@@ -1,5 +1,6 @@
 Openvoc
 =======
+[![Build Status](https://secure.travis-ci.org/blegat/openvoc.png)](http://travis-ci.org/blegat/openvoc)
 
 Description
 -----------
