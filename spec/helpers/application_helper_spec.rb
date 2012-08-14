@@ -15,15 +15,21 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ### END LICENSE
 
-module ApplicationHelper
+require 'spec_helper'
 
-  # Returns the full title of a page
-  def full_title(page_title)
-    base_title = "Openvoc"
-    if page_title.empty?
-      "#{base_title}"
-    else
-      "#{base_title} - #{page_title}"
-    end
-  end
+describe ApplicationHelper do
+
+	describe "full_title" do
+		it "should include the page title" do
+			full_title("foo").should =~ /foo/
+		end
+
+		it "should include the base title" do
+			full_title("foo").should =~ /^Openvoc/
+		end
+
+		it "should not include a bar for the home page" do
+			full_title("").should_not =~ /-/
+		end
+	end
 end

@@ -15,15 +15,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ### END LICENSE
 
-module ApplicationHelper
+class StaticPagesController < ApplicationController
+  def contact
+  end
 
-  # Returns the full title of a page
-  def full_title(page_title)
-    base_title = "Openvoc"
-    if page_title.empty?
-      "#{base_title}"
-    else
-      "#{base_title} - #{page_title}"
-    end
+  def home
   end
 end
