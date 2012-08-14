@@ -4,7 +4,7 @@ Openvoc
 
 Description
 -----------
-Openvoc is a web application that helps you create your vocabulary lists, share it and export it in various format easily.
+Openvoc is a web application that helps you create your vocabulary lists, share them and export them in various format easily.
 
 Contribute
 ----------
