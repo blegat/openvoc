@@ -15,9 +15,26 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ### END LICENSE
 
-Openvoc::Application.routes.draw do
-  resources :languages, only: [:index, :show]
+require 'spec_helper'
 
-  root to: 'static_pages#home'
-  match '/contact', to: 'static_pages#contact'
+describe "Languages" do
+  subject { page }
+  # without '!', let is lazy, it does not do its job until
+  # language is used
+  let!(:language) { FactoryGirl.create(:language) }
+  describe "index page" do
+    before do
+      visit languages_path
+    end
+    # FIXME: path or url ?
+    it { should have_selector "h1", text: "Languages" }
+    it { should have_link language.name, href: language_path(language)  }
+  end
+
+  describe "show page" do
+    before do
+      visit language_path(language)
+    end
+    it { should have_selector "h1", text: language.name }
+  end
 end

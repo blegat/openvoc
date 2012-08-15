@@ -15,9 +15,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ### END LICENSE
 
-Openvoc::Application.routes.draw do
-  resources :languages, only: [:index, :show]
+class LanguagesController < ApplicationController
+  def index
+    @languages = Language.paginate(page: params[:page])
+  end
 
-  root to: 'static_pages#home'
-  match '/contact', to: 'static_pages#contact'
+  def show
+    @language = Language.find(params[:id])
+  end
 end

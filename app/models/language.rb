@@ -15,9 +15,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ### END LICENSE
 
-Openvoc::Application.routes.draw do
-  resources :languages, only: [:index, :show]
-
-  root to: 'static_pages#home'
-  match '/contact', to: 'static_pages#contact'
+class Language < ActiveRecord::Base
+  attr_accessible :name
+  VALID_EMAIL_REGEX = /\A[A-Z][a-z]*\z/
+  validates :name, presence: true, length: { maximum: 32 },
+    format: { with: VALID_EMAIL_REGEX }, uniqueness: { case_sensitive: false }
 end

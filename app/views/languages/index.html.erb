@@ -1,0 +1,13 @@
+<h1>Languages</h1>
+
+<%= will_paginate %>
+<ul>
+  <% @languages.each do |language| %>
+    <li>
+    <%= link_to language.name, language_path(language) %>
+    </li>
+  <% end %>
+</ul>
+<%= will_paginate %>
+
+<br />

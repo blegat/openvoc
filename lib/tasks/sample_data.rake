@@ -15,9 +15,14 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ### END LICENSE
 
-Openvoc::Application.routes.draw do
-  resources :languages, only: [:index, :show]
+namespace :db do
+  desc "Fill database with sample data"
+  task populate: :environment do
+    make_languages
+  end
+end
 
-  root to: 'static_pages#home'
-  match '/contact', to: 'static_pages#contact'
+def make_languages
+  Language.create!(name: "Latin")
+  Language.create!(name: "Random")
 end

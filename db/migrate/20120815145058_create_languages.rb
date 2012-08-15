@@ -1,4 +1,4 @@
-### BEGIN LICENSE
+## BEGIN LICENSE
 # Copyright (C) 2012 Benoît Legat benoit.legat@gmail.com
 #
 # This program is free software: you can redistribute it and/or modify
@@ -15,9 +15,14 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ### END LICENSE
 
-Openvoc::Application.routes.draw do
-  resources :languages, only: [:index, :show]
+class CreateLanguages < ActiveRecord::Migration
+  def change
+    create_table :languages do |t|
+      t.string :name
 
-  root to: 'static_pages#home'
-  match '/contact', to: 'static_pages#contact'
+      t.timestamps
+    end
+
+    add_index :languages, :name, unique: true
+  end
 end
