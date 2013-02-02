@@ -17,7 +17,7 @@
 
 class Language < ActiveRecord::Base
   attr_accessible :name
-  VALID_LANGUAGE_REGEX = /\A[A-Z][a-z]*\z/
+  VALID_LANGUAGE_REGEX = /\A[[:upper:]][[:lower:]]*\z/
   validates :name, presence: true, length: { maximum: 32 },
     format: { with: VALID_LANGUAGE_REGEX },
     uniqueness: { case_sensitive: false }
