@@ -15,9 +15,12 @@
     <!-- Everything within here will be hidden at 940px or less -->
     <!-- Adding collapse class to nav make it open by default -->
     <nav class="nav-collapse">
-    <ul class="nav pull-right">
-      <li <%= "class=active" if yield(:title) == "Contact" %>><%= link_to "Contact", contact_path %></li>
-    </ul>
+      <ul class="nav">
+        <li <%= "class=active" if yield(:title) == "Languages" %>><%= link_to "Languages", languages_path %></li>
+      </ul>
+      <ul class="nav pull-right">
+        <li <%= "class=active" if yield(:title) == "Contact" %>><%= link_to "Contact", contact_path %></li>
+      </ul>
     </nav>
   </div>
 </div>

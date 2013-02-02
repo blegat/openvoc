@@ -16,10 +16,11 @@
 ### END LICENSE
 
 class Word < ActiveRecord::Base
-  attr_accessible :name
-  VALID_EMAIL_REGEX = /\A[\w]+\z/
-  validates :name, presence: true, length: { maximum: 32 },
-    format: { with: VALID_EMAIL_REGEX }
+  attr_accessible :content
+  VALID_WORD_REGEX = /\A[[:alnum:]]+\z/
+  validates :content, presence: true, length: { maximum: 64 },
+    format: { with: VALID_WORD_REGEX }
+  validates :language_id, presence: true
 
   belongs_to :language
 end

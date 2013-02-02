@@ -17,7 +17,10 @@
 
 class Language < ActiveRecord::Base
   attr_accessible :name
-  VALID_EMAIL_REGEX = /\A[A-Z][a-z]*\z/
+  VALID_LANGUAGE_REGEX = /\A[A-Z][a-z]*\z/
   validates :name, presence: true, length: { maximum: 32 },
-    format: { with: VALID_EMAIL_REGEX }, uniqueness: { case_sensitive: false }
+    format: { with: VALID_LANGUAGE_REGEX },
+    uniqueness: { case_sensitive: false }
+
+  has_many :words, dependent: :destroy
 end

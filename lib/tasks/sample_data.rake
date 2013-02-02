@@ -19,10 +19,33 @@ namespace :db do
   desc "Fill database with sample data"
   task populate: :environment do
     make_languages
+    make_words
   end
 end
 
 def make_languages
   Language.create!(name: "Latin")
   Language.create!(name: "Random")
+end
+
+def make_words
+  latin = Language.find_by_name("Latin")
+  latin_words = []
+  content = "est"
+  99.times do |n|
+    while latin_words.include?(content) do
+      content = Faker::Lorem.sentence.split(' ')[0].downcase
+    end
+    latin.words.create!(content: content)
+    latin_words.push(content)
+  end
+  random = Language.find_by_name("Random")
+  random_words = []
+  99.times do |n|
+    while random_words.include?(content) do
+      content = Faker::Lorem.characters(5)
+    end
+    random.words.create!(content: content)
+    random_words.push(content)
+  end
 end

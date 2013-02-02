@@ -22,5 +22,6 @@ class LanguagesController < ApplicationController
 
   def show
     @language = Language.find(params[:id])
+    @words = @language.words.paginate(page: params[:page])
   end
 end

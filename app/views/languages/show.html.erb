@@ -1,3 +1,15 @@
 <h1>
   <%= @language.name %>
 </h1>
+<% if @words.any? %>
+  <h3>Words (<%= @words.count %>)</h3>
+  <%= will_paginate @words %>
+  <ul class="unstyled">
+    <% @words.each do |word| %>
+      <li>
+      <%= word.content %>
+      </li>
+    <% end %>
+  </ul>
+  <%= will_paginate @words %>
+<% end %>

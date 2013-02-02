@@ -36,7 +36,7 @@ describe Language do
     it { should_not be_valid }
   end
   describe "when name is too long" do
-    before { @language.name = "A" + "a" * 33 }
+    before { @language.name = "A" + "a" * 32 }
     it { should_not be_valid }
   end
 
@@ -45,7 +45,12 @@ describe Language do
     it { should_not be_valid }
   end
 
-  describe "when name address is already taken" do
+  describe "when name has non-letter characters" do
+    before { @language.name = "Ab0c" }
+    it { should_not be_valid }
+  end
+
+  describe "when name is already taken" do
     before do
       language_with_same_name = @language.dup
       language_with_same_name.save

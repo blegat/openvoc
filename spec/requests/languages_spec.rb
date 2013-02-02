@@ -32,9 +32,14 @@ describe "Languages" do
   end
 
   describe "show page" do
-    before do
-      visit language_path(language)
-    end
+    let!(:w1) { FactoryGirl.create(:word, language: language, content: 'a') }
+    let!(:w2) { FactoryGirl.create(:word, language: language, content: 'b') }
+    before { visit language_path(language) }
     it { should have_selector "h1", text: language.name }
+    describe "words" do
+      it { should have_content(w1.content) }
+      it { should have_content(w2.content) }
+      it { should have_content(language.words.count) }
+    end
   end
 end

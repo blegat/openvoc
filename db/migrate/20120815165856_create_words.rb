@@ -18,15 +18,13 @@
 class CreateWords < ActiveRecord::Migration
   def change
     create_table :words do |t|
-      t.string :name
+      t.string :content
       t.integer :language_id
 
       t.timestamps
     end
 
-    add_index :words, :name
+    add_index :words, :content
     add_index :words, :language_id
-    # not same name and language_id
-    add_index :words, [:name, :language_id], unique: true
   end
 end
