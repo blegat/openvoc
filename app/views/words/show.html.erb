@@ -1,0 +1,45 @@
+<% provide(:title, @word.content) %>
+<h1><%= @word.language.name %></h1>
+<h2><%= @word.content %></h2>
+ <div class="row">
+  <div class="span3">
+    <h3>Links</h3>
+    <div class="well">
+      <ul class="nav nav-list">
+        <li <%= 'class="active"'.html_safe unless @link %>><%= link_to new_word_link_path(@word) do %>
+          <i class="icon-magnet <%= "icon_white" unless @link %>"></i>
+          New link
+        <% end %>
+        </li>
+        <% @word.links1.each do |l| %>
+          <% unless l.id.nil? %> <!-- not registered -->
+            <li <%= 'class="active"'.html_safe if @link == l %>>
+            <%= link_to link_path(l) do %>
+              <i class="icon-edit <%= "icon_white" unless @link %>"></i>
+              <%= l.word2.content %>
+            <% end %>
+          <% end %>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  </div>
+  <div class="span3 offset3">
+    <h3>Linking</h3>
+    <div class="well">
+      <% if @link %>
+        <p><i class="icon-magnet"></i>
+        <%= link_to @link.word2.content, word_path(@link.word2) %>
+      <% else %>
+        <%= form_for(:link, url: word_links_path(@word)) do |f| %>
+
+          <%= render 'languages/select', f: f, language: @language2, n: 2 %>
+          <%= render 'words/select', f: f, word_content: @word2_content, n: 2 %>
+
+          </br> <!-- find a cleaner way --!>
+          <%= f.submit "Create the link", class: "btn btn-large btn-primary" %>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+</div>

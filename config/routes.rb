@@ -16,7 +16,15 @@
 ### END LICENSE
 
 Openvoc::Application.routes.draw do
+  get "links/new"
+
+  get "links/show"
+
   resources :languages, only: [:index, :show]
+  resources :words, only: [:show] do
+    resources :links, only: [:create, :new]
+  end
+  resources :links, only: [:create, :new, :show]
 
   root to: 'static_pages#home'
   match '/contact', to: 'static_pages#contact'

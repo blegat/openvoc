@@ -7,7 +7,7 @@
   <ul class="unstyled">
     <% @words.each do |word| %>
       <li>
-      <%= word.content %>
+      <%= link_to word.content, word_path(word) %>
       </li>
     <% end %>
   </ul>

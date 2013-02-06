@@ -20,6 +20,7 @@ namespace :db do
   task populate: :environment do
     make_languages
     make_words
+    make_links
   end
 end
 
@@ -47,5 +48,19 @@ def make_words
     end
     random.words.create!(content: content)
     random_words.push(content)
+  end
+end
+
+def make_links
+  latin = Language.find_by_name("Latin")
+  random = Language.find_by_name("Random")
+  latin_words = latin.words
+  random_words = random.words
+  99.times do |n|
+    latin_word_id = latin_words[rand(0..98)]
+    random_word_id = random_words[rand(0..98)]
+    link = Link.new
+    link.word1 = latin_word_id
+    link.word2 = random_word_id
   end
 end

@@ -23,4 +23,9 @@ class Word < ActiveRecord::Base
   validates :language_id, presence: true
 
   belongs_to :language
+  has_many :links1, class_name: "Link", dependent: :destroy, foreign_key: "word1_id"
+  has_many :links2, class_name: "Link", dependent: :destroy, foreign_key: "word2_id"
+  def get_tos_content
+    links1.map { |l| l.word2 }
+  end
 end

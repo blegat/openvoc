@@ -29,6 +29,8 @@ describe Word do
   it { should be_valid }
   it { should respond_to(:content) }
   it { should respond_to(:language) }
+  it { should respond_to(:links1) }
+  it { should respond_to(:links2) }
   its(:language) { should == language }
   describe "accessible attributes" do
     it "should not allow access to language_id" do
@@ -69,6 +71,21 @@ describe Word do
     end
     subject { @word_without_language }
     it { should_not be_valid }
+  end
+
+  describe "linking" do
+    let(:other_word) { FactoryGirl.create(:word) }
+    let!(:link) { FactoryGirl.create(:link, word1: @word, word2: other_word) }
+    it "should have a link" do
+      @word.links1.should include(link)
+    end
+    describe "when the word is destroyed" do
+      before { @word.destroy }
+      it "should destroy all links" do
+        Link.find_by_id(link.id).should be_nil
+        # find raise an exceptions so find_by_id is better
+      end
+    end
   end
 
 end

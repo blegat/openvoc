@@ -29,4 +29,8 @@ FactoryGirl.define do
     content "a"
     language
   end
+  factory :link do
+    association :word1, factory: :word
+    association :word2, factory: :word
+  end
 end
