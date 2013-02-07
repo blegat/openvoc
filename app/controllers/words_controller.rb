@@ -24,9 +24,23 @@ class WordsController < ApplicationController
   end
 
   def new
+    @language = Language.find(params[:language_id])
+    @words = @language.words.paginate(page: params[:page])
+    @new_word = true
+    render 'languages/show', location: language_path(@language)
   end
 
   def create
+    @language = Language.find(params[:language_id])
+    @words = @language.words.paginate(page: params[:page])
+    @new_word = true
+    @word = @language.words.create(content: params[:word][:content])
+    flash.now[:success] = "#{@word.content} added to #{@language.name}"
+    render 'languages/show'
+    #redirect_to new_language_word_path
+    # I need to change the url because otherwise,
+    # when the user change the page a GET request
+    # is sent to language_words_path which insn't defined
   end
 
   def destroy

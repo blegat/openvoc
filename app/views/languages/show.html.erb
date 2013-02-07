@@ -1,6 +1,16 @@
 <h1>
   <%= @language.name %>
 </h1>
+<% if @new_word %>
+  <%= form_for :word, url: language_words_path(@language) do |f| %>
+    <%= f.label 'Word' %>
+    <%= f.text_field :content %>
+    <br/>
+    <%= f.submit 'Create the word', class: "btn btn-large btn-primary" %>
+  <% end %>
+<% else %>
+  <%= link_to "New word", new_language_word_path(@language) %>
+<% end %>
 <% if @words.any? %>
   <h3>Words (<%= @words.count %>)</h3>
   <%= will_paginate @words %>

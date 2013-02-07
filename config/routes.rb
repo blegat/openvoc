@@ -20,7 +20,10 @@ Openvoc::Application.routes.draw do
 
   get "links/show"
 
-  resources :languages, only: [:index, :show]
+  resources :languages, only: [:index, :show] do
+    resources :words, only: [:new, :create]
+    match 'words' => "words#new"
+  end
   resources :words, only: [:show] do
     resources :links, only: [:create, :new]
   end
