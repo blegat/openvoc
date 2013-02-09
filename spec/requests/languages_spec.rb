@@ -37,8 +37,12 @@ describe "Languages" do
     before { visit language_path(language) }
     it { should have_selector "h1", text: language.name }
     describe "words" do
-      it { should have_content(w1.content) }
-      it { should have_content(w2.content) }
+      it { should have_link "New word",
+        href: new_language_word_path(language) }
+      it { should have_link w1.content,
+        href: word_path(w1) }
+      it { should have_content(w2.content),
+        href: word_path(w2) }
       it { should have_content(language.words.count) }
     end
   end

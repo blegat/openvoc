@@ -74,16 +74,34 @@ describe Word do
   end
 
   describe "linking" do
-    let(:other_word) { FactoryGirl.create(:word) }
-    let!(:link) { FactoryGirl.create(:link, word1: @word, word2: other_word) }
+    let!(:other_word) { FactoryGirl.create(:word) }
+    before { @word.save }
+    let!(:link) { FactoryGirl.create(:link,
+                                     word1: @word,
+                                     word2: other_word) }
     it "should have a link" do
       @word.links1.should include(link)
+    end
+    it "should have a reverse link" do
+      other_word.links2.should include(link)
+    end
+    it "should have a valid other end" do
+      @word.links1.find_by_id(link.id).word2.should == other_word
+    end
+    it "should have a valid other end" do
+      other_word.links2.find_by_id(link.id).word1.should == @word
     end
     describe "when the word is destroyed" do
       before { @word.destroy }
       it "should destroy all links" do
         Link.find_by_id(link.id).should be_nil
         # find raise an exceptions so find_by_id is better
+      end
+      it "should destroy the link of word1" do
+        @word.links1.should_not include(link)
+      end
+      it "should destroy the link of word2" do
+        other_word.links2.should_not include(link)
       end
     end
   end

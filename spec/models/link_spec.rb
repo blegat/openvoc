@@ -54,5 +54,9 @@ describe Link do
     end
     it { @link_dup.should_not be_valid }
   end
+  describe "when it is a reverse duplicate" do
+    let (:rlink) { FactoryGirl.build(:link, word1: word2, word2: word1) }
+    it { rlink.should be_valid }
+  end
 
 end
