@@ -1,0 +1,15 @@
+<% provide(:title, "Register") %>
+
+<%= debug @registration %>
+<%= form_for @registration, url: registrations_path do |f| %>
+  <%= f.label :email %>
+  <%= f.text_field :email %>
+
+  <%= f.label :password %>
+  <%= f.password_field :password %>
+
+  <%= f.label :password_confirmation, "Confirm password" %>
+  <%= f.password_field :password_confirmation %>
+  <br />
+  <%= f.submit 'Register', class: "btn btn-large btn-primary" %>
+<% end %>

@@ -23,7 +23,20 @@
       <!--<li><%= form_for(:link) do |f| %>
         <%= f.text_field :word1 %>
       <% end %></li>-->
-        <li <%= "class=active" if yield(:title) == "Contact" %>><%= link_to "Contact", contact_path %></li>
+
+      <% if current_user %>
+        <li <%= "class=active" if yield(:title) == "Profile" %>>
+        <%= link_to "Profile", users_path(current_user) %>
+        <li <%= "class=active" if yield(:title) == "Sign out" %>>
+        <%= link_to "Sign out", signout_path %>
+        </li>
+      <% else %>
+        <li <%= "class=active" if yield(:title) == "Sign in" %>>
+        <%= link_to "Sign in", signin_path %>
+        </li>
+      <% end %>
+
+      <li <%= "class=active" if yield(:title) == "Contact" %>><%= link_to "Contact", contact_path %></li>
       </ul>
     </nav>
   </div>

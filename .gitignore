@@ -17,5 +17,9 @@
 # Ignore other unneeded files.
 doc/
 *.tmp
+*.swp
 *~
 bundler_stubs/
+
+# Sensitive data
+/config/app_environment_variables.rb

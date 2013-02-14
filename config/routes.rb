@@ -16,6 +16,9 @@
 ### END LICENSE
 
 Openvoc::Application.routes.draw do
+  resources :authentications, only: [:index, :create, :destroy]
+  resources :registrations, only: [:new, :create, :destroy]
+
   get "links/new"
 
   get "links/show"
@@ -31,4 +34,9 @@ Openvoc::Application.routes.draw do
 
   root to: 'static_pages#home'
   match '/contact', to: 'static_pages#contact'
+
+  match "/auth/:provider/callback" => "authentications#create"
+  match "/signin" => "authentications#index", as: :signin
+  match "/signout" => "sessions#destroy", as: :signout
+  resources :users
 end

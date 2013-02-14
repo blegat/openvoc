@@ -6,6 +6,13 @@ gem 'bcrypt-ruby', '3.0.1'
 gem 'faker', '1.0.1'
 gem 'will_paginate', '3.0.3'
 gem 'bootstrap-will_paginate', '0.0.6'
+gem 'omniauth-twitter'
+gem 'omniauth-linkedin'
+gem 'omniauth-openid'
+gem 'omniauth-github'
+gem 'omniauth-google-oauth2'
+gem 'omniauth-identity'
+gem 'ruby-openid', '2.2.2' # TODO: remove
 
 group :development, :test do
   gem 'sqlite3'

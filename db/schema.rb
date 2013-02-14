@@ -11,7 +11,23 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130202132757) do
+ActiveRecord::Schema.define(:version => 20130212085856) do
+
+  create_table "authentications", :force => true do |t|
+    t.integer  "user_id"
+    t.string   "provider"
+    t.string   "uid"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  create_table "identities", :force => true do |t|
+    t.string   "name"
+    t.string   "email"
+    t.string   "password_digest"
+    t.datetime "created_at",      :null => false
+    t.datetime "updated_at",      :null => false
+  end
 
   create_table "languages", :force => true do |t|
     t.string   "name"
@@ -22,19 +38,38 @@ ActiveRecord::Schema.define(:version => 20130202132757) do
   add_index "languages", ["name"], :name => "index_languages_on_name", :unique => true
 
   create_table "links", :force => true do |t|
-    t.string   "word1_id"
-    t.string   "word2_id"
+    t.integer  "word1_id"
+    t.integer  "word2_id"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
   end
 
-  add_index "links", ["word1_id", "word2_id"], :name => "index_links_on_word1_id_and_word2_id"
+  add_index "links", ["word1_id"], :name => "index_links_on_word1_id"
+  add_index "links", ["word2_id"], :name => "index_links_on_word2_id"
+
+  create_table "registrations", :force => true do |t|
+    t.string   "email"
+    t.string   "password_digest"
+    t.integer  "user_id"
+    t.datetime "created_at",      :null => false
+    t.datetime "updated_at",      :null => false
+  end
+
+  create_table "users", :force => true do |t|
+    t.string   "name"
+    t.string   "email"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  add_index "users", ["email"], :name => "index_users_on_email", :unique => true
 
   create_table "words", :force => true do |t|
     t.string   "content"
     t.integer  "language_id"
     t.datetime "created_at",  :null => false
     t.datetime "updated_at",  :null => false
+    t.integer  "link_id"
   end
 
   add_index "words", ["content"], :name => "index_words_on_content"
