@@ -19,10 +19,6 @@ Openvoc::Application.routes.draw do
   resources :authentications, only: [:index, :create, :destroy]
   resources :registrations, only: [:new, :create, :destroy]
 
-  get "links/new"
-
-  get "links/show"
-
   resources :languages, only: [:index, :show] do
     resources :words, only: [:new, :create]
     match 'words' => "words#new"
@@ -38,5 +34,6 @@ Openvoc::Application.routes.draw do
   match "/auth/:provider/callback" => "authentications#create"
   match "/signin" => "authentications#index", as: :signin
   match "/signout" => "sessions#destroy", as: :signout
-  resources :users
+  resources :sessions, only: [:new, :create]
+  resources :users, only: [:update, :edit, :new, :show, :create]
 end

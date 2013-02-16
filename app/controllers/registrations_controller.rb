@@ -17,6 +17,11 @@
 
 class RegistrationsController < ApplicationController
   def new
+    if signed_in? && current_user.registered?
+      flash.now[:notice] = "You already have a registration.
+        If you create another one, your existing registration
+      will be destroyed."
+    end
     @registration = Registration.new
     if signed_in?
       @registration.email = current_user.email
@@ -29,6 +34,7 @@ class RegistrationsController < ApplicationController
     else
       @user = User.new
       @registration = @user.build_registration(params[:registration])
+      @user.update_name(params[:name])
       @user.save
     end
     if @registration.save
@@ -37,7 +43,7 @@ class RegistrationsController < ApplicationController
         sign_in(@user)
         flash.now[:success] = "Succefully logged in"
       end
-      current_user.update_email(@registration)# if current_user.email.blank?
+      current_user.update_email(@registration.email)
       render :new
     else
       unless signed_in?
@@ -46,6 +52,9 @@ class RegistrationsController < ApplicationController
       #flash.now[:error] = "Fail"
       unless @registration.errors.empty? # that would be weird :o
         flash.now[:notice] = @registration.errors.full_messages.to_sentence
+      end
+      unless @user.errors.empty?
+        flash.now[:notice] = @user.errors.full_messages.to_sentence
       end
       render :new
     end

@@ -1,38 +1,15 @@
-<% provide(:title, "Sign in") %>
+<% provide(:title, "Openvoc signin") %>
 
-<p><strong>Sign in through one of these services:</strong></p>
+<%= form_for :registration, url: sessions_path do |f| %>
+  <%= f.label :email %>
+  <%= f.text_field :email %>
 
-<a href="/auth/twitter" class="auth_provider">
-  <%= image_tag "twitter_64.png", size: "64x64", alt: "Twitter" %>
-  Twitter
-</a>
-<a href="/auth/facebook" class="auth_provider">
-  <%= image_tag "facebook_64.png", size: "64x64", alt: "Facebook" %>
-  Facebook
-</a>
-<a href="/auth/google_oauth2" class="auth_provider">
-  <%= image_tag "google_64.png", size: "64x64", alt: "Google" %>
-  Google
-</a>
-<a href="/auth/open_id" class="auth_provider">
-  <%= image_tag "openid_64.png", size: "64x64", alt: "OpenID" %>
-  OpenID
-</a>
+  <%= f.label :password %>
+  <%= f.password_field :password %>
 
-<p>
-  <strong>Don't use these services?</strong>
-  <%= link_to "Create an account", new_identities_path %> or
-  <%= link_to "Login", "auth/identity" %> below.
-</p>
-
-<%= form_tag "/auth/identity/callback" do %>
-  <div class="field">
-    <%= label_tag :auth_key, "Email" %><br>
-    <%= text_field_tag :auth_key %>
-  </div>
-  <div class="field">
-    <%= label_tag :password %><br>
-    <%= password_field_tag :password %>
-  </div>
-  <div class="actions"><%= submit_tag "Login" %></div>
+  <br />
+  <%= f.submit 'Register', class: "btn btn-large btn-primary" %>
 <% end %>
+<p>No account yet ?
+<%= link_to "Register", new_registration_path %>
+</p>

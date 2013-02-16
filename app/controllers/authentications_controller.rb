@@ -33,7 +33,6 @@ class AuthenticationsController < ApplicationController
     omniauth = request.env["omniauth.auth"]
     authentication = Authentication.find_by_provider_and_uid(omniauth['provider'], omniauth['uid'])
     if authentication
-      flash[:success] = "Authentication"
       if signed_in?
         # Trying to add an authentication to a user
         if current_user?(authentication.user)
@@ -44,30 +43,54 @@ class AuthenticationsController < ApplicationController
         end
       else
         # Trying to connect
+        authentication.user.update_with_omniauth(omniauth, authentication)
         flash[:notice] = "Logged in successfuly";
         sign_in(authentication.user)
-        redirect_to users_path(authentication.user)
+        redirect_to authentication.user
       end
     elsif signed_in?
-      flash[:success] = "current_user #{current_user.id}"
-      current_user.authentications.create!(:provider => omniauth['provider'], :uid => omniauth['uid'])
-      flash[:notice] = "Authentication successful."
-      redirect_to authentications_url
+      authentication = current_user.apply_omniauth(omniauth)
+      if authentication.save
+        current_user.update_with_omniauth(omniauth, authentication)
+        flash[:notice] = "Authentication successful."
+        redirect_to authentications_path
+        # redirect is necessary because @authentications
+        # must be calculated for the views
+      else
+        unless authentication.errors.empty? # that would be weird :o
+          flash[:notice] = authentication.errors.full_messages.to_sentence
+        end
+      end
     else
-      flash[:success] = "Nothing"
-      user = User.new
-      user.apply_omniauth(omniauth)
+      if omniauth[:info][:name].blank?
+        # user is invalid without a name
+        session[:omniauth] = omniauth
+        render "users/new" and return
+      end
+      user = User.create_with_omniauth(omniauth)
+      authentication = user.apply_omniauth(omniauth)
       if user.valid?
+        flash[:notice] = "Account created"
         user.save!
         # saving could fail if the db has changed since
         # TODO handle it.
         # It could also happen that save validations checks are
         # ok but the db changes and then it fails
-        flash[:notice] = "Signed in successfully."
-        sign_in(user)
-        redirect_to users_path(user)
+        if authentication.save
+          user.set_src(authentication)
+          flash[:notice] = "Signed in successfully."
+          sign_in(user)
+          redirect_to user
+        else
+          flash[:error] = "ERROR"
+          session[:omniauth] = omniauth.except('extra')
+          render :index
+        end
       else
-        flash[:error] = "There is already a user with the same email"
+        #flash[:error] = "There is already a user with the same email"
+        unless user.errors.empty?
+          flash.now[:error] = user.errors.full_messages.to_sentence
+        end
         # TODO ask another email
         session[:omniauth] = omniauth.except('extra')
         render :index

@@ -32,4 +32,8 @@ class Registration < ActiveRecord::Base
     password = hash[:password]
     password_confirmation = hash[:password_confirmation]
   end
+  def update_email(email)
+    self.email = email
+    self.save
+  end
 end

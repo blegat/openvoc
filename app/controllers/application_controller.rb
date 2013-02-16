@@ -20,8 +20,8 @@ class ApplicationController < ActionController::Base
   helper_method :current_user, :sign_in, :signed_in?,
     :current_use=, :current_user?, :signed_in_user
   def sign_in(user)
-    #cookies.permanent[:remember_token] =  user.remember_token
-    session[:user_id] =  user.id
+    cookies.permanent[:remember_token] =  user.remember_token
+    #session[:user_id] =  user.id
     self.current_user = user
   end
 
@@ -38,10 +38,14 @@ class ApplicationController < ActionController::Base
   end
 
   def current_user
-    #@current_user ||= User.find_by_remember_token(cookies[:remember_token])
+    #if cookies[:remember_token].nil?
+      #nil
+    #else
+    @current_user ||= User.find_by_remember_token(cookies[:remember_token])
+    #end
     #@current_user ||= User.find_by_id(session[:user_id])
     #@current_user ||= User.find(session[:user_id]) if session[:user_id]
-    @current_user ||= User.find_by_id(session[:user_id])
+    #@current_user ||= User.find_by_id(session[:user_id])
   end
 
   def signed_in_user
@@ -53,8 +57,8 @@ class ApplicationController < ActionController::Base
 
   def sign_out
     self.current_user = nil
-    #cookies.delete(:remember_token)
-    session.delete(:user_id)
+    cookies.delete(:remember_token)
+    #session.delete(:user_id)
   end
 
   def redirect_back_or(default)

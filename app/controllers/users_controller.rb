@@ -18,4 +18,48 @@
 class UsersController < ApplicationController
   def new
   end
+  def create
+    @omniauth = session[:omniauth]
+    @omniauth['info']['name'] = params[:user][:name]
+    user = User.create_with_omniauth(@omniauth)
+    authentication = user.apply_omniauth(@omniauth)
+    @user = user
+    if user.save
+      if authentication.save
+        user.update_with_omniauth(@omniauth,
+                                  authentication)
+        flash.now[:success] = "Created successfully"
+        sign_in(user)
+        render :show and return
+      else
+        unless authentication.errors.empty?
+          flash.now[:error] = authentication.errors.full_messages.to_sentence
+        end
+      end
+    else
+      unless user.errors.empty?
+        flash.now[:error] = user.errors.full_messages.to_sentence
+      end
+    end
+    render :new
+  end
+  def edit
+    @user = User.find(params[:id])
+  end
+  def update
+    @user = User.find(params[:id])
+    if @user.registered?
+      @user.update_email(params[:user][:email])
+    else
+      authentication = Authentication.find(params[:user][:email_src][:id])
+      if @user.authentications.include?(authentication)
+        flash.now[:notice] = "Updated"
+        @user.update_email_src(authentication)
+      else
+        # this shouldn't happen for a non-hacker
+        flash.now[:error] = "This authentication is not in yours"
+      end
+    end
+    render :edit
+  end
 end

@@ -16,17 +16,25 @@
 ### END LICENSE
 
 class SessionsController < ApplicationController
+  def new
+    # Login with a registration
+  end
   def create
-    #auth = request.env["omniauth.auth"]
-    #raise auth.to_yaml
-    user = User.from_omniauth(env["omniauth.auth"])
-    session[:user_id] = user.id
-    redirect_to root_url, :notice => "Signed in!"
+    registration = Registration.find_by_email(params[:registration][:email])
+    if registration &&
+      registration.authenticate(params[:registration][:password])
+      sign_in registration.user
+      redirect_back_or registration.user
+    else
+      flash.now[:error] = 'Invalid email/password combination'
+      render 'new'
+    end
   end
 
   def destroy
-    session[:user_id] = nil
-    redirect_to root_url, :notice => "Signed out!"
+    #session[:user_id] = nil
+    sign_out
+    redirect_to root_path, :notice => "Signed out!"
   end
 
   def failure

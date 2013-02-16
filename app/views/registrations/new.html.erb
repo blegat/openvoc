@@ -2,6 +2,10 @@
 
 <%= debug @registration %>
 <%= form_for @registration, url: registrations_path do |f| %>
+  <% unless signed_in? %>
+    <%= label_tag :name %>
+    <%= text_field_tag :name %>
+  <% end %>
   <%= f.label :email %>
   <%= f.text_field :email %>
 

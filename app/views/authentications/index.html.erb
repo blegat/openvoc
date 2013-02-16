@@ -48,13 +48,16 @@
 <div class="well">
   <div class="row-fluid">
     <div class="span2">
-      <a href=<%= new_registration_path %> class="auth_provider">
+      <a href=<%= new_session_path %> class="auth_provider">
         <%= image_tag "openvoc_64.png", :size => "64x64", :alt => "Openvoc" %>
         Openvoc
       </a>
     </div>
-    <% ['developer', 'open_id', 'twitter',
-      'github', 'google_apps'].each do |provider| %>
+    <% @methods = ['open_id', 'twitter', 'github', 'google_oauth2']
+    unless Rails.env.production?
+      @methods.prepend('developer')
+    end %>
+    <% @methods.each do |provider| %>
       <div class="span2">
         <%= link_to "/auth/#{provider}", class: "auth_provider" do %>
           <%= image_tag "#{provider}_64.png", size: "64x64",

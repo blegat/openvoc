@@ -24,5 +24,9 @@ class CreateAuthentications < ActiveRecord::Migration
 
       t.timestamps
     end
+    change_table :users do |t|
+      t.references :name_src
+      t.references :email_src
+    end
   end
 end
