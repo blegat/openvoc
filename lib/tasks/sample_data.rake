@@ -18,9 +18,19 @@
 namespace :db do
   desc "Fill database with sample data"
   task populate: :environment do
+    make_users
     make_languages
     make_words
     make_links
+  end
+end
+
+def make_users
+  99.times do |n|
+    name = Faker::Name.name
+    email = "example-#{n+1}@openvoc.com"
+    User.create!(name: name,
+                 email: email)
   end
 end
 
@@ -37,7 +47,9 @@ def make_words
     while latin_words.include?(content) do
       content = Faker::Lorem.sentence.split(' ')[0].downcase
     end
-    latin.words.create!(content: content)
+    word = latin.words.build(content: content)
+    word.owner = User.random # uses random_record gem
+    word.save!
     latin_words.push(content)
   end
   random = Language.find_by_name("Random")
@@ -46,7 +58,9 @@ def make_words
     while random_words.include?(content) do
       content = Faker::Lorem.characters(5)
     end
-    random.words.create!(content: content)
+    word = random.words.build(content: content)
+    word.owner = User.random
+    word.save!
     random_words.push(content)
   end
 end
@@ -62,5 +76,7 @@ def make_links
     link = Link.new
     link.word1 = latin_word_id
     link.word2 = random_word_id
+    link.owner = User.random
+    link.save!
   end
 end

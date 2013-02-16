@@ -17,14 +17,19 @@
 
 class User < ActiveRecord::Base
   attr_accessible :name, :email
-  has_many :authentications, dependent: :destroy
-  has_one :registration, dependent: :destroy
+
   belongs_to :email_src, class_name: Authentication
   belongs_to :name_src, class_name: Authentication
   validates :email, uniqueness: true
+  # 2 empty emails are not unique...
   validates :name, presence: true
 
+  has_many :authentications, dependent: :destroy
+  has_one :registration, dependent: :destroy
   before_save :create_remember_token
+
+  has_many :words, foreign_key: :owner_id
+  has_many :links, foreign_key: :owner_id
 
   # registration: registration
   # omniauth: omniauth hash

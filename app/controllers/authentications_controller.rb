@@ -17,14 +17,6 @@
 
 class AuthenticationsController < ApplicationController
 
-  #def sign_in(user)
-    #session[:user_id] = user.id
-  #end
-
-  #def current_user
-    #@current_user ||= User.find(session[:user_id]) if session[:user_id]
-  #end
-
   def index
     @authentications = current_user.authentications if current_user
   end
@@ -46,13 +38,13 @@ class AuthenticationsController < ApplicationController
         authentication.user.update_with_omniauth(omniauth, authentication)
         flash[:notice] = "Logged in successfuly";
         sign_in(authentication.user)
-        redirect_to authentication.user
+        redirect_back_or authentication.user
       end
     elsif signed_in?
       authentication = current_user.apply_omniauth(omniauth)
       if authentication.save
         current_user.update_with_omniauth(omniauth, authentication)
-        flash[:notice] = "Authentication successful."
+        flash[:notice] = "Authentication successfully added."
         redirect_to authentications_path
         # redirect is necessary because @authentications
         # must be calculated for the views
@@ -80,7 +72,7 @@ class AuthenticationsController < ApplicationController
           user.set_src(authentication)
           flash[:notice] = "Signed in successfully."
           sign_in(user)
-          redirect_to user
+          redirect_back_or user
         else
           flash[:error] = "ERROR"
           session[:omniauth] = omniauth.except('extra')

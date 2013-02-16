@@ -20,13 +20,26 @@ require 'spec_helper'
 describe "Words" do
   subject { page }
   let!(:language) { FactoryGirl.create(:language) }
+  let!(:user) { FactoryGirl.create(:user) }
   let!(:word) { FactoryGirl.create(:word, language: language) }
   let!(:other_word1) { FactoryGirl.create(:word) }
   let!(:other_word2) { FactoryGirl.create(:word) }
-  describe "new word" do
+  describe "new word when signed out" do
     before { visit new_language_word_path(language) }
+    it { should_not have_field "word_content" }
+    it { should have_selector('title', text: 'Sign In') }
+  end
+  describe "new word when signed in" do
+    before do
+      sign_in user
+      visit new_language_word_path(language)
+    end
     it { should have_selector "h1", text: language.name }
     it { should have_field "word_content" }
+  end
+  describe "create word when signed out" do
+    before { post language_words_path(language) }
+    specify { response.should redirect_to(signin_path) }
   end
 
   describe "show page" do

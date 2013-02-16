@@ -35,33 +35,34 @@ class RegistrationsController < ApplicationController
       @user = User.new
       @registration = @user.build_registration(params[:registration])
       @user.update_name(params[:name])
-      @user.save
+      @user.update_email(@registration.email)
+      # update_email is necessary for the user to be valid
+      # email is unique and 2 nil email is the same
+      unless @user.save
+        flash_errors @user
+        render :new and return
+      end
     end
     if @registration.save
       #TODO check uniqueness of email
-      unless signed_in?
+      if signed_in?
+        current_user.update_email(@registration.email)
+        flash.now[:success] = "Succefully added registration."
+      else
         sign_in(@user)
-        flash.now[:success] = "Succefully logged in"
+        flash.now[:success] = "Succefully registered."
       end
-      current_user.update_email(@registration.email)
-      render :new
+      redirect_back_or registrations_path
     else
       unless signed_in?
         @user.destroy
       end
-      #flash.now[:error] = "Fail"
-      unless @registration.errors.empty? # that would be weird :o
-        flash.now[:notice] = @registration.errors.full_messages.to_sentence
-      end
-      unless @user.errors.empty?
-        flash.now[:notice] = @user.errors.full_messages.to_sentence
-      end
-      render :new
+      flash_errors(@registration)
     end
   end
   def destroy
     current_user.registration.destroy
-    flash[:notice] = "Successfully destroyed registration."
+    flash.now[:success] = "Successfully destroyed registration."
     redirect_to authentications_path
   end
 end

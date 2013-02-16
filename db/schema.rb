@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130215182754) do
+ActiveRecord::Schema.define(:version => 20130216103308) do
 
   create_table "authentications", :force => true do |t|
     t.integer  "user_id"
@@ -34,6 +34,7 @@ ActiveRecord::Schema.define(:version => 20130215182754) do
     t.integer  "word2_id"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
+    t.integer  "owner_id"
   end
 
   add_index "links", ["word1_id"], :name => "index_links_on_word1_id"
@@ -66,6 +67,7 @@ ActiveRecord::Schema.define(:version => 20130215182754) do
     t.datetime "created_at",  :null => false
     t.datetime "updated_at",  :null => false
     t.integer  "link_id"
+    t.integer  "owner_id"
   end
 
   add_index "words", ["content"], :name => "index_words_on_content"

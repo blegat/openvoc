@@ -22,6 +22,9 @@ class Word < ActiveRecord::Base
     format: { with: VALID_WORD_REGEX }
   validates :language_id, presence: true
 
+  belongs_to :owner, class_name: "User"
+  validates :owner_id, presence: true
+
   belongs_to :language
   has_many :links1, class_name: "Link", dependent: :destroy, foreign_key: "word1_id"
   has_many :links2, class_name: "Link", dependent: :destroy, foreign_key: "word2_id"

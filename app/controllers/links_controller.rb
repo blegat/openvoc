@@ -1,4 +1,6 @@
 class LinksController < ApplicationController
+  before_filter :signed_in_user, only: [:new, :create]
+
   def new
     if params[:word_id]
       @word = Word.find_by_id(params[:word_id])
@@ -43,15 +45,20 @@ class LinksController < ApplicationController
       if @word2
         link = @word1.links1.build
         link.word2 = @word2
-        link.save
-        flash.now[:success] = "New link from 
-        #{view_context.link_to(@word1.content,
+        link.owner = current_user
+        if link.save
+          flash.now[:success] = "New link from 
+          #{view_context.link_to(@word1.content,
                              word_path(@word1))}
-        to
-        #{view_context.link_to(@word2.content,
+          to
+                             #{view_context.link_to(@word2.content,
                              word_path(@word2))}
-        created".html_safe
-        render 'new'
+          created".html_safe
+          render 'new'
+        else
+          @word = @word1
+          render 'words/show'
+        end
       else
         @word = @word1
         render 'words/show'

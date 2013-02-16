@@ -1,6 +1,6 @@
 <% provide(:title, @word.content) %>
 <h1><%= @word.language.name %></h1>
-<h2><%= @word.content %></h2>
+<h2><%= @word.content %>, created by <%= @word.owner.name %></h2>
  <div class="row">
   <div class="span3">
     <h3>Links</h3>
@@ -28,6 +28,7 @@
     <h3>Linking</h3>
     <div class="well">
       <% if @link %>
+        <h4>Created by <%= @link.owner.name %></h4>
         <p><i class="icon-magnet"></i>
         <%= link_to @link.word2.content, word_path(@link.word2) %>
       <% else %>

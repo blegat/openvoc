@@ -18,7 +18,14 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery
   helper_method :current_user, :sign_in, :signed_in?,
-    :current_use=, :current_user?, :signed_in_user
+    :current_use=, :current_user?, :signed_in_user, :flash_erros
+
+  def flash_errors(object)
+    unless object.errors.empty?
+      flash.now[:error] = object.errors.full_messages.to_sentence
+    end
+  end
+
   def sign_in(user)
     cookies.permanent[:remember_token] =  user.remember_token
     #session[:user_id] =  user.id

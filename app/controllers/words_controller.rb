@@ -16,6 +16,8 @@
 ### END LICENSE
 
 class WordsController < ApplicationController
+  before_filter :signed_in_user, only: [:new, :create]
+
   def index
   end
 
@@ -34,13 +36,19 @@ class WordsController < ApplicationController
     @language = Language.find(params[:language_id])
     @words = @language.words.paginate(page: params[:page])
     @new_word = true
-    @word = @language.words.create(content: params[:word][:content])
-    flash.now[:success] = "#{@word.content} added to #{@language.name}"
-    render 'languages/show'
-    #redirect_to new_language_word_path
-    # I need to change the url because otherwise,
-    # when the user change the page a GET request
-    # is sent to language_words_path which insn't defined
+    @word = @language.words.build(content: params[:word][:content])
+    @word.owner = current_user
+    if @word.save
+      flash.now[:success] = "#{@word.content} added to #{@language.name}"
+      render 'languages/show'
+      #redirect_to new_language_word_path
+      # I need to change the url because otherwise,
+      # when the user change the page a GET request
+      # is sent to language_words_path which insn't defined
+    else
+      flash_errors(@word)
+      render :new
+    end
   end
 
   def destroy
