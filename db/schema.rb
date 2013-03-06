@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130216103308) do
+ActiveRecord::Schema.define(:version => 20130216160939) do
 
   create_table "authentications", :force => true do |t|
     t.integer  "user_id"
@@ -20,6 +20,16 @@ ActiveRecord::Schema.define(:version => 20130216103308) do
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
   end
+
+  create_table "inclusions", :force => true do |t|
+    t.integer  "list_id"
+    t.integer  "word_id"
+    t.integer  "author_id"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  add_index "inclusions", ["list_id"], :name => "index_inclusions_on_list_id"
 
   create_table "languages", :force => true do |t|
     t.string   "name"
@@ -39,6 +49,17 @@ ActiveRecord::Schema.define(:version => 20130216103308) do
 
   add_index "links", ["word1_id"], :name => "index_links_on_word1_id"
   add_index "links", ["word2_id"], :name => "index_links_on_word2_id"
+
+  create_table "lists", :force => true do |t|
+    t.string   "name"
+    t.integer  "parent_id"
+    t.integer  "owner_id"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  add_index "lists", ["owner_id"], :name => "index_lists_on_owner_id"
+  add_index "lists", ["parent_id"], :name => "index_lists_on_parent_id"
 
   create_table "registrations", :force => true do |t|
     t.string   "email"

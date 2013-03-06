@@ -27,8 +27,10 @@ module ApplicationHelper
     end
   end
 
-  def current_user
-    @current_user ||= User.find(session[:user_id]) if session[:user_id]
+  def flash_errors(object)
+    unless object.errors.empty?
+      flash.now[:error] = object.errors.full_messages.to_sentence
+    end
   end
 
 end

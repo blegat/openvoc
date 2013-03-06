@@ -25,6 +25,7 @@ Openvoc::Application.routes.draw do
   end
   resources :words, only: [:show] do
     resources :links, only: [:create, :new]
+    resources :inclusions, only: [:create]
   end
   resources :links, only: [:create, :new, :show]
 
@@ -36,4 +37,7 @@ Openvoc::Application.routes.draw do
   match "/signout" => "sessions#destroy", as: :signout
   resources :sessions, only: [:new, :create]
   resources :users, only: [:update, :edit, :new, :show, :create]
+  resources :lists, only: [:new, :create, :index, :show] do
+    resources :lists, only: [:new, :create]
+  end
 end

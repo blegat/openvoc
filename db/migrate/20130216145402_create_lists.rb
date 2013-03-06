@@ -15,9 +15,16 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ### END LICENSE
 
-class AddRememberTokenToUsers < ActiveRecord::Migration
+class CreateLists < ActiveRecord::Migration
   def change
-    add_column :users, :remember_token, :string
-    add_index  :users, :remember_token
+    create_table :lists do |t|
+      t.string :name
+      t.references :parent
+      t.references :owner
+
+      t.timestamps
+    end
+    add_index :lists, :parent_id
+    add_index :lists, :owner_id
   end
 end

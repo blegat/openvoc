@@ -24,11 +24,35 @@ class Word < ActiveRecord::Base
 
   belongs_to :owner, class_name: "User"
   validates :owner_id, presence: true
+  #TODO rename it author
 
   belongs_to :language
   has_many :links1, class_name: "Link", dependent: :destroy, foreign_key: "word1_id"
   has_many :links2, class_name: "Link", dependent: :destroy, foreign_key: "word2_id"
+  # if need has_many inclusions
+  # need to add index for :word_id in table
+  # :inclusions for efficiency
   def get_tos_content
     links1.map { |l| l.word2 }
   end
+
 end
+# == Schema Information
+# Schema version: 20130216160939
+#
+# Table name: words
+#
+#  id          :integer         not null, primary key
+#  content     :string(255)
+#  language_id :integer
+#  created_at  :datetime        not null
+#  updated_at  :datetime        not null
+#  link_id     :integer
+#  owner_id    :integer
+#
+# Indexes
+#
+#  index_words_on_language_id  (language_id)
+#  index_words_on_content      (content)
+#
+

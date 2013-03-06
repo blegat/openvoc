@@ -31,10 +31,24 @@ class User < ActiveRecord::Base
   has_many :words, foreign_key: :owner_id
   has_many :links, foreign_key: :owner_id
 
+  has_many :lists, foreign_key: :owner_id
+  has_many :inlusions, foreign_key: :author_id
+
   # registration: registration
   # omniauth: omniauth hash
   # authentication: authentication
   # auth: authentication or registration
+
+  def root_lists
+    self.lists.find_all_by_parent_id(nil)
+  end
+
+  def set_root_if_none
+    if self.root.nil?
+      self.root = self.lists.create(name: '/')
+      self.root
+    end
+  end
 
   def self.create_with_omniauth(omniauth)
     User.new(name: omniauth['info']['name'],
@@ -117,3 +131,23 @@ class User < ActiveRecord::Base
     end
   end
 end
+# == Schema Information
+# Schema version: 20130216160939
+#
+# Table name: users
+#
+#  id             :integer         not null, primary key
+#  name           :string(255)
+#  email          :string(255)
+#  created_at     :datetime        not null
+#  updated_at     :datetime        not null
+#  name_src_id    :integer
+#  email_src_id   :integer
+#  remember_token :string(255)
+#
+# Indexes
+#
+#  index_users_on_remember_token  (remember_token)
+#  index_users_on_email           (email) UNIQUE
+#
+

@@ -59,3 +59,18 @@ describe Language do
     it { should_not be_valid }
   end
 end
+# == Schema Information
+# Schema version: 20130216160939
+#
+# Table name: languages
+#
+#  id         :integer         not null, primary key
+#  name       :string(255)
+#  created_at :datetime        not null
+#  updated_at :datetime        not null
+#
+# Indexes
+#
+#  index_languages_on_name  (name) UNIQUE
+#
+

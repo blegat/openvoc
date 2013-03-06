@@ -17,64 +17,7 @@
 
 class ApplicationController < ActionController::Base
   protect_from_forgery
-  helper_method :current_user, :sign_in, :signed_in?,
-    :current_use=, :current_user?, :signed_in_user, :flash_erros
-
-  def flash_errors(object)
-    unless object.errors.empty?
-      flash.now[:error] = object.errors.full_messages.to_sentence
-    end
-  end
-
-  def sign_in(user)
-    cookies.permanent[:remember_token] =  user.remember_token
-    #session[:user_id] =  user.id
-    self.current_user = user
-  end
-
-  def signed_in?
-    !current_user.nil?
-  end
-
-  def current_user=(user)
-    @current_user = user
-  end
-
-  def current_user?(user)
-    user == current_user
-  end
-
-  def current_user
-    #if cookies[:remember_token].nil?
-      #nil
-    #else
-    @current_user ||= User.find_by_remember_token(cookies[:remember_token])
-    #end
-    #@current_user ||= User.find_by_id(session[:user_id])
-    #@current_user ||= User.find(session[:user_id]) if session[:user_id]
-    #@current_user ||= User.find_by_id(session[:user_id])
-  end
-
-  def signed_in_user
-    unless signed_in?
-      store_location
-      redirect_to signin_path, notice: "Please sign in."
-    end
-  end
-
-  def sign_out
-    self.current_user = nil
-    cookies.delete(:remember_token)
-    #session.delete(:user_id)
-  end
-
-  def redirect_back_or(default)
-    redirect_to(session[:return_to] || default)
-    session.delete(:return_to)
-  end
-
-  def store_location
-    session[:return_to] = request.fullpath
-  end
+  include SessionsHelper
+  include ApplicationHelper
 
 end

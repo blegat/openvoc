@@ -1,7 +1,7 @@
 <% provide(:title, @word.content) %>
 <h1><%= @word.language.name %></h1>
 <h2><%= @word.content %>, created by <%= @word.owner.name %></h2>
- <div class="row">
+<div class="row">
   <div class="span3">
     <h3>Links</h3>
     <div class="well">
@@ -24,23 +24,37 @@
       </ul>
     </div>
   </div>
-  <div class="span3 offset3">
-    <h3>Linking</h3>
-    <div class="well">
-      <% if @link %>
-        <h4>Created by <%= @link.owner.name %></h4>
-        <p><i class="icon-magnet"></i>
-        <%= link_to @link.word2.content, word_path(@link.word2) %>
-      <% else %>
-        <%= form_for(:link, url: word_links_path(@word)) do |f| %>
-
-          <%= render 'languages/select', f: f, language: @language2, n: 2 %>
-          <%= render 'words/select', f: f, word_content: @word2_content, n: 2 %>
-
-          <br/>
-          <%= f.submit "Create the link", class: "btn btn-large btn-primary" %>
+  <% if signed_in? %>
+    <div class="span3">
+      <h3>Lists</h3>
+      <div class="well">
+        <p>Add to</p>
+        <%= form_for :inclusion, url: word_inclusions_path(@word) do |f| %>
+          <%= f.collection_select("list_id", current_user.lists, :id, :path, prompt: true) %>
+          <%= f.submit "Add", class: "btn btn-primary" %>
         <% end %>
-      <% end %>
+      </div>
     </div>
-  </div>
+  <% end %>
+  <% if signed_in? or @link %>
+    <div class="span3 <%= 'offset3' unless signed_in? %>">
+      <h3>Linking</h3>
+      <div class="well">
+        <% if @link %>
+          <h4>Created by <%= @link.owner.name %></h4>
+          <p><i class="icon-magnet"></i>
+          <%= link_to @link.word2.content, word_path(@link.word2) %>
+        <% elsif signed_in? %>
+          <%= form_for(:link, url: word_links_path(@word)) do |f| %>
+
+            <%= render 'languages/select', f: f, language: @language2, n: 2 %>
+            <%= render 'words/select', f: f, word_content: @word2_content, n: 2 %>
+
+            <br/>
+            <%= f.submit "Create the link", class: "btn btn-large btn-primary" %>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
 </div>

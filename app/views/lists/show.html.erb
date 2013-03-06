@@ -1,0 +1,19 @@
+<% provide(:title, 'List') %>
+<h1><%= @path %></h1>
+<% if @new_list %>
+  <%= form_for @new_list, url: path_to_create_list(@list) do |f| %>
+    <%= f.label :name %>
+    <%= f.text_field :name %>
+    <br />
+    <%= f.submit "Create list here", class: "btn btn-large btn-primary" %>
+  <% end %>
+<% else %>
+  <%= link_to 'New list here', path_for_new_list(@list) %>
+<% end %>
+<ul>
+  <% @lists.each do |list| %>
+    <li>
+    <%= link_to list.name, list %>
+    </li>
+  <% end %>
+</ul>

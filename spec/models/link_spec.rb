@@ -60,3 +60,21 @@ describe Link do
   end
 
 end
+# == Schema Information
+# Schema version: 20130216160939
+#
+# Table name: links
+#
+#  id         :integer         not null, primary key
+#  word1_id   :integer
+#  word2_id   :integer
+#  created_at :datetime        not null
+#  updated_at :datetime        not null
+#  owner_id   :integer
+#
+# Indexes
+#
+#  index_links_on_word2_id  (word2_id)
+#  index_links_on_word1_id  (word1_id)
+#
+

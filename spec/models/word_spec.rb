@@ -107,3 +107,22 @@ describe Word do
   end
 
 end
+# == Schema Information
+# Schema version: 20130216160939
+#
+# Table name: words
+#
+#  id          :integer         not null, primary key
+#  content     :string(255)
+#  language_id :integer
+#  created_at  :datetime        not null
+#  updated_at  :datetime        not null
+#  link_id     :integer
+#  owner_id    :integer
+#
+# Indexes
+#
+#  index_words_on_language_id  (language_id)
+#  index_words_on_content      (content)
+#
+
