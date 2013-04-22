@@ -13,6 +13,7 @@ gem 'omniauth-github'
 gem 'omniauth-google-oauth2'
 gem 'omniauth-identity'
 gem 'ruby-openid', '2.2.2' # TODO: remove
+gem 'algorithms'
 
 group :development, :test do
   gem 'sqlite3'

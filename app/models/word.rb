@@ -25,15 +25,40 @@ class Word < ActiveRecord::Base
   belongs_to :owner, class_name: "User"
   validates :owner_id, presence: true
   #TODO rename it author
+  has_many :trains, dependent: :destroy
 
   belongs_to :language
   has_many :links1, class_name: "Link", dependent: :destroy, foreign_key: "word1_id"
   has_many :links2, class_name: "Link", dependent: :destroy, foreign_key: "word2_id"
+
+  has_many :translations, through: :links1, source: :word2
+
   # if need has_many inclusions
   # need to add index for :word_id in table
   # :inclusions for efficiency
   def get_tos_content
     links1.map { |l| l.word2 }
+  end
+
+  def last_train(user)
+    #raise created_at.class.to_s
+    trains.where(user_id: user.id).order(:created_at).last
+  end
+
+  def success_count(user = nil)
+    if user.nil?
+      trains.where(success: true).count
+    else
+      trains.where(user_id: user.id).where(success: true).count
+    end
+  end
+
+  def train_count(user = nil)
+    if user.nil?
+      trains.count
+    else
+      trains.where(user_id: user.id).count
+    end
   end
 
 end

@@ -38,6 +38,7 @@ Openvoc::Application.routes.draw do
   resources :sessions, only: [:new, :create]
   resources :users, only: [:update, :edit, :new, :show, :create]
   resources :lists, only: [:new, :create, :index, :show] do
+    resources :trains, only: [:new, :create]
     resources :lists, only: [:new, :create]
   end
 end

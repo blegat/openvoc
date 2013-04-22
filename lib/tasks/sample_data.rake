@@ -19,9 +19,11 @@ namespace :db do
   desc "Fill database with sample data"
   task populate: :environment do
     make_users
+    make_dev
     make_languages
     make_words
     make_links
+    make_lists
   end
 end
 
@@ -32,6 +34,17 @@ def make_users
     User.create!(name: name,
                  email: email)
   end
+end
+
+def make_dev
+  user = User.create!(name: 'dev',
+                      email: 'dev@dev.com')
+  user.save!
+  reg = Registration.new(email: 'dev@dev.com',
+                         password: 'foobar',
+                         password_confirmation: 'foobar')
+  reg.user = user
+  reg.save!
 end
 
 def make_languages
@@ -77,6 +90,20 @@ def make_links
     link.word1 = latin_word_id
     link.word2 = random_word_id
     link.owner = User.random
-    link.save!
+    link.save # it could fail for same word1, word2
+  end
+end
+
+def make_lists
+  empty = true
+  99.times do |n|
+    list = List.new
+    list.name = Faker::Lorem.words(1).to_s
+    list.owner = User.random
+    if Random.rand(2) == 0 and not empty
+      list.parent = list.owner.lists.random
+    end
+    list.save!
+    empty = false
   end
 end

@@ -4,6 +4,7 @@ class ListsController < ApplicationController
     @list = List.find_by_id(params[:list_id])
     @path = get_path(@list)
     @lists = get_childs(@list)
+    @words = get_childs(@list)
     @new_list = current_user.lists.build
     #@new_list.parent = @list # yet useless
     render :show
@@ -20,7 +21,8 @@ class ListsController < ApplicationController
     else
       flash_errors(@new_list)
       @path = get_path(@list)
-      @childs = get_childs(@list)
+      @lists = get_childs(@list)
+      @words = get_words(@list)
       render :show
     end
   end
@@ -33,6 +35,7 @@ class ListsController < ApplicationController
     @list = List.find(params[:id])
     @path = @list.path
     @lists = @list.childs
+    @words = @list.words
   end
   private
   def get_path(list)
@@ -47,6 +50,13 @@ class ListsController < ApplicationController
       current_user.root_lists
     else
       list.childs
+    end
+  end
+  def get_words(list)
+    if list.nil?
+      nil
+    else
+      list.words
     end
   end
 end

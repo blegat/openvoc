@@ -34,6 +34,8 @@ class User < ActiveRecord::Base
   has_many :lists, foreign_key: :owner_id
   has_many :inlusions, foreign_key: :author_id
 
+  has_many :trains, dependent: :destroy
+
   # registration: registration
   # omniauth: omniauth hash
   # authentication: authentication

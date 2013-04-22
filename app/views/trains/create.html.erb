@@ -1,0 +1,52 @@
+<% provide(:title, 'Training' ) %>
+<h1>Training
+  <% if @guesss.nil? %>
+    <i class="icon-remove-sign"></i>
+  <% else %>
+    <i class="icon-ok-sign"></i>
+  <% end %>
+</h1>
+<% if @guess.nil? %>
+  <p>Your guess is wrong.
+  <%= @guess_content %>
+  is not a valid translation for
+  <%= link_to @word.content, @word %></p>
+  <% if @word.translations.empty? %>
+    <p>Actually, <%= @word.content %>
+    has no translation recorded yet.</p>
+  <% else %>
+    <p>The possible translations were</p>
+    <ul>
+      <% @word.translations.each do |t| %>
+        <li>
+        <%= link_to t.content, t %>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+<% else %>
+  <p>Your guess is correct.
+  <%= link_to @guess.content, @guess %>
+  is a valid translation for
+  <%= link_to @word.content, @word %>.</p>
+<% end %>
+<p>
+You already have guessed it correct
+<% user_success_count = @word.success_count(current_user) %>
+<% user_train_count = @word.train_count(current_user) %>
+<%= user_success_count %> times ou of
+<%= user_train_count %> tries
+while makes an average of
+<%= percentage(user_success_count, user_train_count.to_f) %>.
+</p>
+
+<p>
+The average succeed with an average of
+<%= percentage(@word.success_count, @word.train_count) %>.
+</p>
+
+<%= link_to "Next", new_list_train_path(@list),
+  class: 'btn btn-large btn-primary' %>
+<br />
+<br />
+<%= link_to "Back to list", @list %>

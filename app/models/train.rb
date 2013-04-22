@@ -15,33 +15,31 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ### END LICENSE
 
-class Link < ActiveRecord::Base
-  validates :word1_id, presence: true,
-    uniqueness: { scope: :word2_id }
-  validates :word2_id, presence: true
+class Train < ActiveRecord::Base
+  attr_accessible :success, :guess
 
-  belongs_to :owner, class_name: "User"
-  validates :owner_id, presence: true
-  #TODO rename it author
+  # guess = nil means give up. '' means no guess.
+  # So no validates presence: true.
 
-  belongs_to :word1, class_name: "Word"#, foreign_key: 'word1_id'
-  belongs_to :word2, class_name: "Word"#, foreign_key: 'word2_id'
+  validates :success, inclusion: { in: [true, false] }
+
+  belongs_to :user
+  validates :user_id, presence: true
+
+  belongs_to :word
+  validates :word_id, presence: true
+
 end
 # == Schema Information
-# Schema version: 20130216160939
 #
-# Table name: links
+# Table name: trains
 #
 #  id         :integer         not null, primary key
-#  word1_id   :integer
-#  word2_id   :integer
+#  user_id    :integer
+#  word_id    :integer
+#  guess      :string(255)
+#  success    :boolean
 #  created_at :datetime        not null
 #  updated_at :datetime        not null
-#  owner_id   :integer
-#
-# Indexes
-#
-#  index_links_on_word2_id  (word2_id)
-#  index_links_on_word1_id  (word1_id)
 #
 
