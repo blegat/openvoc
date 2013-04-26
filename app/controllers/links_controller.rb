@@ -85,10 +85,12 @@ class LinksController < ApplicationController
               render_list_show
             end
           else
-            flash.now[:error] = "This link already exists"
             if @list.nil?
+              flash.now[:error] = "This link already exists"
               redirect_to l
             else
+              # At least it has been added to the list so it wasn't useless
+              flash.now[:notice] = "This link already exists"
               render_list_show
             end
           end
