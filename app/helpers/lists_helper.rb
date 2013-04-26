@@ -13,13 +13,4 @@ module ListsHelper
       list_lists_path(list)
     end
   end
-  def selectable_path(list)
-    p = ''
-    current = self
-    until current.nil?
-      p.prepend("/#{link_to current.name, current}")
-      current = current.parent
-    end
-    p
-  end
 end

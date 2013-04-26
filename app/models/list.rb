@@ -39,25 +39,18 @@ class List < ActiveRecord::Base
   end
 
   def selectable_path
-    p = ''
-    current = self
-    until current.nil?
-      p.prepend("/#{link_to current.name, current}")
-      current = current.parent
+    if parent.nil?
+      "/#{link_to name, self}"
+    else
+      "#{parent.path}/#{link_to name, current}"
     end
-    p
   end
   def path
-    p = ''
-    current = self
-    until current.nil?
-      puts "before #{p}"
-      puts "in #{current.name}"
-      p.prepend("/#{current.name}")
-      puts "after #{p}"
-      current = current.parent
+    if parent.nil?
+      "/#{name}"
+    else
+      "#{parent.path}/#{name}"
     end
-    p
   end
   def set_root_if_no_parent
     if self.parent.nil?# and not self.owner.nil?
