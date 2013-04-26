@@ -17,9 +17,9 @@
 
 class Word < ActiveRecord::Base
   attr_accessible :content
-  VALID_WORD_REGEX = /\A[[:alnum:]]+\z/
-  validates :content, presence: true, length: { maximum: 64 },
-    format: { with: VALID_WORD_REGEX }
+  #VALID_WORD_REGEX = /\A[[:alnum:]]+\z/
+  validates :content, presence: true, length: { maximum: 64 }#,
+    #format: { with: VALID_WORD_REGEX }
   validates :language_id, presence: true
 
   belongs_to :owner, class_name: "User"
@@ -40,8 +40,11 @@ class Word < ActiveRecord::Base
     links1.map { |l| l.word2 }
   end
 
+  def trained_by(user)
+    not trains.where(user_id: user.id).empty?
+  end
+
   def last_train(user)
-    #raise created_at.class.to_s
     trains.where(user_id: user.id).order(:created_at).last
   end
 

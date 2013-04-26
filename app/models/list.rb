@@ -62,6 +62,26 @@ class List < ActiveRecord::Base
     end
   end
 
+  def words_rec
+    childs.inject(words.to_a) do |words, child|
+      words + child.words_rec
+    end
+  end
+
+  def contain_word(word)
+    words.include?(word)
+  end
+
+  def add_word(word, user)
+    inclusion = Inclusion.new
+    inclusion.list = self
+    inclusion.author = user
+    inclusion.word = word
+    unless inclusion.save
+      raise inclusion.errors.full_messages.to_sentence
+    end
+  end
+
 end
 # == Schema Information
 # Schema version: 20130216160939

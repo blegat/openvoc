@@ -45,6 +45,12 @@ class User < ActiveRecord::Base
     self.lists.find_all_by_parent_id(nil)
   end
 
+  def lists_without(word)
+    lists.select do |list|
+      not list.contain_word(word)
+    end
+  end
+
   def set_root_if_none
     if self.root.nil?
       self.root = self.lists.create(name: '/')

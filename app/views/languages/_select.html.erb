@@ -1,4 +1,4 @@
-<%= f.label "Language #{['from','to'][n-1]}" %>
+<%= f.label "language#{n}_id", "Language #{['from','to'][n-1]}" %>
 <%= if language
       f.collection_select("language#{n}_id", Language.all, :id, :name,
                           selected: language.id)

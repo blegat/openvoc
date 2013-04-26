@@ -6,20 +6,17 @@ class TrainsController < ApplicationController
       redirect_to @list,
         flash: { notice: "The list contains no word" } and return
     end
-    already_trained =
-      @list.words.joins(:trains).where(trains: { user_id: current_user.id }).uniq#.group_by(:word).order(:created_at)
-    # if not uniq, it try to delete it twice
-    if already_trained.to_a.count < @list.words.count
-      pool = @list.words.select { |x| !already_trained.include?(x) }
-      flash[:notice] = pool.to_s
-      #@word = pool.random #not working :(
-      pool_a = pool.to_a
-      @word = pool_a.at(Random.rand(pool_a.size))
+    words = ((params[:rec] == "true") ? @list.words_rec : @list.words)
+    not_trained_yet = words.select do |w|
+      not w.trained_by(current_user)
+    end
+    if not not_trained_yet.empty?
+      @word = not_trained_yet.at(Random.rand(not_trained_yet.size))
     else
       require 'rubygems'
       require 'algorithms'
       q = Containers::PriorityQueue.new
-      pool = @list.words
+      pool = words
       message = ""
       pool.each do |x|
         message += x.last_train(current_user).inspect

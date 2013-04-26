@@ -2,6 +2,11 @@ class Inclusion < ActiveRecord::Base
   belongs_to :list
   belongs_to :word
   belongs_to :author, class_name: "User"
+
+  validates :list_id, presence: true
+  validates :word_id, presence: true,
+    uniqueness: { scope: :list_id }
+  validates :author_id, presence: true
 end
 # == Schema Information
 # Schema version: 20130216160939

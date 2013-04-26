@@ -1,50 +1,70 @@
 <% provide(:title, 'List') %>
 <h1><%= @path %></h1>
-<% if @list %>
-  <% if @list.parent.nil? %>
-    <%= link_to "Go back to /", lists_path %>
-  <% else %>
-    <%= link_to "Go back to #{@list.parent.path}", @list.parent %>
-  <% end %>
-<% end %>
 
-<% if @new_list %>
-  <%= form_for @new_list, url: path_to_create_list(@list) do |f| %>
-    <%= f.label :name %>
-    <%= f.text_field :name %>
-    <br />
-    <%= f.submit "Create list here", class: "btn btn-large btn-primary" %>
-  <% end %>
-<% else %>
-  <%= link_to 'New list here', path_for_new_list(@list) %>
-<% end %>
 
-<h2>Sublists</h2>
-<% if @lists.empty? %>
-  <p>No sublist.</p>
-<% else %>
-  <ul>
-    <% @lists.each do |list| %>
-      <li>
-      <%= link_to list.name, list %>
-      </li>
-    <% end %>
-  </ul>
-<% end %>
-<% if @path != '/' %>
-  <h2>Words</h2>
-  <% if @words.empty? %>
-    <p>No word.</p>
-  <% else %>
-    <ul>
-      <% @words.each do |word| %>
-        <li>
-        <%= link_to word.content, word %>
-        </li>
+<div class="row">
+  <div class="span6">
+    <% if @list %>
+      <% if @list.parent.nil? %>
+        <%= link_to "Go back to /", lists_path, class: "btn" %>
+      <% else %>
+        <%= link_to "Go back to #{@list.parent.path}", @list.parent, class: "btn" %>
       <% end %>
-    </ul>
-  <% end %>
+    <% end %>
 
-  <%= link_to "Train on this list", new_list_train_path(@list),
-    class: 'btn btn-large btn-primary' %>
-<% end %>
+    <% if @new_list %>
+      <%= form_for @new_list, url: path_to_create_list(@list) do |f| %>
+        <%= f.label :name %>
+        <%= f.text_field :name %>
+        <br />
+        <%= f.submit "Create list here", class: "btn" %>
+      <% end %>
+    <% else %>
+      <%= link_to 'New list here', path_for_new_list(@list), class: "btn" %>
+    <% end %>
+
+    <h2>Sublists</h2>
+    <% if @lists.empty? %>
+      <p>No sublist.</p>
+    <% else %>
+      <ul>
+        <% @lists.each do |list| %>
+          <li>
+          <%= link_to list.name, list %>
+          </li>
+        <% end %>
+      </ul>
+    <% end %>
+    <% if @path != '/' %>
+      <h2>Words</h2>
+      <% if @words.empty? %>
+        <p>No word.</p>
+      <% else %>
+        <ul>
+          <% @words.each do |word| %>
+            <li>
+            <%= link_to word.content, word %>
+            </li>
+          <% end %>
+        </ul>
+      <% end %>
+
+      <%= link_to "Train on this list", new_list_train_path(@list),
+        class: 'btn' %>
+      <%= link_to "Train on this list and its sublists", new_list_train_path(@list, rec: true),
+        class: 'btn btn-primary' %>
+    <% end %>
+  </div>
+
+  <% unless @list.nil? %>
+    <div class="span6">
+      <h2>New links</h2>
+      <p>
+      Quickly add new words to this list while ensuring your
+      requested link is present.
+      If the words or the link doesn't exist, it will be added.
+      </p>
+      <%= render 'links/new' %>
+    </div>
+  <% end %>
+</div>

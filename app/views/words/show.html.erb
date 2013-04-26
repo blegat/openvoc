@@ -30,7 +30,7 @@
       <div class="well">
         <p>Add to</p>
         <%= form_for :inclusion, url: word_inclusions_path(@word) do |f| %>
-          <%= f.collection_select("list_id", current_user.lists, :id, :path, prompt: true) %>
+          <%= f.collection_select("list_id", current_user.lists_without(@word), :id, :path, prompt: true) %>
           <%= f.submit "Add", class: "btn btn-primary" %>
         <% end %>
       </div>

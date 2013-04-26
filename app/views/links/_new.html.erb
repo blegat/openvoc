@@ -1,0 +1,13 @@
+<%= form_for(:link, url: links_path) do |f| %>
+
+  <%= f.hidden_field :list_id, value: @list.id %>
+
+  <%= render 'languages/select', f: f, language: @language1, n: 1 %>
+  <%= render 'words/select', f: f, word_content: @word1_content, n: 1 %>
+
+  <%= render 'languages/select', f: f, language: @language2, n: 2 %>
+  <%= render 'words/select', f: f, word_content: @word2_content, n: 2 %>
+
+  <br/>
+  <%= f.submit "Create the link", class: "btn btn-large btn-primary" %>
+<% end %>
