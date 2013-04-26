@@ -41,6 +41,10 @@ class User < ActiveRecord::Base
   # authentication: authentication
   # auth: authentication or registration
 
+  def auth_number
+    authentications.count + (registration.nil? ? 0 : 1)
+  end
+
   def root_lists
     self.lists.find_all_by_parent_id(nil)
   end

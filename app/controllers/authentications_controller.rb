@@ -17,6 +17,8 @@
 
 class AuthenticationsController < ApplicationController
 
+  before_filter :signed_in?, only: [:destroy]
+
   def index
     @authentications = current_user.authentications if current_user
   end
@@ -93,8 +95,15 @@ class AuthenticationsController < ApplicationController
 
   def destroy
     @authentication = current_user.authentications.find(params[:id])
-    @authentication.destroy
-    flash[:notice] = "Successfully destroyed authentication."
+    if @authentication.nil? or @authentication.user != current_user
+      redirect_to root_path
+    end
+    if @authentication.user.auth_number == 1
+      flash[:error] = "This is your last authentication."
+    else
+      @authentication.destroy
+      flash[:success] = "Successfully destroyed authentication."
+    end
     redirect_to authentications_path
   end
 

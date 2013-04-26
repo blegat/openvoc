@@ -52,7 +52,7 @@ class RegistrationsController < ApplicationController
         sign_in(@user)
         flash.now[:success] = "Succefully registered."
       end
-      redirect_back_or registrations_path
+      redirect_back_or authentications_path
     else
       unless signed_in?
         @user.destroy
@@ -61,8 +61,12 @@ class RegistrationsController < ApplicationController
     end
   end
   def destroy
-    current_user.registration.destroy
-    flash.now[:success] = "Successfully destroyed registration."
+    if current_user.auth_number == 1
+      flash[:error] = "This is your last authentication."
+    else
+      current_user.registration.destroy
+      flash[:success] = "Successfully destroyed registration."
+    end
     redirect_to authentications_path
   end
 end

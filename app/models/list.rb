@@ -42,7 +42,10 @@ class List < ActiveRecord::Base
     p = ''
     current = self
     until current.nil?
+      puts "before #{p}"
+      puts "in #{link_to current.name, current}"
       p.prepend("/#{link_to current.name, current}")
+      puts "after #{p}"
       current = current.parent
     end
     p
