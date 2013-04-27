@@ -2,11 +2,11 @@ class TrainsController < ApplicationController
   before_filter :signed_in_user
   before_filter :list_exists
   def new
-    if @list.words.empty?
-      redirect_to @list,
-        flash: { notice: "The list contains no word" } and return
-    end
     words = ((params[:rec] == "true") ? @list.words_rec : @list.words)
+    if words.empty?
+      redirect_to @list,
+        flash: { notice: "There is no word for training" } and return
+    end
     not_trained_yet = words.select do |w|
       not w.trained_by(current_user)
     end

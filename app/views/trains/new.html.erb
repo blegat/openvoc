@@ -2,9 +2,9 @@
 <h1>Training<i class="icon-question-sign"></i></h1>
 <%= form_for(:train, url: list_trains_path(@list)) do |f| %>
   <%= f.hidden_field :word_id, value: @word.id %>
-  <%= f.label :guess, "What is the translation of #{@word.content}?" %>
+  <%= f.label :guess, "What is the translation of \"#{@word.content}\"?" %>
   <%= f.text_field :guess %>
   <br />
   <%= f.submit "Guess", class: "btn btn-large btn-primary" %>
 <% end %>
-<%= link_to "Back to list", @list %>
+<%= link_to "Back to list", @list, class: "btn" %>
