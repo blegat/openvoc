@@ -17,7 +17,7 @@
 
 class AuthenticationsController < ApplicationController
 
-  before_filter :signed_in?, only: [:destroy]
+  before_filter :signed_in_user, only: [:destroy]
 
   def index
     @authentications = current_user.authentications if current_user

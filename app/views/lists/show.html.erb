@@ -4,23 +4,53 @@
 
 <div class="row">
   <div class="span6">
-    <% if @list %>
-      <% if @list.parent.nil? %>
-        <%= link_to "Go back to /", lists_path, class: "btn" %>
-      <% else %>
-        <%= link_to "Go back to #{@list.parent.path}", @list.parent, class: "btn" %>
+    <div class="btn-group">
+      <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+        Action <i class="icon-cog"></i>
+        <span class="caret"></span>
+      </a>
+      <ul class="dropdown-menu">
+        <% unless @list.nil? %>
+          <li>
+          <% if @list.parent.nil? %>
+            <%= link_to "Go back to /", lists_path %>
+          <% else %>
+            <%= link_to "Go back to #{@list.parent.path}", @list.parent %>
+          <% end %>
+          </li>
+          <% unless @moving %>
+            <li>
+            <%= link_to "Move", list_moving_path(@list) %>
+            </li>
+          <% end %>
+        <% end %>
+        <% if @new_list.nil? %>
+          <li>
+          <%= link_to 'New list here', path_for_new_list(@list) %>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+
+    <% if @moving %>
+      <%= form_for :dest, url: list_move_path(@list) do |f| %>
+        <%= f.label :list_id, "Destination" %>
+        <% if @list.parent.nil? %>
+          <%= f.collection_select("list_id", current_user.lists_outside(@list), :id, :path) %>
+        <% else %>
+          <%= f.collection_select("list_id", current_user.lists_outside(@list), :id, :path, prompt: "/") %>
+      <% end %>
+        <br />
+        <%= f.submit "Move", class: "btn" %>
       <% end %>
     <% end %>
-
-    <% if @new_list %>
+    <% unless @new_list.nil? %>
       <%= form_for @new_list, url: path_to_create_list(@list) do |f| %>
         <%= f.label :name %>
         <%= f.text_field :name %>
         <br />
         <%= f.submit "Create list here", class: "btn" %>
       <% end %>
-    <% else %>
-      <%= link_to 'New list here', path_for_new_list(@list), class: "btn" %>
     <% end %>
 
     <h2>Sublists</h2>

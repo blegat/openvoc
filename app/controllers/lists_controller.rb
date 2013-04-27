@@ -1,10 +1,13 @@
 class ListsController < ApplicationController
   before_filter :signed_in_user
+  before_filter :list_exists1, only: [:show]
+  before_filter :list_exists2, only: [:moving, :move]
   def new
     @list = List.find_by_id(params[:list_id])
+    # if list is nil, it is '/'
     @path = get_path(@list)
     @lists = get_childs(@list)
-    @words = @list.words
+    @words = get_words(@list)
     @new_list = current_user.lists.build
     #@new_list.parent = @list # yet useless
     render :show
@@ -32,12 +35,50 @@ class ListsController < ApplicationController
     render :show
   end
   def show
-    @list = List.find(params[:id])
     @path = @list.path
     @lists = @list.childs
     @words = @list.words
   end
+  def moving
+    @moving = true
+    @path = @list.path
+    @lists = @list.childs
+    @words = @list.words
+    render :show
+  end
+  def move
+    # if list_id is nil, that means the prompt "/" has been chosen
+    if params[:dest][:list_id].blank?
+      @list.parent = nil
+      @list.save
+    else
+      @dest = List.find_by_id(params[:dest][:list_id])
+      if @dest.nil? or @dest.owner != current_user
+        @moving = true
+        flash.now[:error] = "Invalid destination"
+      else
+        @list.parent = @dest
+        @list.save
+      end
+    end
+    @path = @list.path
+    @lists = @list.childs
+    @words = @list.words
+    render :show
+  end
   private
+  def list_exists1
+    @list = List.find_by_id(params[:id])
+    if @list.nil?
+      redirect_to root_path
+    end
+  end
+  def list_exists2
+    @list = List.find_by_id(params[:list_id])
+    if @list.nil?
+      redirect_to root_path
+    end
+  end
   def get_path(list)
     if list.nil?
       '/'

@@ -78,6 +78,23 @@ class List < ActiveRecord::Base
     end
   end
 
+  def lists_outside(list)
+    lists = []
+    is_parent = false
+    if self != list
+      childs.each do |cur|
+        lists.concat(cur.lists_outside(list))
+        if list == cur
+          is_parent = true
+        end
+      end
+      unless is_parent
+        lists << self
+      end
+    end
+    lists
+  end
+
 end
 # == Schema Information
 # Schema version: 20130216160939

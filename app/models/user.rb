@@ -54,6 +54,13 @@ class User < ActiveRecord::Base
       not list.contain_word(word)
     end
   end
+  def lists_outside(list)
+    lists = []
+    root_lists.each do |cur|
+      lists.concat(cur.lists_outside(list))
+    end
+    lists
+  end
 
   def set_root_if_none
     if self.root.nil?
