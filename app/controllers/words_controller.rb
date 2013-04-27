@@ -16,7 +16,7 @@
 ### END LICENSE
 
 class WordsController < ApplicationController
-  before_filter :signed_in_user, only: [:new, :create]
+  before_filter :signed_in_user, only: [:new, :create, :destroy]
 
   def index
   end
@@ -52,5 +52,15 @@ class WordsController < ApplicationController
   end
 
   def destroy
+    @list = List.find_by_id(params[:list_id])
+    if @list.nil? or @list.owner != current_user
+      redirect_to root_path
+    end
+    @word = Word.find_by_id(params[:id])
+    if @word.nil? or not @list.words.include?(@word)
+      redirect_to root_path
+    end
+    @list.words.delete(@word)
+    redirect_to @list, flash: { success: "Successfully removed from the list" }
   end
 end

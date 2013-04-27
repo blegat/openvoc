@@ -74,6 +74,7 @@
           <% @words.each do |word| %>
             <li>
             <%= link_to word.content, word %>
+            <%= link_to "", list_word_path(@list, word), method: :delete, class: "icon-remove" %>
             </li>
           <% end %>
         </ul>
