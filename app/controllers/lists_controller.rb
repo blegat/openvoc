@@ -4,7 +4,7 @@ class ListsController < ApplicationController
     @list = List.find_by_id(params[:list_id])
     @path = get_path(@list)
     @lists = get_childs(@list)
-    @words = get_childs(@list)
+    @words = @list.words
     @new_list = current_user.lists.build
     #@new_list.parent = @list # yet useless
     render :show
