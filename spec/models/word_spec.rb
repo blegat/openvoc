@@ -55,7 +55,7 @@ describe Word do
 
   describe "when content has non-alnum characters" do
     before { @word.content = "a|b" }
-    it { should_not be_valid }
+    it { should be_valid }
   end
   describe "when content has digits" do
     before { @word.content = "a0b" }
