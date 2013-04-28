@@ -27,7 +27,7 @@ class List < ActiveRecord::Base
 
   #before_save :set_root_if_no_parent
 
-  has_many :words, through: :inclusions
+  has_many :words, dependent: :destroy, through: :inclusions
   has_many :inclusions
 
   validate :parent_of_same_owner

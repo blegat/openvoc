@@ -1,8 +1,9 @@
 class TrainsController < ApplicationController
   before_filter :signed_in_user
   before_filter :list_exists
+  before_filter :set_rec
   def new
-    words = ((params[:rec] == "true") ? @list.words_rec : @list.words)
+    words = ((@rec) ? @list.words_rec : @list.words)
     if words.empty?
       redirect_to @list,
         flash: { notice: "There is no word for training" } and return
@@ -49,6 +50,9 @@ class TrainsController < ApplicationController
 
   private
 
+  def set_rec
+    @rec = params[:rec] == "true"
+  end
   def list_exists
     @list = List.find_by_id(params[:list_id])
     if @list.nil?

@@ -52,15 +52,32 @@ class WordsController < ApplicationController
   end
 
   def destroy
-    @list = List.find_by_id(params[:list_id])
-    if @list.nil? or @list.owner != current_user
-      redirect_to root_path
+    if params[:list_id].nil?
+      # destroy the word
+      @word = Word.find_by_id(params[:id])
+      if @word.nil? or @word.owner != current_user
+        # can only be removed by the owner if no list is using it
+        redirect_to root_path
+      elsif not @word.lists.empty?
+        redirect_to @word, flash: { error: "The word is being used" }
+      else
+        language = @word.language
+        @word.destroy
+        flash.now[:success] = "Successfully destroyed"
+        redirect_to language
+      end
+    else
+      # remove the word from a list
+      @list = List.find_by_id(params[:list_id])
+      if @list.nil? or @list.owner != current_user
+        redirect_to root_path
+      end
+      @word = Word.find_by_id(params[:id])
+      if @word.nil? or not @list.words.include?(@word)
+        redirect_to root_path
+      end
+      @list.words.delete(@word)
+      redirect_to @list, flash: { success: "Successfully removed from the list" }
     end
-    @word = Word.find_by_id(params[:id])
-    if @word.nil? or not @list.words.include?(@word)
-      redirect_to root_path
-    end
-    @list.words.delete(@word)
-    redirect_to @list, flash: { success: "Successfully removed from the list" }
   end
 end

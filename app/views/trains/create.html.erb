@@ -45,8 +45,8 @@ The average succeed with an average of
 <%= percentage(@word.success_count, @word.train_count) %>.
 </p>
 
-<%= link_to "Next", new_list_train_path(@list),
+<%= link_to "Next", new_list_train_path(@list, rec: @rec),
   class: 'btn btn-large btn-primary' %>
 <br />
 <br />
-<%= link_to "Back to list", @list, class: "btn" %>
+<%= back_to_list %>
