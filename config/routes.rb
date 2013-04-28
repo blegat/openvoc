@@ -40,7 +40,9 @@ Openvoc::Application.routes.draw do
   resources :lists, only: [:new, :create, :index, :show] do
     match "/moving" => "lists#moving", as: :moving
     match "/move" => "lists#move", as: :move
-    resources :trains, only: [:new, :create]
+    resources :trains, only: [:new, :create] do
+      match "/toggle_success" => "trains#toggle_success", as: :toggle_success
+    end
     resources :lists, only: [:new, :create]
     resources :words, only: [:destroy]
   end

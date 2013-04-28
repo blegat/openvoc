@@ -36,16 +36,24 @@ class TrainsController < ApplicationController
       redirect_to root_path
     else
       @guess = @word.translations.find_by_content(@guess_content)
-      train = Train.new(success: !@guess.nil?,
+      @train = Train.new(success: !@guess.nil?,
                         guess: @guess_content)
-      train.user = current_user
-      train.word = @word
-      puts Train.count
-      unless train.save
-        flash_errors(train)
+      @train.user = current_user
+      @train.word = @word
+      unless @train.save
+        flash_errors(@train)
       end
-      puts Train.count
     end
+  end
+  def toggle_success
+    # this gives access to the user the right to modify
+    # any of its train
+    @train = Train.find_by_id(params[:train_id])
+    if @train.nil? or @train.user != current_user
+      redirect_to root_path
+    end
+    @train.toggle!(:success)
+    redirect_to new_list_train_path(@list, rec: @rec)
   end
 
   private

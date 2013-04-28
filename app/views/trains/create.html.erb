@@ -45,8 +45,10 @@ The average succeed with an average of
 <%= percentage(@word.success_count, @word.train_count) %>.
 </p>
 
-<%= link_to "Next", new_list_train_path(@list, rec: @rec),
-  class: 'btn btn-large btn-primary' %>
+<%= link_to "Keep decision", new_list_train_path(@list, rec: @rec),
+  class: 'btn btn-large' %>
+  <%= link_to (@train.success ? "Mark as failed" : "Mark as succeeded"), list_train_toggle_success_path(@list, @train, rec: @rec),
+    class: 'btn btn-large btn-primary' %>
 <br />
 <br />
 <%= back_to_list %>
