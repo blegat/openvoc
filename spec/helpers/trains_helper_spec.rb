@@ -1,15 +1,12 @@
 require 'spec_helper'
 
-# Specs in this file have access to a helper object that includes
-# the TrainsHelper. For example:
-#
-# describe TrainsHelper do
-#   describe "string concat" do
-#     it "concats two strings with spaces" do
-#       helper.concat_strings("this","that").should == "this that"
-#     end
-#   end
-# end
 describe TrainsHelper do
-  pending "add some examples to (or delete) #{__FILE__}"
+  describe "percentage" do
+    describe "int" do
+      it { percentage(1, 5).should == "20.00%" }
+    end
+    describe "float" do
+      it { percentage(1, 3).should == "33.33%" }
+    end
+  end
 end
