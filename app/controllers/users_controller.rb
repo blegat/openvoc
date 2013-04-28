@@ -21,7 +21,7 @@ class UsersController < ApplicationController
   def create
     @omniauth = session[:omniauth]
     @omniauth['info']['name'] = params[:user][:name]
-    user = User.create_with_omniauth(@omniauth)
+    user = User.build_with_omniauth(@omniauth)
     authentication = user.apply_omniauth(@omniauth)
     @user = user
     if user.save

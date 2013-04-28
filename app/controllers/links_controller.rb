@@ -19,6 +19,7 @@ class LinksController < ApplicationController
       # Except in case of hacking so no flash is necessary
     end
     begin
+      # should only find word of language `language`
       word = language.words.find_by_content!(word_content)
     rescue ActiveRecord::RecordNotFound
       puts language.name

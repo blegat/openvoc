@@ -69,7 +69,7 @@ class User < ActiveRecord::Base
     end
   end
 
-  def self.create_with_omniauth(omniauth)
+  def self.build_with_omniauth(omniauth)
     User.new(name: omniauth['info']['name'],
              email: omniauth['info']['email'])
   end

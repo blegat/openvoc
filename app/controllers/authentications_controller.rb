@@ -61,18 +61,13 @@ class AuthenticationsController < ApplicationController
         session[:omniauth] = omniauth
         render "users/new" and return
       end
-      user = User.create_with_omniauth(omniauth)
+      user = User.build_with_omniauth(omniauth)
       authentication = user.apply_omniauth(omniauth)
-      if user.valid?
+      if user.save
         flash[:notice] = "Account created"
-        user.save!
-        # saving could fail if the db has changed since
-        # TODO handle it.
-        # It could also happen that save validations checks are
-        # ok but the db changes and then it fails
         if authentication.save
           user.set_src(authentication)
-          flash[:notice] = "Signed in successfully."
+          flash[:success] = "Signed in successfully."
           sign_in(user)
           redirect_back_or user
         else
@@ -83,7 +78,7 @@ class AuthenticationsController < ApplicationController
       else
         #flash[:error] = "There is already a user with the same email"
         unless user.errors.empty?
-          flash.now[:error] = user.errors.full_messages.to_sentence
+          flash_errors(user)
         end
         # TODO ask another email
         session[:omniauth] = omniauth.except('extra')
