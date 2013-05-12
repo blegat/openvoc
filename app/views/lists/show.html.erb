@@ -73,6 +73,7 @@
       <% if @words.empty? %>
         <p>No word.</p>
       <% else %>
+        <%= will_paginate @words %>
         <ul>
           <% @words.each do |word| %>
             <li>
@@ -81,6 +82,7 @@
             </li>
           <% end %>
         </ul>
+        <%= will_paginate @words %>
       <% end %>
 
       <%= link_to "Train on this list", new_list_train_path(@list),

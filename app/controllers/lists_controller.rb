@@ -37,13 +37,13 @@ class ListsController < ApplicationController
   def show
     @path = @list.path
     @lists = @list.childs
-    @words = @list.words
+    @words = get_words(@list)
   end
   def moving
     @moving = true
     @path = @list.path
     @lists = @list.childs
-    @words = @list.words
+    @words = get_words(@list)
     render :show
   end
   def move
@@ -63,7 +63,7 @@ class ListsController < ApplicationController
     end
     @path = @list.path
     @lists = @list.childs
-    @words = @list.words
+    @words = get_words(@list)
     render :show
   end
   def export
@@ -109,7 +109,7 @@ class ListsController < ApplicationController
     if list.nil?
       nil
     else
-      list.words
+      list.words.paginate(page: params[:page])
     end
   end
 end
