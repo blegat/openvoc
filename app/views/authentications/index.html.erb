@@ -2,7 +2,7 @@
 <% if @authentications %>
   <% unless @authentications.empty? and !current_user.registered? %>
     <p><strong>You can sign in to this account using:</strong></p>
-    <img src="openvoc_64.png">
+    <img src="openvoc_128.png">
     </img>
     <div class="well">
       <div class="row-fluid">
@@ -10,7 +10,7 @@
           <!-- Not more than 6 so span2 is safe -->
           <% if current_user.registered? %>
             <li class="span2">
-            <%= image_tag "openvoc_64.png", :size => "64x64" %>
+            <%= image_tag "openvoc_128.png", :size => "64x64" %>
             <div class="caption">
               <p><strong>Openvoc</strong>
               <%= link_to current_user.registration,
@@ -49,7 +49,7 @@
   <div class="row-fluid">
     <div class="span2">
       <a href=<%= new_session_path %> class="auth_provider">
-        <%= image_tag "openvoc_64.png", :size => "64x64", :alt => "Openvoc" %>
+        <%= image_tag "openvoc_128.png", :size => "64x64", :alt => "Openvoc" %>
         Openvoc
       </a>
     </div>

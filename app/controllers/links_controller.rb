@@ -26,8 +26,8 @@ class LinksController < ApplicationController
       word = language.words.build(content: word_content)
       word.owner = current_user
       unless word.save
-        word = nil
         flash_errors word
+        word = nil
       end
     end
     return word, language
