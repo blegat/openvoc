@@ -13,7 +13,7 @@
 // http://stackoverflow.com/questions/10218587/twitter-bootstrap-drop-down-suddenly-not-working
 // jquery has to be below bootstrap
 //
+//= require jquery
 //= require jquery_ujs
 //= require bootstrap
-//= require jquery
 //= require_tree .

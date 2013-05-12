@@ -86,6 +86,7 @@ GEM
     mime-types (1.20.1)
     multi_json (1.5.0)
     multipart-post (1.1.5)
+    mysql2 (0.3.11)
     nokogiri (1.5.6)
     oauth (0.4.7)
     oauth2 (0.8.0)
@@ -120,7 +121,6 @@ GEM
     omniauth-twitter (0.0.14)
       multi_json (~> 1.3)
       omniauth-oauth (~> 1.0)
-    pg (0.12.2)
     polyglot (0.3.3)
     rack (1.4.4)
     rack-cache (1.2)
@@ -212,13 +212,13 @@ DEPENDENCIES
   factory_girl_rails (= 4.1.0)
   faker (= 1.0.1)
   jquery-rails
+  mysql2
   omniauth-github
   omniauth-google-oauth2
   omniauth-identity
   omniauth-linkedin
   omniauth-openid
   omniauth-twitter
-  pg (= 0.12.2)
   rails (= 3.2.11)
   random_record
   rspec-rails (= 2.11.0)

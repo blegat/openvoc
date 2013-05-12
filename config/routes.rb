@@ -38,6 +38,7 @@ Openvoc::Application.routes.draw do
   resources :sessions, only: [:new, :create]
   resources :users, only: [:update, :edit, :new, :show, :create]
   resources :lists, only: [:new, :create, :index, :show] do
+    match "/export" => "lists#export", as: :export
     match "/moving" => "lists#moving", as: :moving
     match "/move" => "lists#move", as: :move
     resources :trains, only: [:new, :create] do

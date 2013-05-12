@@ -1,7 +1,7 @@
 class ListsController < ApplicationController
   before_filter :signed_in_user
   before_filter :list_exists1, only: [:show]
-  before_filter :list_exists2, only: [:moving, :move]
+  before_filter :list_exists2, only: [:moving, :move, :export]
   def new
     @list = List.find_by_id(params[:list_id])
     # if list is nil, it is '/'
@@ -65,6 +65,18 @@ class ListsController < ApplicationController
     @lists = @list.childs
     @words = @list.words
     render :show
+  end
+  def export
+    content = @list.words.inject("") do |sum, word|
+      "#{sum}#{word.content}|#{word.translations.inject("") do |s, w|
+        if s.blank?
+          "#{w.content}"
+        else
+          "#{s},#{w.content}"
+        end
+      end}\n"
+    end
+    send_data content, filename: 'export.txt'
   end
   private
   def list_exists1

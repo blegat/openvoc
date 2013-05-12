@@ -23,6 +23,9 @@
             <%= link_to "Move", list_moving_path(@list) %>
             </li>
           <% end %>
+          <li>
+          <%= link_to "Export", list_export_path(@list) %>
+          </li>
         <% end %>
         <% if @new_list.nil? %>
           <li>
