@@ -17,11 +17,11 @@
 
 class LanguagesController < ApplicationController
   def index
-    @languages = Language.paginate(page: params[:page])
+    @languages = Language.order(:name).paginate(page: params[:page])
   end
 
   def show
-    @language = Language.find(params[:id])
-    @words = @language.words.paginate(page: params[:page])
+    @language = Language.order(:name).find(params[:id])
+    @words = @language.words.order(:content).paginate(page: params[:page])
   end
 end

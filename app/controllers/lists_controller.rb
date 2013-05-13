@@ -109,7 +109,7 @@ class ListsController < ApplicationController
     if list.nil?
       nil
     else
-      list.words.paginate(page: params[:page])
+      list.words.order(:content).paginate(page: params[:page])
     end
   end
 end

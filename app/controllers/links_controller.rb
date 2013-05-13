@@ -127,9 +127,10 @@ class LinksController < ApplicationController
 
 
   def render_list_show
+    # TODO redirect_to instead of render
     @path = @list.path
     @lists = @list.childs
-    @words = @list.words.paginate(page: params[:page])
+    @words = @list.words.order(:content).paginate(page: params[:page])
     render 'lists/show'
   end
 
