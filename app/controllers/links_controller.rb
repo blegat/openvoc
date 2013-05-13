@@ -1,5 +1,5 @@
 class LinksController < ApplicationController
-  before_filter :signed_in_user, only: [:new, :create]
+  before_filter :signed_in_user, only: [:new, :create, :destroy]
 
   def new
     if params[:word_id]
@@ -112,6 +112,19 @@ class LinksController < ApplicationController
       end
     end
   end
+  def destroy
+    link = Link.find_by_id(params[:id])
+    if link.nil? or link.owner != current_user
+      redirect_to root_path
+    else
+      # destroy the link
+      word1 = link.word1
+      link.destroy
+      flash.now[:success] = "Successfully destroyed"
+      redirect_to word1
+    end
+  end
+
 
   def render_list_show
     @path = @list.path

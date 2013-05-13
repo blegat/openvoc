@@ -48,8 +48,13 @@
       <div class="well">
         <% if @link %>
           <h4>Created by <%= @link.owner.name %></h4>
-          <p><i class="icon-magnet"></i>
+          <p>
+          <i class="icon-magnet"></i>
           <%= link_to @link.word2.content, word_path(@link.word2) %>
+          <% if @link.owner == current_user %>
+            <%= link_to "", link_path(@link), method: :delete, class: "icon-remove" %>
+          <% end %>
+          </p>
         <% elsif signed_in? %>
           <%= form_for(:link, url: word_links_path(@word)) do |f| %>
 

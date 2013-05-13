@@ -27,7 +27,7 @@ Openvoc::Application.routes.draw do
     resources :links, only: [:create, :new]
     resources :inclusions, only: [:create]
   end
-  resources :links, only: [:create, :new, :show]
+  resources :links, only: [:create, :new, :show, :destroy]
 
   root to: 'static_pages#home'
   match '/contact', to: 'static_pages#contact'
