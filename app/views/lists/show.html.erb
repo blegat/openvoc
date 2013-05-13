@@ -78,7 +78,9 @@
           <% @words.each do |word| %>
             <li>
             <%= link_to word.content, word %>
-            <%= link_to "", list_word_path(@list, word), method: :delete, class: "icon-remove" %>
+            <% if @list.owner == current_user %>
+              <%= link_to "", list_word_path(@list, word), method: :delete, class: "icon-remove" %>
+            <% end %>
             </li>
           <% end %>
         </ul>
@@ -92,15 +94,17 @@
     <% end %>
   </div>
 
-  <% unless @list.nil? %>
-    <div class="span6">
-      <h2>New links</h2>
-      <p>
-      Quickly add new words to this list while ensuring your
-      requested link is present.
-      If the words or the link doesn't exist, it will be added.
-      </p>
-      <%= render 'links/new' %>
-    </div>
+  <% if @list.owner == current_user %>
+    <% unless @list.nil? %>
+      <div class="span6">
+        <h2>New links</h2>
+        <p>
+        Quickly add new words to this list while ensuring your
+        requested link is present.
+        If the words or the link doesn't exist, it will be added.
+        </p>
+        <%= render 'links/new' %>
+      </div>
+    <% end %>
   <% end %>
 </div>
