@@ -34,14 +34,14 @@
 You already have guessed it correct
 <% user_success_count = @word.success_count(current_user) %>
 <% user_train_count = @word.train_count(current_user) %>
-<%= user_success_count %> times ou of
+<%= user_success_count %> times out of
 <%= user_train_count %> tries
-while makes an average of
+which makes an average of
 <%= percentage(user_success_count, user_train_count.to_f) %>.
 </p>
 
 <p>
-The average succeed with an average of
+The average user succeeds with an average of
 <%= percentage(@word.success_count, @word.train_count) %>.
 </p>
 
