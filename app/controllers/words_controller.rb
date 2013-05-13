@@ -56,10 +56,12 @@ class WordsController < ApplicationController
       # destroy the word
       @word = Word.find_by_id(params[:id])
       if @word.nil? or @word.owner != current_user
-        # can only be removed by the owner if no list is using it
+        # can only be removed by the owner if no list is using it and no link
         redirect_to root_path
       elsif not @word.lists.empty?
-        redirect_to @word, flash: { error: "The word is being used" }
+        redirect_to @word, flash: { error: "The word is being used by a list" }
+      elsif not @word.links2.empty?
+        redirect_to @word, flash: { error: "The word is being used by a link" }
       else
         language = @word.language
         @word.destroy
