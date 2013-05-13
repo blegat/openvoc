@@ -1,6 +1,6 @@
 <% provide(:title, 'Training' ) %>
 <h1>Training
-  <% if @guesss.nil? %>
+  <% if @guess.nil? %>
     <i class="icon-remove-sign"></i>
   <% else %>
     <i class="icon-ok-sign"></i>
@@ -46,9 +46,9 @@ The average succeed with an average of
 </p>
 
 <%= link_to "Keep decision", new_list_train_path(@list, rec: @rec),
-  class: 'btn btn-large' %>
+  class: 'btn btn-large btn-primary' %>
   <%= link_to (@train.success ? "Mark as failed" : "Mark as succeeded"), list_train_toggle_success_path(@list, @train, rec: @rec),
-    class: 'btn btn-large btn-primary' %>
+    class: 'btn btn-large' %>
 <br />
 <br />
 <%= back_to_list %>
