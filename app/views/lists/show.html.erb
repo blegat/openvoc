@@ -68,7 +68,7 @@
         <% end %>
       </ul>
     <% end %>
-    <% if @path != '/' %>
+    <% unless @list.nil? %>
       <h2>Words</h2>
       <% if @words.empty? %>
         <p>No word.</p>
@@ -94,17 +94,15 @@
     <% end %>
   </div>
 
-  <% if @list.owner == current_user %>
-    <% unless @list.nil? %>
-      <div class="span6">
-        <h2>New links</h2>
-        <p>
-        Quickly add new words to this list while ensuring your
-        requested link is present.
-        If the words or the link doesn't exist, it will be added.
-        </p>
-        <%= render 'links/new' %>
-      </div>
-    <% end %>
+  <% if not @list.nil? and @list.owner == current_user %>
+    <div class="span6">
+      <h2>New links</h2>
+      <p>
+      Quickly add new words to this list while ensuring your
+      requested link is present.
+      If the words or the link doesn't exist, it will be added.
+      </p>
+      <%= render 'links/new' %>
+    </div>
   <% end %>
 </div>
