@@ -116,7 +116,7 @@ class LinksController < ApplicationController
   def render_list_show
     @path = @list.path
     @lists = @list.childs
-    @words = @list.words
+    @words = @list.words.paginate(page: params[:page])
     render 'lists/show'
   end
 
