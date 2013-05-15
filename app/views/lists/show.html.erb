@@ -87,10 +87,44 @@
         <%= will_paginate @words %>
       <% end %>
 
-      <%= link_to "Train on this list", new_list_train_path(@list),
-        class: 'btn' %>
-      <%= link_to "Train on this list and its sublists", new_list_train_path(@list, rec: true),
-        class: 'btn btn-primary' %>
+      <h2>Training</h2>
+      <%= form_for(:train, url: list_training_path(@list)) do |f| %>
+        <fieldset>
+          <legend>Filter</legend>
+          <span class="help-block">
+            By default, all the words can be asked.
+            Here is filters you can apply.
+            If you have an idea for another filter, please
+            <%= link_to_bug_tracker 'let us know' %>.
+          </span>
+          <%= f.label :max, "Maximum success rate" %>
+          <%= f.number_field :max, value: 100 %>
+          <span class="help-block">
+            A word with a success rate higher than this
+            won't be asked.
+            This is the average success rate of every user.
+          </span>
+          <%= f.label :rec do %>
+            <%= f.check_box :rec %>
+            pick words from sublists too
+          <% end %>
+        </fieldset>
+        <fieldset>
+          <legend>Priority</legend>
+          <span class="help-block">
+            You are first asked the words that you have never tried and that
+            have a success rate lower or equal than the maximum success rate.
+            Once you have tried every word or all the words you haven't
+            tried are too easy according to your filters,
+            you are asked the words you have not tried
+            for the longest time first.
+            More options will be added.
+            If you have an idea for an option, please
+            <%= link_to_bug_tracker 'let us know' %>.
+          </span>
+        </fieldset>
+        <%= f.submit "Start training", class: 'btn btn-large btn-primary' %>
+      <% end %>
     <% end %>
   </div>
 

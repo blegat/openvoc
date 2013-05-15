@@ -78,6 +78,23 @@ class ListsController < ApplicationController
     end
     send_data content, filename: 'export.txt'
   end
+  def training
+    list = List.find_by_id(params[:list_id])
+    max = params[:train][:max]
+    rec = params[:train][:rec]
+    if max.nil? or rec.nil? or list.nil?
+      redirect_to root_path and return
+    end
+    max = max.to_i
+    rec = rec.to_i
+    if rec != 0 and rec != 1
+      redirect_to root_path and return
+    end
+    if max < 0 or max > 100
+      redirect_to list, flash: { error: 'Maximum success rate should be between 0 and 100' } and return
+    end
+    redirect_to new_list_train_path(list, rec: rec, max: max)
+  end
   private
   def list_exists1
     @list = List.find_by_id(params[:id])

@@ -2,8 +2,14 @@ class TrainsController < ApplicationController
   before_filter :signed_in_user
   before_filter :list_exists
   before_filter :set_rec
+  before_filter :set_max
   def new
     words = ((@rec) ? @list.words_rec : @list.words)
+    if @max < 100
+      words = words.select do |word|
+        word.success_count * 100 <= word.train_count * @max
+      end
+    end
     if words.empty?
       redirect_to @list,
         flash: { notice: "There is no word for training" } and return
@@ -53,13 +59,24 @@ class TrainsController < ApplicationController
       redirect_to root_path
     end
     @train.toggle!(:success)
-    redirect_to new_list_train_path(@list, rec: @rec)
+    redirect_to new_list_train_path(@list, rec: @rec, max: @max)
   end
 
   private
 
+  def set_max
+    if params[:max].nil?
+      raise params[:max].to_s
+      redirect_to root_path
+    end
+    @max = params[:max].to_i
+    if @max < 0 or @max > 100
+      raise @max.to_s
+      redirect_to root_path
+    end
+  end
   def set_rec
-    @rec = params[:rec] == "true"
+    @rec = (params[:rec] == "1" ? 1 : 0)
   end
   def list_exists
     @list = List.find_by_id(params[:list_id])

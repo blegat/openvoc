@@ -41,6 +41,7 @@ Openvoc::Application.routes.draw do
     match "/export" => "lists#export", as: :export
     match "/moving" => "lists#moving", as: :moving
     match "/move" => "lists#move", as: :move
+    match "/training" => "lists#training", as: :training
     resources :trains, only: [:new, :create] do
       match "/toggle_success" => "trains#toggle_success", as: :toggle_success
     end

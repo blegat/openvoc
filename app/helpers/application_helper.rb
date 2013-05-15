@@ -33,4 +33,18 @@ module ApplicationHelper
     end
   end
 
+  def link_to_bug_tracker(message)
+    link_to message, 'https://github.com/blegat/openvoc/issues'
+  end
+
+  def link_to_mailing_list(message)
+    link_to message, 'mailto:openvoc@googlegroups.com'
+  end
+
+  def bootstrap_form_for(subject, url, legend, &block)
+    form_for(subject, url: url) do |f|
+      block.call(f)
+    end
+  end
+
 end
