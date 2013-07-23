@@ -49,12 +49,19 @@ FactoryGirl.define do
     #     end
     #   end
     content "a"
-    language
+    #language
+    association :language, factory: :language
     association :owner, factory: :user
   end
   factory :link do
     association :word1, factory: :word
     association :word2, factory: :word
     association :owner, factory: :user
+  end
+  factory :train do
+    guess "42"
+    success true
+    association :user
+    association :word
   end
 end

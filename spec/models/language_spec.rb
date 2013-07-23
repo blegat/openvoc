@@ -19,11 +19,12 @@ require 'spec_helper'
 
 describe Language do
 
-  before { @language = Language.new(name: "English") }
+  before { @language = FactoryGirl.build(:language, name: "English") }
 
   subject { @language }
 
   it { should respond_to(:name) }
+  it { should respond_to(:words) }
 
   it { should be_valid }
 
@@ -57,6 +58,18 @@ describe Language do
     end
 
     it { should_not be_valid }
+  end
+
+  describe "when it has a words" do
+    before do
+      @language.save
+    end
+    let!(:word) { FactoryGirl.create(:word, language: @language) }
+    subject { word }
+    it { @language.words.should include(word) }
+    it "should destroy the word when the language is destroyed" do
+      expect { @language.destroy }.to change(Word, :count).by -1
+    end
   end
 end
 # == Schema Information

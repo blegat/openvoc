@@ -20,8 +20,10 @@ require 'spec_helper'
 describe Word do
 
   let (:language) { FactoryGirl.create(:language) }
+  let (:owner) { FactoryGirl.create(:user) }
   before do
-    @word = FactoryGirl.build(:word, language: language)
+    @word = FactoryGirl.build(:word, language: language,
+                              owner: owner)
   end
 
   subject { @word }
@@ -29,13 +31,24 @@ describe Word do
   it { should be_valid }
   it { should respond_to(:content) }
   it { should respond_to(:language) }
+  it { should respond_to(:owner) }
+  it { should respond_to(:trains) }
+  it { should respond_to(:inclusions) }
+  it { should respond_to(:lists) }
   it { should respond_to(:links1) }
+  it { should respond_to(:translations) }
   it { should respond_to(:links2) }
   its(:language) { should == language }
+  its(:owner) { should == owner }
   describe "accessible attributes" do
     it "should not allow access to language_id" do
       expect do
         Word.new(content:"test",language_id: language.id)
+      end.to raise_error(ActiveModel::MassAssignmentSecurity::Error)
+    end
+    it "should not allow access to owner_id" do
+      expect do
+        Word.new(content:"test",owner_id: owner.id)
       end.to raise_error(ActiveModel::MassAssignmentSecurity::Error)
     end
   end
@@ -67,9 +80,15 @@ describe Word do
   #end # FIXME
   describe "when it belongs to no language" do
     before do
-      @word_without_language = Word.new(content:"house")
+      @word.language = nil
     end
-    subject { @word_without_language }
+    subject { @word }
+    it { should_not be_valid }
+  end
+
+  describe "when it belongs to nobody" do
+    before { @word.owner = nil }
+    subject { @word }
     it { should_not be_valid }
   end
 
@@ -90,6 +109,9 @@ describe Word do
     end
     it "should have a valid other end" do
       other_word.links2.find_by_id(link.id).word1.should == @word
+    end
+    it "should be in translations" do
+      @word.translations.should include(other_word)
     end
     describe "when the word is destroyed" do
       before { @word.destroy }

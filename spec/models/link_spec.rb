@@ -31,6 +31,20 @@ describe Link do
   it { should be_valid }
   it { word1.should == @link.word1 }
   it { word2.should == @link.word2 }
+
+  describe "accessible attributes" do
+    it "should not allow access to language_id" do
+      expect do
+        Link.new(word1_id: word1)
+      end.to raise_error(ActiveModel::MassAssignmentSecurity::Error)
+    end
+    it "should not allow access to owner_id" do
+      expect do
+        Link.new(word2_id: word2)
+      end.to raise_error(ActiveModel::MassAssignmentSecurity::Error)
+    end
+  end
+
   describe "when there is no word1" do
     before { @link.word1 = nil }
     it { should_not be_valid }
@@ -50,7 +64,7 @@ describe Link do
     before do
       @link_dup = @link.dup
       @link.save
-      @link_dup.save
+      #@link_dup.save
     end
     it { @link_dup.should_not be_valid }
   end
