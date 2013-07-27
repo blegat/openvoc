@@ -24,3 +24,6 @@ bundler_stubs/
 # Sensitive data
 /config/app_environment_variables.rb
 /config/app_environment_variables.sh
+
+# Let's build the assets on the server manually
+/public/assests
