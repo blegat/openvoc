@@ -53,7 +53,8 @@ class ListsController < ApplicationController
       @list.save
     else
       @dest = List.find_by_id(params[:dest][:list_id])
-      if @dest.nil? or @dest.owner != current_user
+      if @dest.nil? or @dest.owner != current_user or
+        @dest == @list or @dest.in?(@list.rec_parents)
         @moving = true
         flash.now[:error] = "Invalid destination"
       else

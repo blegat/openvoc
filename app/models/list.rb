@@ -84,6 +84,13 @@ class List < ActiveRecord::Base
     end
   end
 
+  def rec_parents
+    if parent.nil?
+      []
+    else
+      parent.rec_parents.push(parent)
+    end
+  end
   def lists_outside(list)
     lists = []
     is_parent = false
