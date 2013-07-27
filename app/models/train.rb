@@ -31,6 +31,7 @@ class Train < ActiveRecord::Base
 
 end
 # == Schema Information
+# Schema version: 20130317152821
 #
 # Table name: trains
 #
@@ -41,5 +42,10 @@ end
 #  success    :boolean
 #  created_at :datetime        not null
 #  updated_at :datetime        not null
+#
+# Indexes
+#
+#  index_trains_on_word_id  (word_id)
+#  index_trains_on_user_id  (user_id)
 #
 

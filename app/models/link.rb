@@ -28,7 +28,7 @@ class Link < ActiveRecord::Base
   belongs_to :word2, class_name: "Word"#, foreign_key: 'word2_id'
 end
 # == Schema Information
-# Schema version: 20130216160939
+# Schema version: 20130317152821
 #
 # Table name: links
 #

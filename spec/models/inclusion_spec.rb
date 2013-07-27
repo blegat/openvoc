@@ -17,42 +17,54 @@
 
 require 'spec_helper'
 
-describe Train do
+describe Inclusion do
 
   let(:word) { FactoryGirl.create(:word) }
-  let(:user) { FactoryGirl.create(:user) }
+  let(:author) { FactoryGirl.create(:user) }
+  let(:list) { FactoryGirl.create(:list) }
 
-  before { @train = FactoryGirl.build(:train, word: word, user: user) }
+  before { @incl = FactoryGirl.build(:inclusion, word: word,
+                                     author: author, list: list) }
 
-  subject { @train }
+  subject { @incl }
 
   it { should be_valid }
-  it { should respond_to(:user) }
+  it { should respond_to(:author) }
   it { should respond_to(:word) }
-  it { should respond_to(:guess) }
-  it { should respond_to(:success) }
+  it { should respond_to(:list) }
   its(:word) { should == word }
-  its(:user) { should == user }
+  its(:author) { should == author }
+  its(:list) { should == list }
   describe "accessible attributes" do
     it "should not allow access to word_id" do
       expect do
-        Train.new(guess:"test", word_id: word.id)
+        Inclusion.new(word_id: word.id)
       end.to raise_error(ActiveModel::MassAssignmentSecurity::Error)
     end
-    it "should not allow access to user_id" do
+    it "should not allow access to author_id" do
       expect do
-        Train.new(guess:"test", user_id: user.id)
+        Inclusion.new(author_id: author.id)
+      end.to raise_error(ActiveModel::MassAssignmentSecurity::Error)
+    end
+    it "should not allow access to list_id" do
+      expect do
+        Inclusion.new(list_id: list.id)
       end.to raise_error(ActiveModel::MassAssignmentSecurity::Error)
     end
   end
 
   describe "when word is not present" do
-    before { @train.word = nil }
+    before { @incl.word = nil }
     it { should_not be_valid }
   end
 
-  describe "when user is not present" do
-    before { @train.user = nil }
+  describe "when author is not present" do
+    before { @incl.author = nil }
+    it { should_not be_valid }
+  end
+
+  describe "when list is not present" do
+    before { @incl.list = nil }
     it { should_not be_valid }
   end
 
@@ -60,19 +72,17 @@ end
 # == Schema Information
 # Schema version: 20130317152821
 #
-# Table name: trains
+# Table name: inclusions
 #
 #  id         :integer         not null, primary key
-#  user_id    :integer
+#  list_id    :integer
 #  word_id    :integer
-#  guess      :string(255)
-#  success    :boolean
+#  author_id  :integer
 #  created_at :datetime        not null
 #  updated_at :datetime        not null
 #
 # Indexes
 #
-#  index_trains_on_word_id  (word_id)
-#  index_trains_on_user_id  (user_id)
+#  index_inclusions_on_list_id  (list_id)
 #
 

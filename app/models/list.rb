@@ -18,17 +18,23 @@
 class List < ActiveRecord::Base
   attr_accessible :name
   validates :name, presence: true
+    # uniqueness: { scope: :parent } FIXME deal with root with owner
 
   belongs_to :owner, class_name: "User"
   validates :owner, presence: true
 
-  has_many :childs, class_name: "List", foreign_key: :parent_id
+  has_many :childs, class_name: "List", foreign_key: :parent_id,
+    dependent: :destroy
   belongs_to :parent, class_name: "List"
 
   #before_save :set_root_if_no_parent
 
-  has_many :words, dependent: :destroy, through: :inclusions
-  has_many :inclusions
+  #has_many :words, dependent: :destroy, through: :inclusions
+  #has_many :inclusions
+  #FIXME which one is better ? why is the first one working ?
+  #(i.e. passing the tests)
+  has_many :words, through: :inclusions
+  has_many :inclusions, dependent: :destroy
 
   validate :parent_of_same_owner
 
@@ -97,7 +103,7 @@ class List < ActiveRecord::Base
 
 end
 # == Schema Information
-# Schema version: 20130216160939
+# Schema version: 20130317152821
 #
 # Table name: lists
 #
@@ -110,7 +116,7 @@ end
 #
 # Indexes
 #
-#  index_lists_on_owner_id   (owner_id)
 #  index_lists_on_parent_id  (parent_id)
+#  index_lists_on_owner_id   (owner_id)
 #
 
