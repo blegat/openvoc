@@ -24,3 +24,5 @@ You can now try it by running a server on a terminal with
     $ rails server # or rails s
 Then open a browser at the address `http://localhost:3000/`
 and should see openvoc in action running locally.
+
+    $ annotate -p after -mi
