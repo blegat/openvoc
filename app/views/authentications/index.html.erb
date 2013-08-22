@@ -48,7 +48,8 @@
 <div class="well">
   <div class="row-fluid">
     <div class="span2">
-      <a href=<%= new_session_path %> class="auth_provider">
+      <a href=<%= signed_in? ? new_registration_path : new_session_path %>
+        class="auth_provider">
         <%= image_tag "openvoc_128.png", :size => "64x64", :alt => "Openvoc" %>
         Openvoc
       </a>

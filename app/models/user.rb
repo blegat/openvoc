@@ -18,10 +18,9 @@
 class User < ActiveRecord::Base
   attr_accessible :name, :email
 
-  belongs_to :email_src, class_name: Authentication
-  belongs_to :name_src, class_name: Authentication
-  validates :email, uniqueness: true
-  # 2 empty emails are not unique...
+  validates :email, presence: true,
+    format: { with: Registration::VALID_EMAIL_REGEX },
+    uniqueness: { case_sensitive: false }
   validates :name, presence: true
 
   has_many :authentications, dependent: :destroy
@@ -35,15 +34,6 @@ class User < ActiveRecord::Base
   has_many :inlusions, foreign_key: :author_id
 
   has_many :trains, dependent: :destroy
-
-  # registration: registration
-  # omniauth: omniauth hash
-  # authentication: authentication
-  # auth: authentication or registration
-
-  def auth_number
-    authentications.count + (registration.nil? ? 0 : 1)
-  end
 
   def root_lists
     self.lists.find_all_by_parent_id(nil)
@@ -69,72 +59,44 @@ class User < ActiveRecord::Base
     end
   end
 
+  # registration: registration
+  # omniauth: omniauth hash
+  # authentication: authentication
+  # auth: authentication or registration
+  #
+  # Email: mandatory, unique
+  # Name: mandatory
+  # omniauth:
+  #   create:
+  #     Fill name & email if blank because:
+  #      - changes are bad
+  #      - first account is the main one
+  # registration:
+  #   new:
+  #     Prefill with full name and email
+  #   create:
+  #     Fill name & email
+
+  def auth_number
+    authentications.count + (registration.nil? ? 0 : 1)
+  end
+
   def self.build_with_omniauth(omniauth)
     User.new(name: omniauth['info']['name'],
              email: omniauth['info']['email'])
   end
-  def set_src(authentication)
-    email_src = authentication
-    name_src = authentication
-    save
-  end
-  def apply_omniauth(omniauth)
-    #update_omniauth(omniauth)
+  def build_omniauth(omniauth)
     authentications.build(provider: omniauth['provider'],
                           uid: omniauth['uid'])
   end
-  def update_with_omniauth(omniauth, authentication)
-    if self.email.blank? and omniauth['info']['email']
-      self.email_src = authentication
-    end
-    if self.email_src == authentication and omniauth['info']['email']
-      self.email = omniauth['info']['email']
-    end
-    if self.name.blank? and omniauth['info']['name']
-      self.name_src = authentication
-    end
-    if self.name_src == authentication
-      self.name = omniauth['info']['name']
-    end
-    self.save
-  end
-  def update_omniauth(auth)
-    if self.email.blank? and omniauth['info']['email']
-      self.email_uid = omniauth['uid']
-    end
-    if self.email_uid == omniauth['uid']
-      self.email = omniauth['info']['email']
-    end
-    if self.name.blank? and omniauth['info']['name']
-      self.name_uid = omniauth['uid']
-    end
-    if self.name_uid == omniauth['uid']
-      self.name = omniauth['info']['name']
-    end
-    self.save
+
+  def self.build_with_registration(registration)
+    User.new(name: registration[:name],
+             email: registration[:registration][:email])
   end
 
   def registered?()
     !self.registration.nil?
-  end
-  def update_email(email)
-    if email != self.email
-      self.email = email
-      if registered?
-        self.registration.update_email(email)
-      end
-      self.save
-    end
-  end
-  def update_email_src(authentication)
-    if self.email_src != authentication
-      self.email_src = authentication
-      self.save
-    end
-  end
-  def update_name(name)
-    self.name = name
-    self.save
   end
 
   def password_required?

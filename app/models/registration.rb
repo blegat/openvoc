@@ -21,9 +21,11 @@ class Registration < ActiveRecord::Base
   belongs_to :user
   validates :user_id, presence: true
   before_save { self.email.downcase! }
+  # VALID_EMAIL_REGEX is also used by User
   VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
-  validates :email, presence: true, format: { with: VALID_EMAIL_REGEX },
-	  uniqueness: { case_sensitive: false }
+  validates :email, presence: true,
+    format: { with: VALID_EMAIL_REGEX },
+    uniqueness: { case_sensitive: false }
   validates :password, length: { minimum: 6 }
   # presence: true <- commented to avoid duplication of error message with digest
   validates :password_confirmation, presence: true
@@ -31,10 +33,6 @@ class Registration < ActiveRecord::Base
     email = hash[:email]
     password = hash[:password]
     password_confirmation = hash[:password_confirmation]
-  end
-  def update_email(email)
-    self.email = email
-    self.save
   end
 end
 # == Schema Information

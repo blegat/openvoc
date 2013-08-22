@@ -17,8 +17,6 @@
 
 class Authentication < ActiveRecord::Base
   belongs_to :user
-  has_one :email_dest, class_name: User, foreign_key: :email_src_id
-  has_one :name_dest, class_name: User, foreign_key: :name_src_id
   attr_accessible :provider, :uid, :user_id
 
   def provider_name #useless ?

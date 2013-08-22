@@ -1,24 +1,11 @@
 <% provide(:title, "Settings") %>
 
 <h1>Settings</h1>
-<%= debug @user %>
-<% if @user.registered? %>
-  <%= debug @user.registration %>
-<% end %>
 <%= form_for(@user) do |f| %>
   <%= f.label :email %>
-  <% if @user.registered? %>
-    <%= f.text_field(:email) %>
-  <% else %>
-
-    <%= f.fields_for :email_src do |g| %>
-      <% if @user.email_src %>
-        <%= g.collection_select(:id, @user.authentications, :id, :provider, selected: @user.email_src.id) %>
-      <% else %>
-        <%= g.collection_select(:id, @user.authentications, :id, :provider, prompt: true) %>
-      <% end %>
-    <% end %>
-  <% end %>
+  <%= f.text_field(:email) %>
+  <%= f.label :name %>
+  <%= f.text_field(:name) %>
   <br />
   <%= f.submit "Save", class: "btn btn-large btn-primary" %>
 <% end %>

@@ -16,6 +16,8 @@
 ### END LICENSE
 
 class SessionsController < ApplicationController
+  before_filter :signed_out_user, only: [:new, :create]
+
   def new
     # Login with a registration
   end

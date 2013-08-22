@@ -19,22 +19,31 @@ class UsersController < ApplicationController
   def new
   end
   def create
-    @omniauth = session[:omniauth]
-    @omniauth['info']['name'] = params[:user][:name]
-    user = User.build_with_omniauth(@omniauth)
-    authentication = user.apply_omniauth(@omniauth)
-    @user = user
+    # When there is a missing name in an omniauth,
+    # users/new is called and here we are
+
+    session['name'] = params[:user][:name]
+    session['email'] = params[:user][:email]
+
+    user = User.new(name: session[:name], email: session[:email])
     if user.save
-      if authentication.save
-        user.update_with_omniauth(@omniauth,
-                                  authentication)
+      if session[:current] == 'omniauth'
+        auth = user.build_omniauth(session[:omniauth])
+      else
+        auth = user.build_registration(session[:registration])
+      end
+      if auth.save
         flash.now[:success] = "Created successfully"
         sign_in(user)
+        @user = user
         render :show and return
       else
-        unless authentication.errors.empty?
-          flash.now[:error] = authentication.errors.full_messages.to_sentence
+        # Weird case, give up everything
+        user.destroy
+        unless auth.errors.empty?
+          flash.now[:error] = auth.errors.full_messages.to_sentence
         end
+        redirect_to authentications_path
       end
     else
       unless user.errors.empty?
@@ -51,16 +60,13 @@ class UsersController < ApplicationController
   end
   def update
     @user = User.find(params[:id])
-    if @user.registered?
-      @user.update_email(params[:user][:email])
+    @user.name = params[:user][:name]
+    @user.email = params[:user][:email]
+    if @user.save
+      flash.now[:success] = "Successfully updated"
     else
-      authentication = Authentication.find(params[:user][:email_src][:id])
-      if @user.authentications.include?(authentication)
-        flash.now[:notice] = "Updated"
-        @user.update_email_src(authentication)
-      else
-        # this shouldn't happen for a non-hacker
-        flash.now[:error] = "This authentication is not in yours"
+      unless @user.errors.empty?
+        flash.now[:error] = @user.errors.full_messages.to_sentence
       end
     end
     render :edit

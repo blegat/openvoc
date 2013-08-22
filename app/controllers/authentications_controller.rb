@@ -31,21 +31,20 @@ class AuthenticationsController < ApplicationController
         # Trying to add an authentication to a user
         if current_user?(authentication.user)
           flash[:notice] = "You already have this authentication"
+          redirect_to authentications_path
         else
           flash[:error] = "This authentication is already used by another user"
           render :index
         end
       else
         # Trying to connect
-        authentication.user.update_with_omniauth(omniauth, authentication)
         flash[:notice] = "Logged in successfuly";
         sign_in(authentication.user)
         redirect_back_or authentication.user
       end
     elsif signed_in?
-      authentication = current_user.apply_omniauth(omniauth)
+      authentication = current_user.build_omniauth(omniauth)
       if authentication.save
-        current_user.update_with_omniauth(omniauth, authentication)
         flash[:notice] = "Authentication successfully added."
         redirect_to authentications_path
         # redirect is necessary because @authentications
@@ -56,17 +55,17 @@ class AuthenticationsController < ApplicationController
         end
       end
     else
-      if omniauth[:info][:name].blank?
-        # user is invalid without a name
-        session[:omniauth] = omniauth
-        render "users/new" and return
-      end
+      # if omniauth[:info][:name].blank? or
+      #   omniauth[:info][:email].blank?
+      #   # user is invalid without a name and an email
+      #   session[:omniauth] = omniauth
+      #   render "users/new" and return
+      # end
       user = User.build_with_omniauth(omniauth)
-      authentication = user.apply_omniauth(omniauth)
       if user.save
         flash[:notice] = "Account created"
+        authentication = user.build_omniauth(omniauth)
         if authentication.save
-          user.set_src(authentication)
           flash[:success] = "Signed in successfully."
           sign_in(user)
           redirect_back_or user
@@ -80,9 +79,14 @@ class AuthenticationsController < ApplicationController
         unless user.errors.empty?
           flash_errors(user)
         end
-        # TODO ask another email
+        # if session[:omniauth].nil? is not safe on UsersControlleer
+        # because it could be the registration after an omniauth
+        # if session[:current] == 'omniauth' is ok
+        session[:current] = 'omniauth'
         session[:omniauth] = omniauth.except('extra')
-        render :index
+        session[:name] = user.name
+        session[:email] = user.email
+        render "users/new"
         #redirect_to new_user_registration_url
       end
     end

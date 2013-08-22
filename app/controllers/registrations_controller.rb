@@ -26,38 +26,42 @@ class RegistrationsController < ApplicationController
     if signed_in?
       @registration.email = current_user.email
     end
+    # FIXME prefill with name
   end
   def create
     #@registration = Registration.from_hash(params[:registration])
     if signed_in?
-      @registration = current_user.build_registration(params[:registration])
-    else
-      @user = User.new
-      @registration = @user.build_registration(params[:registration])
-      @user.update_name(params[:name])
-      @user.update_email(@registration.email)
-      # update_email is necessary for the user to be valid
-      # email is unique and 2 nil email is the same
-      unless @user.save
-        flash_errors @user
-        render :new and return
-      end
-    end
-    if @registration.save
-      #TODO check uniqueness of email
-      if signed_in?
-        current_user.update_email(@registration.email)
+      @registration = current.build_registration(params[:registration])
+      if @registration.save
         flash.now[:success] = "Succefully added registration."
+        redirect_to authentications_path
       else
-        sign_in(@user)
-        flash.now[:success] = "Succefully registered."
+        flash_errors(@registration)
+        render :new
       end
-      redirect_back_or authentications_path
     else
-      unless signed_in?
-        @user.destroy
+      user = User.build_with_registration(params)
+      if user.save
+        @registration = user.build_registration(params[:registration])
+        if @registration.save
+          sign_in(user)
+          flash.now[:success] = "Succefully registered."
+          redirect_back_or authentications_path
+        else
+          user.destroy
+          flash_errors(@registration)
+          render :new and return
+        end
+      else
+        unless user.errors.empty?
+          flash_errors(user)
+        end
+        session[:current] = 'registration'
+        session[:registration] = params[:registration]
+        session[:name] = user.name
+        session[:email] = user.email
+        render "users/new"
       end
-      flash_errors(@registration)
     end
   end
   def destroy

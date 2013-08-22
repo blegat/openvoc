@@ -51,6 +51,11 @@ module SessionsHelper
       redirect_to signin_path, notice: "Please sign in."
     end
   end
+  def signed_out_user
+    if signed_in?
+      redirect_to root_path, notice: "Please sign out first."
+    end
+  end
 
   def sign_out
     self.current_user = nil
