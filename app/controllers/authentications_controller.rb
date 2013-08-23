@@ -31,11 +31,10 @@ class AuthenticationsController < ApplicationController
         # Trying to add an authentication to a user
         if current_user?(authentication.user)
           flash[:notice] = "You already have this authentication"
-          redirect_to authentications_path
         else
           flash[:error] = "This authentication is already used by another user"
-          render :index
         end
+        redirect_to authentications_path
       else
         # Trying to connect
         flash[:notice] = "Logged in successfuly";

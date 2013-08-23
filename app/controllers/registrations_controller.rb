@@ -31,7 +31,7 @@ class RegistrationsController < ApplicationController
   def create
     #@registration = Registration.from_hash(params[:registration])
     if signed_in?
-      @registration = current.build_registration(params[:registration])
+      @registration = current_user.build_registration(params[:registration])
       if @registration.save
         flash.now[:success] = "Succefully added registration."
         redirect_to authentications_path
