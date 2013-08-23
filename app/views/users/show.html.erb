@@ -1,9 +1,21 @@
-<table class="table table-bordered">
-  <tr><th>Nom</th><td><%= @user.name %></td></tr>
+<div class="row">
+  <div class="span2">
+    <center>
+      <%= gravatar_for @user %>
+    </center>
+  </div>
+  <div class="span7">
+    <table class="table table-bordered">
+      <tr>
+        <th class="span2">Nom</th>
+        <td class="span4"><%= @user.name %></td></tr>
+      <% if current_user?(@user) %>
+        <tr style="background-color:#F1F1F1;">
+          <th>Email</th>
+          <td><%= @user.email %></td>
+        </tr>
+      <% end %>
+    </table>
+  </div>
+</div>
 
-  <tr style="background-color:#F1F1F1;">
-    <th>Email</th><td><%= @user.email %></td>
-  </tr>
-</table>
-
-<%= link_to "Add authentications methods", authentications_path %>
