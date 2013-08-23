@@ -26,7 +26,7 @@ class Inclusion < ActiveRecord::Base
   validates :author_id, presence: true
 end
 # == Schema Information
-# Schema version: 20130317152821
+# Schema version: 20130822154326
 #
 # Table name: inclusions
 #

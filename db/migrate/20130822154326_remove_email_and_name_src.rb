@@ -1,8 +1,8 @@
 class RemoveEmailAndNameSrc < ActiveRecord::Migration
   def up
     change_table :users do |t|
-      t.remove :name_src
-      t.remove :email_src
+      t.remove :name_src_id
+      t.remove :email_src_id
     end
   end
 

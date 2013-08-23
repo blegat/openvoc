@@ -113,7 +113,7 @@ class User < ActiveRecord::Base
   end
 end
 # == Schema Information
-# Schema version: 20130317152821
+# Schema version: 20130822154326
 #
 # Table name: users
 #
@@ -122,8 +122,6 @@ end
 #  email          :string(255)
 #  created_at     :datetime        not null
 #  updated_at     :datetime        not null
-#  name_src_id    :integer
-#  email_src_id   :integer
 #  remember_token :string(255)
 #
 # Indexes

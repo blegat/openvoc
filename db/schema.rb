@@ -86,8 +86,6 @@ ActiveRecord::Schema.define(:version => 20130822154326) do
     t.string   "email"
     t.datetime "created_at",     :null => false
     t.datetime "updated_at",     :null => false
-    t.integer  "name_src_id"
-    t.integer  "email_src_id"
     t.string   "remember_token"
   end
 
