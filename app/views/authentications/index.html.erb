@@ -55,7 +55,9 @@
       </a>
     </div>
     <% @methods = ['open_id', 'twitter', 'github', 'google_oauth2']
-    unless Rails.env.production?
+    if Rails.env.production?
+      @methods.append('facebook')
+    else
       @methods.prepend('developer')
     end %>
     <% @methods.each do |provider| %>

@@ -11,6 +11,7 @@ gem 'omniauth-linkedin'
 gem 'omniauth-openid'
 gem 'omniauth-github'
 gem 'omniauth-google-oauth2'
+gem 'omniauth-facebook'
 gem 'omniauth-identity'
 gem 'ruby-openid', '2.2.2' # TODO: remove
 gem 'algorithms'
