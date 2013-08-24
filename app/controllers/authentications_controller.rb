@@ -49,35 +49,25 @@ class AuthenticationsController < ApplicationController
         # redirect is necessary because @authentications
         # must be calculated for the views
       else
-        unless authentication.errors.empty? # that would be weird :o
-          flash[:notice] = authentication.errors.full_messages.to_sentence
-        end
+        flash_errors authentication # that would be weird :o
+        redirect_to authentications_path
       end
     else
-      # if omniauth[:info][:name].blank? or
-      #   omniauth[:info][:email].blank?
-      #   # user is invalid without a name and an email
-      #   session[:omniauth] = omniauth
-      #   render "users/new" and return
-      # end
       user = User.build_with_omniauth(omniauth)
       if user.save
-        flash[:notice] = "Account created"
         authentication = user.build_omniauth(omniauth)
         if authentication.save
-          flash[:success] = "Signed in successfully."
+          flash[:success] = "Account created."
           sign_in(user)
           redirect_back_or user
         else
-          flash[:error] = "ERROR"
-          session[:omniauth] = omniauth.except('extra')
+          user.destroy
+          flash_errors authentication
           render :index
         end
       else
         #flash[:error] = "There is already a user with the same email"
-        unless user.errors.empty?
-          flash_errors(user)
-        end
+        flash_errors(user)
         # if session[:omniauth].nil? is not safe on UsersControlleer
         # because it could be the registration after an omniauth
         # if session[:current] == 'omniauth' is ok
