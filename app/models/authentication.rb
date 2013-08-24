@@ -16,8 +16,14 @@
 ### END LICENSE
 
 class Authentication < ActiveRecord::Base
-  belongs_to :user
   attr_accessible :provider, :uid, :user_id
+
+  belongs_to :user
+  validates :user_id, presence: true
+
+  validates :provider, presence: true
+  validates :uid, presence: true,
+    uniqueness: { scope: :provider }
 
   def provider_name #useless ?
     if provider == 'open_id'
@@ -26,7 +32,6 @@ class Authentication < ActiveRecord::Base
       provider.titleize
     end
   end
-
 end
 # == Schema Information
 # Schema version: 20130822154326

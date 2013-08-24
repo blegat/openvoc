@@ -23,24 +23,22 @@ class SessionsController < ApplicationController
   end
   def create
     registration = Registration.find_by_email(params[:registration][:email])
-    if registration &&
-      registration.authenticate(params[:registration][:password])
-      sign_in registration.user
-      redirect_back_or registration.user
+    if registration
+      if registration.authenticate(params[:registration][:password])
+        sign_in registration.user
+        redirect_back_or registration.user
+      else
+        flash.now[:error] = 'Incorrect password'
+      end
     else
-      flash.now[:error] = 'Invalid email/password combination'
-      render 'new'
+      flash.now[:error] = 'There is no registration with this email'
     end
+    render 'new'
   end
 
   def destroy
     #session[:user_id] = nil
     sign_out
     redirect_to root_path, :notice => "Signed out!"
-  end
-
-  def failure
-    redirect_to root_url,
-      alert: "Authentication failed, please try again"
   end
 end

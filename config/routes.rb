@@ -17,7 +17,7 @@
 
 Openvoc::Application.routes.draw do
   resources :authentications, only: [:index, :create, :destroy]
-  resources :registrations, only: [:new, :create, :destroy]
+  resources :registrations, only: [:new, :create, :edit, :update, :destroy]
 
   resources :languages, only: [:index, :show] do
     resources :words, only: [:new, :create]

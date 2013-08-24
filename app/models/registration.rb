@@ -16,23 +16,28 @@
 ### END LICENSE
 
 class Registration < ActiveRecord::Base
+  attr_accessor :skip_user_validation
   attr_accessible :email, :password, :password_confirmation
   has_secure_password
   belongs_to :user
-  validates :user_id, presence: true
+  validates :user_id, presence: true, unless: :skip_user_validation?
   before_save { self.email.downcase! }
   # VALID_EMAIL_REGEX is also used by User
   VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
   validates :email, presence: true,
     format: { with: VALID_EMAIL_REGEX },
     uniqueness: { case_sensitive: false }
-  validates :password, length: { minimum: 6 }
+  validates :password, length: { minimum: 6 }, :if => :validate_password?
   # presence: true <- commented to avoid duplication of error message with digest
-  validates :password_confirmation, presence: true
-  def self.from_hash(hash)
-    email = hash[:email]
-    password = hash[:password]
-    password_confirmation = hash[:password_confirmation]
+  validates :password_confirmation, presence: true, :if => :validate_password?
+  def validate_password?
+    password.present? || password_confirmation.present?
+  end
+
+  private
+
+  def skip_user_validation?
+    skip_user_validation
   end
 end
 # == Schema Information

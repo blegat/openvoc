@@ -16,6 +16,11 @@
 ### END LICENSE
 
 module ApplicationHelper
+  # Nested parents (see http://m.onkey.org/nested-layouts-in-rails-3)
+  def parent_layout(layout)
+    @view_flow.set(:layout ,output_buffer)
+    self.output_buffer = render(file: "layouts/#{layout}")
+  end
 
   # Returns the full title of a page
   def full_title(page_title)

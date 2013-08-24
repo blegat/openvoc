@@ -16,6 +16,9 @@
 ### END LICENSE
 
 class UsersController < ApplicationController
+  before_filter :user_exists, only: [:edit, :update, :destroy]
+  before_filter :allowed_user, only: [:edit, :update]
+
   def new
   end
   def create
@@ -38,37 +41,52 @@ class UsersController < ApplicationController
         @user = user
         render :show and return
       else
-        # Weird case, give up everything
+        # it normally has already been checked.
+        # It must be that someone has registered with that email
+        # while redirecting to users/new
         user.destroy
-        unless auth.errors.empty?
-          flash.now[:error] = auth.errors.full_messages.to_sentence
+        flash_errors(auth)
+        if session[:current] == 'omniauth'
+          redirect_to authentications_path and return
+        else
+          @registration = auth
+          render new_registration_path and return
         end
-        redirect_to authentications_path
       end
     else
-      unless user.errors.empty?
-        flash.now[:error] = user.errors.full_messages.to_sentence
-      end
+      flash_errors user
     end
     render :new
   end
   def show
-    @user = User.find(params[:id])
   end
   def edit
-    @user = User.find(params[:id])
+    @users_edit = true
+    render layout: 'settings'
   end
   def update
-    @user = User.find(params[:id])
     @user.name = params[:user][:name]
     @user.email = params[:user][:email]
     if @user.save
       flash.now[:success] = "Successfully updated"
     else
-      unless @user.errors.empty?
-        flash.now[:error] = @user.errors.full_messages.to_sentence
-      end
+      flash_errors @user
     end
-    render :edit
+    @users_edit = true
+    render :edit, layout: 'settings'
+  end
+
+  private
+
+  def user_exists
+    @user = User.find_by_id(params[:id])
+    if @user.nil?
+      redirect_to root_path
+    end
+  end
+  def allowed_user
+    unless current_user?(@user)
+      redirect_to root_path
+    end
   end
 end

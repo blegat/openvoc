@@ -1,0 +1,23 @@
+<%= form_for(@registration) do |f| %>
+  <fieldset>
+    <legend>Email address</legend>
+    <%= f.label :email %>
+    <%= f.text_field(:email) %>
+  </fieldset>
+  <fieldset>
+    <legend>Password</legend>
+    <span class="help-block">
+      To reset your password,
+      you need to enter you current password and then
+      you new password twice to make sure you don't mistype it.
+    </span>
+    <%= f.label :current_password %>
+    <%= f.password_field(:current_password) %>
+    <%= f.label :new_password %>
+    <%= f.password_field(:new_password) %>
+    <%= f.label :new_password_confirmation %>
+    <%= f.password_field(:new_password_confirmation) %>
+  </fieldset>
+  <br />
+  <%= f.submit "Save", class: "btn btn-large btn-primary" %>
+<% end %>

@@ -16,6 +16,9 @@
 ### END LICENSE
 
 class RegistrationsController < ApplicationController
+  before_filter :user_exists, only: [:edit, :update, :destroy]
+  before_filter :allowed_user, only: [:edit, :update, :destroy]
+
   def new
     if signed_in? && current_user.registered?
       flash.now[:notice] = "You already have a registration.
@@ -40,22 +43,30 @@ class RegistrationsController < ApplicationController
         render :new
       end
     else
+      # Need to first verify if the registration is valid.
+      # It is weird to show that the user is not valid
+      # while the registration is not even valid yet.
+      @registration = Registration.new(params[:registration])
+      @registration.skip_user_validation = true
+      unless @registration.save
+        flash_errors(@registration)
+        render :new and return
+      end
       user = User.build_with_registration(params)
       if user.save
-        @registration = user.build_registration(params[:registration])
-        if @registration.save
+        @registration.user = user
+        @registration.skip_user_validation = false
+        if registration.save
           sign_in(user)
           flash.now[:success] = "Succefully registered."
           redirect_back_or authentications_path
         else
-          user.destroy
-          flash_errors(@registration)
-          render :new and return
+          flash_errors(registration)
+          render :new
         end
       else
-        unless user.errors.empty?
-          flash_errors(user)
-        end
+        @registration.destroy
+        flash_errors(user)
         session[:current] = 'registration'
         session[:registration] = params[:registration]
         session[:name] = user.name
@@ -64,13 +75,55 @@ class RegistrationsController < ApplicationController
       end
     end
   end
+  def edit
+    render_edit
+  end
+  def update
+    @registration.email = params[:registration][:email]
+    unless params[:registration][:new_password].blank?
+      if @registration.authenticate(params[:registration][:current_password])
+        @registration.password =
+          params[:registration][:new_password]
+        @registration.password_confirmation =
+          params[:registration][:new_password_confirmation]
+      else
+        flash.now[:error] = "Incorrect password"
+        render_edit
+      end
+    end
+    if @registration.save
+      flash.now[:success] = "Successfully updated"
+    else
+      flash_errors @registration
+    end
+    render_edit
+  end
   def destroy
-    if current_user.auth_number == 1
+    if @registration.user.auth_number == 1
       flash[:error] = "This is your last authentication."
     else
-      current_user.registration.destroy
+      @registration.destroy
       flash[:success] = "Successfully destroyed registration."
     end
     redirect_to authentications_path
+  end
+
+  private
+
+  def render_edit
+    @registrations_edit = true
+    @user = @registration.user
+    render :edit, layout: 'settings' and return
+  end
+  def user_exists
+    @registration = Registration.find_by_id(params[:id])
+    if @registration.nil?
+      redirect_to root_path
+    end
+  end
+  def allowed_user
+    unless current_user?(@registration.user)
+      redirect_to root_path
+    end
   end
 end
