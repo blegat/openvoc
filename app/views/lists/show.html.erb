@@ -26,6 +26,9 @@
           <li>
           <%= link_to "Export", list_export_path(@list) %>
           </li>
+          <li>
+          <%= link_to "Import", list_importing_path(@list) %>
+          </li>
         <% end %>
         <% if @new_list.nil? %>
           <li>
@@ -42,9 +45,30 @@
           <%= f.collection_select("list_id", current_user.lists_outside(@list), :id, :path) %>
         <% else %>
           <%= f.collection_select("list_id", current_user.lists_outside(@list), :id, :path, prompt: "/") %>
-      <% end %>
+        <% end %>
         <br />
         <%= f.submit "Move", class: "btn" %>
+      <% end %>
+    <% end %>
+    <% if @importing %>
+      <%= form_for :file, url: list_preview_import_path(@list) do |f| %>
+        <div class="form-group">
+          <%= f.label :format, "Format of the file" %>
+          <%= f.select(:format, supported) %>
+        </div>
+        <div class="form-group">
+          <%= f.label :file, "File to import" %>
+          <%= f.file_field :file %>
+        </div>
+        <div class="form-group">
+          <%= f.label :column1, "Column from" %>
+          <%= f.select(:column1, [["left", 1], ["right", 2]]) %>
+          <p class="help-block">Column with the target language of the list.</p>
+        </div>
+        <%= render 'languages/select', f: f, language: nil, n: 1 %>
+        <%= render 'languages/select', f: f, language: nil, n: 2 %>
+        <br />
+        <%= f.submit "Preview import", class: "btn" %>
       <% end %>
     <% end %>
     <% unless @new_list.nil? %>

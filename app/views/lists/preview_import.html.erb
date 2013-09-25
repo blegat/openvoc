@@ -1,0 +1,90 @@
+<% provide(:title, 'Import') %>
+<h1><%= @path %></h1>
+
+<p>If you import this file, you will to the following public changes.
+Be aware that if you add wrong information,
+your changes may be voted down and even removed.
+That may make you loose reputation.
+If your reputation become too low,
+you won't be able to add words and translations anymore.
+This is the best way we found to avoid abuses.
+If you are afraid of that,
+just choose below to only add existing words to your list.</p>
+
+<p>Adding words to your list does not influence your reputation
+since this only affects you.</p>
+
+<p>Below is a list of the changes that will be made followed
+by a form that let you chooses what to import.</p>
+
+<h2>Adding words and translations to the public.</h2>
+
+<% unless @words1_to_create.empty? %>
+  <p>It will add the following words
+  in <%= @language1.name %>.</p>
+  <ul>
+    <% for word in @words1_to_create do %>
+      <li><%= word %></li>
+    <% end %>
+  </ul>
+<% end %>
+
+<% unless @words2_to_create.empty? %>
+  <p>It will add the following words
+  in <%= @language2.name %>.</p>
+  <ul>
+    <% for word in @words2_to_create do %>
+      <li><%= word %></li>
+    <% end %>
+  </ul>
+<% end %>
+
+<% unless @links_to_create.empty? %>
+  <p>It will add the following links
+  between a word of <%= @language1.name %>
+  and a word of <%= @language2.name %>.</p>
+  <table class="table table-bordered">
+    <tr>
+      <th class="span2"><%= @language1.name %></th>
+      <th class="span2"><%= @language2.name %></th>
+    </tr>
+    <% for link in @links_to_create do %>
+      <tr>
+        <td class="span2"><%= link[0] %></td>
+        <td class="span2"><%= link[1] %></td>
+      </tr>
+    <% end %>
+  </table>
+<% end %>
+
+<h2>Adding words to the sublist.</h2>
+
+<% unless @words_to_add.empty? %>
+  <p>It will add the following words
+  to this list.</p>
+  <ul>
+    <% for word in @words_to_add do %>
+      <li><%= word %></li>
+    <% end %>
+  </ul>
+<% end %>
+
+<h2>Import mode.</h2>
+
+<%= form_for :import, url: list_import_path(@list) do |f| %>
+  <%= f.label :mode do %>
+    <%= f.radio_button(:mode, 0) %>
+    Import everything as previewed above.
+  <% end %>
+  <%= f.label :mode do %>
+    <%= f.radio_button(:mode, 1) %>
+    Only add existing words to the list.
+  <% end %>
+  <%= f.label :mode do %>
+    <%= f.radio_button(:mode, 2) %>
+    Only create <%= @language1.name %> words and
+    add all the words to the list
+    (this will create words without currently any translation).
+  <% end %>
+  <%= f.submit "Import" , class: 'btn btn-large btn-primary' %>
+<% end %>

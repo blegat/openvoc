@@ -1,5 +1,9 @@
 source 'https://rubygems.org'
 
+# ODF
+gem 'ruby-ole' # needed by roo
+gem 'roo', '~> 1.12.2'
+
 gem 'rails', '3.2.11'
 gem 'bootstrap-sass', '2.3'
 gem 'bcrypt-ruby', '3.0.1'

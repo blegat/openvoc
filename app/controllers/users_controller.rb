@@ -16,7 +16,7 @@
 ### END LICENSE
 
 class UsersController < ApplicationController
-  before_filter :user_exists, only: [:edit, :update, :destroy]
+  before_filter :user_exists, only: [:edit, :update, :destroy, :show]
   before_filter :allowed_user, only: [:edit, :update]
 
   def new
@@ -36,10 +36,8 @@ class UsersController < ApplicationController
         auth = user.build_registration(session[:registration])
       end
       if auth.save
-        flash.now[:success] = "Created successfully"
         sign_in(user)
-        @user = user
-        render :show and return
+        render @user, flash: { success: "Created successfully" }
       else
         # it normally has already been checked.
         # It must be that someone has registered with that email
