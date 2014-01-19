@@ -6,11 +6,13 @@ class InclusionsController < ApplicationController
       @list = List.find_by_id(params[:inclusion][:list_id])
       if @list and @list.owner == current_user
         hash = Hash.new
-        if @list.words.find_by_id(word)
-          hash[:notice] = "#{word.content} is already in #{@list.path}"
-        else
-          @list.add_word word, current_user
+        # FIXME remove the first redundant one ?
+        #       the second one is more sure so is needed
+        if @list.words.find_by_id(word).nil? and
+          @list.add_word(word, current_user).nil?
           hash[:success] = "Successfully added"
+        else
+          hash[:notice] = "#{word.content} is already in #{@list.path}"
         end
         redirect_to @list, flash: hash
       else

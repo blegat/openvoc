@@ -52,8 +52,9 @@ class LinksController < ApplicationController
         if @list.owner != current_user
           redirect_to root_path and return
         end
-        if @list.words.find_by_id(@word1).nil?
+        if @list.words.find_by_id(@word1).nil? and
           @list.add_word(@word1, current_user)
+          flash.now[:success] = "Successfully added"
         else
           flash.now[:notice] = "#{@word1.content} is already in #{@list.path}"
         end

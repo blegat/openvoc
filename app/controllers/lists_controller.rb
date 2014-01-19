@@ -41,6 +41,7 @@ class ListsController < ApplicationController
     render :show
   end
   def show
+    #raise flash[:error].to_s
     @path = @list.path
     @lists = @list.childs
     @words = get_words(@list)
@@ -116,9 +117,16 @@ class ListsController < ApplicationController
       flash[:notice] =
         "You said the file extension was '#{format}' but it actually #{actual}. If the file extension was correct on your computer, you have told us the wrong one and the following output might be absurd. For your curiousity the corresponding MIME type you claimed was '#{ext_to_mime[format]}' but according to its extension, the MIME type of the file you gave us is '#{file.content_type}'."
     end
+    split1 = params[:file][:split1] # I'm not stripping it, It could be just a space !
+    split2 = params[:file][:split2]
+    if split1.nil? or split2.nil?
+      redirect to root_path and return
+    end
+    split1 = split1 if !split1.empty? # If "", it becomes nil ("a,b".split(nil) returns ["a,b"])
+    split2 = split2 if !split2.empty?
 
-    # with "Tempfile.open do |f| .. end", I'm not sure what is returned
-    # makes sens (I've read the source from the doc
+    # with "Tempfile.open do |f| .. end", I'm not sure that what is returned
+    # makes sense (I've read the source from the doc)
     f = Tempfile.open(['import',format], Rails.root.join('tmp'))
     begin
       f.binmode
@@ -156,78 +164,125 @@ class ListsController < ApplicationController
 
     @words1_to_create = Array.new
     @words2_to_create = Array.new
-    @links_to_create = Array.new
+    @links1_to_create = Array.new
+    @links2_to_create = Array.new
     @words_to_add = Array.new
     column1 = params[:file][:column1].to_i
     column2 = (column1 % 2) + 1
     for row in (@spreadsheet.first_row)..(@spreadsheet.last_row)
-      content1 = @spreadsheet.cell(row,column1)
-      content2 = @spreadsheet.cell(row,column2)
-      word1 = @language1.words.find_by_content(content1)
-      word2 = @language2.words.find_by_content(content2)
-      if word1.nil?
-        @words1_to_create << content1
-      end
-      if word2.nil?
-        @words2_to_create << content2
-      end
-      if ((not word1.nil?) and (not word2.nil?) and (not word1.translations.include? word2)) or (word1.nil?) or (word2.nil?)
-        @links_to_create << [content1, content2]
-      end
-      if @list.words.find_by_content(content1).nil?
-        @words_to_add << content1
+      @spreadsheet.cell(row, column1).split(split1).each do |content1|
+        @spreadsheet.cell(row, column2).split(split2).each do |content2|
+          content1.strip! # removes blank at beginning and end
+          content2.strip!
+          word1 = @language1.words.find_by_content(content1)
+          word2 = @language2.words.find_by_content(content2)
+          if word1.nil? and not content1.blank?
+            @words1_to_create << content1
+          end
+          if word2.nil? and not content2.blank?
+            @words2_to_create << content2
+          end
+          if not content1.blank? and not content2.blank? and
+            (((not word1.nil?) and (not word2.nil?) and
+              (not word1.translations.include? word2)) or (word1.nil?) or (word2.nil?))
+            # Can't pass 2D array by POST to #import so use 2 arrays
+            @links1_to_create << content1
+            @links2_to_create << content2
+          end
+          if not content1.blank? and @list.words.find_by_content(content1).nil?
+            @words_to_add << content1
+          end
+        end
       end
     end
-
-    session[:language1] = @language1
-    session[:words1_to_create] = @words1_to_create
-    session[:language2] = @language2
-    session[:words2_to_create] = @words2_to_create
-    session[:links_to_create] = @links_to_create
-    session[:words_to_add] = @words_to_add
 
     @path = @list.path
   end
   def import
-    raise "a"
     # We can trust session
-    language1 = Language.find(session[:language1])
-    words1_to_create = session[:words1_to_create]
-    language2 = Language.find(session[:language2])
-    words2_to_create = session[:words2_to_create]
-    links_to_create = session[:links_to_create]
-    words_to_add = session[:words_to_add]
-    if words1_to_create.nil? or words2_to_create.nil? or
-      links_to_create.nil? or words_to_add.nil?
-      redirect_to root_path
-    else
-      # warn if created/deleted between preview and now
+    #language1 = Language.find(session[:language1])
+    #words1_to_create = session[:words1_to_create]
+    #language2 = Language.find(session[:language2])
+    #words2_to_create = session[:words2_to_create]
+    #links_to_create = session[:links_to_create]
+    #words_to_add = session[:words_to_add]
+
+    language1 = Language.find(params[:import][:language1])
+    words1_to_create = params[:import][:words1_to_create] || []
+    language2 = Language.find(params[:import][:language2])
+    words2_to_create = params[:import][:words2_to_create] || []
+
+    links1_to_create = params[:import][:links1_to_create] || []
+    links2_to_create = params[:import][:links2_to_create] || []
+    if links1_to_create.count != links2_to_create.count
+      redirect_to root_path and return
+    end
+    links_to_create = links1_to_create.zip(links2_to_create)
+
+    words_to_add = params[:import][:words_to_add]
+
+    # warn if created/deleted between preview and now
+    warnings = Array.new
+    errors = Array.new
+    unless words1_to_create.nil?
       for word_content in words1_to_create
         word = language1.words.build(content: word_content)
         word.owner = current_user
-        word.save
+        unless word.save
+          warnings << "Word '#{word_content}' could not be created. #{word.errors.full_messages.to_sentence}"
+        end
       end
+    end
 
+    unless words2_to_create.nil?
       for word_content in words2_to_create
         new = language2.words.build(content: word_content)
         new.owner = current_user
         new.save
-      end
-
-      for link in links_to_create
-        word1 = Word.find_by_content(link[0])
-        word2 = Word.find_by_content(link[1])
-        new_link = word1.links1.build
-        new_link.word2 = word2
-        new_link.owner = current_user
-        new_link.save
-      end
-
-      for word_content in words_to_add
-        word = Word.find_by_content(content: word_content)
-        @list.words << word
+        unless word.save
+          warnings << "Word '#{word_content}' could not be created. #{word.errors.full_messages.to_sentence}"
+        end
       end
     end
+
+    unless links_to_create.nil?
+      for link in links_to_create
+        word1 = Word.find_by_content(link[0])
+        if word1.nil?
+          errors << "Link between #{link[0]} and '#{link[1]}' could not be added to the list. #{link[0]} has been deleted between by someone else the preview and the import."
+        else
+          word2 = Word.find_by_content(link[1])
+          if word2.nil?
+            errors << "Link between #{link[0]} and '#{link[1]}' could not be added to the list. #{link[1]} has been deleted between by someone else the preview and the import."
+          else
+            new_link = word1.links1.build
+            new_link.word2 = word2
+            new_link.owner = current_user
+            unless new_link.save
+              warnings << "Link between '#{link[0]}' and '#{link[1]}' could not be created. #{new_link.errors.full_messages.to_sentence}"
+            end
+          end
+        end
+      end
+    end
+
+    unless words_to_add.nil?
+      for word_content in words_to_add
+        word = Word.find_by_content(word_content)
+        if word.nil?
+          errors << "Word '#{word_content}' could not be added to the list. It has been deleted between by someone else the preview and the import."
+        else
+          err = @list.add_word word, current_user
+          unless err.nil?
+            errors << "Word '#{word_content}' is already in the list. It has been added between by someone else the preview and the import."
+          end
+        end
+      end
+    end
+
+    flash[:notice] = warnings.to_sentence
+    flash[:error] = errors.to_sentence
+    redirect_to @list
   end
   def training
     max = params[:train][:max]

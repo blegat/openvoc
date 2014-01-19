@@ -65,6 +65,27 @@
           <%= f.select(:column1, [["left", 1], ["right", 2]]) %>
           <p class="help-block">Column with the target language of the list.</p>
         </div>
+        <div class="form-group">
+          <%= f.label :split1, "Separator from" %>
+          <%= f.text_field :split1 %>
+          <p class="help-block">
+          If you have multiple words per field.
+          For example
+          <code>happy, glad    | content</code>
+          you can give <code>", "</code> so that the words "happy" and "glad" will be added with the translations
+          "happy" to "content" and "glad" to "content" instead of the word "happy, glad" which doesn't exist.
+          Be careful with the trailing spaces, if you split by <code>", "</code> and the field contains
+          <code>happy,glad</code>, it won't be split up. You need to enter <code>","</code> (without the space).
+          Leave it empty if you only have one word per field.
+          </p>
+        </div>
+        <div class="form-group">
+          <%= f.label :split2, "Separator to" %>
+          <%= f.text_field :split2 %>
+          <p class="help-block">
+          This is the separator for the translations.
+          </p>
+        </div>
         <%= render 'languages/select', f: f, language: nil, n: 1 %>
         <%= render 'languages/select', f: f, language: nil, n: 2 %>
         <br />

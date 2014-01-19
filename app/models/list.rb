@@ -79,8 +79,10 @@ class List < ActiveRecord::Base
     inclusion.list = self
     inclusion.author = user
     inclusion.word = word
-    unless inclusion.save
-      raise inclusion.errors.full_messages.to_sentence
+    if inclusion.save
+      nil
+    else
+      inclusion.errors.full_messages.to_sentence
     end
   end
 

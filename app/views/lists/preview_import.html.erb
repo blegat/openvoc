@@ -39,7 +39,7 @@ by a form that let you chooses what to import.</p>
   </ul>
 <% end %>
 
-<% unless @links_to_create.empty? %>
+<% unless @links1_to_create.empty? %>
   <p>It will add the following links
   between a word of <%= @language1.name %>
   and a word of <%= @language2.name %>.</p>
@@ -48,7 +48,7 @@ by a form that let you chooses what to import.</p>
       <th class="span2"><%= @language1.name %></th>
       <th class="span2"><%= @language2.name %></th>
     </tr>
-    <% for link in @links_to_create do %>
+    <% for link in @links1_to_create.zip(@links2_to_create) do %>
       <tr>
         <td class="span2"><%= link[0] %></td>
         <td class="span2"><%= link[1] %></td>
@@ -86,5 +86,17 @@ by a form that let you chooses what to import.</p>
     add all the words to the list
     (this will create words without currently any translation).
   <% end %>
+  <%= f.hidden_field :language1, value: @language1.id %>
+  <%= render 'shared/hidden_array', f: f,
+    id: :words1_to_create, array: @words1_to_create %>
+  <%= f.hidden_field :language2, value: @language2.id %>
+  <%= render 'shared/hidden_array', f: f,
+    id: :words2_to_create, array: @words2_to_create %>
+  <%= render 'shared/hidden_array', f: f,
+    id: :links1_to_create, array: @links1_to_create %>
+  <%= render 'shared/hidden_array', f: f,
+    id: :links2_to_create, array: @links2_to_create %>
+  <%= render 'shared/hidden_array', f: f,
+    id: :words_to_add, array: @words_to_add %>
   <%= f.submit "Import" , class: 'btn btn-large btn-primary' %>
 <% end %>
