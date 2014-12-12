@@ -56,11 +56,13 @@ class RegistrationsController < ApplicationController
       if user.save
         @registration.user = user
         @registration.skip_user_validation = false
-        if registration.save
+        if @registration.save
           sign_in(user)
           flash.now[:success] = "Succefully registered."
           redirect_back_or authentications_path
         else
+          @registration.destroy
+          user.destroy
           flash_errors(registration)
           render :new
         end

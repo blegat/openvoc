@@ -26,7 +26,7 @@ class SessionsController < ApplicationController
     if registration
       if registration.authenticate(params[:registration][:password])
         sign_in registration.user
-        redirect_back_or registration.user
+        redirect_back_or registration.user and return
       else
         flash.now[:error] = 'Incorrect password'
       end
