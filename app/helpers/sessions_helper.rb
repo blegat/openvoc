@@ -64,8 +64,10 @@ module SessionsHelper
   end
 
   def redirect_back_or(default)
-    redirect_to(session[:return_to] || default)
+    return_to = session[:return_to]
+    # FIXME maybe not delete it if redirect_to fails
     session.delete(:return_to)
+    redirect_to(return_to || default) and return true
   end
 
   def store_location
