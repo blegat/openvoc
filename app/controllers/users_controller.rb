@@ -16,7 +16,7 @@
 ### END LICENSE
 
 class UsersController < ApplicationController
-  before_filter :user_exists, only: [:edit, :update, :destroy]
+  before_filter :user_exists, only: [:edit, :update, :destroy, :show]
   before_filter :allowed_user, only: [:edit, :update]
 
   def new
