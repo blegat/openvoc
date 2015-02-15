@@ -19,10 +19,25 @@ To modify the code, for us as explained in the
 Then, to install the gems, run
 
     $ bundle install --without production
+
+Create and populate the database with
+
+    $ bundle exec rake db:create
+    $ bundle exec rake db:migrate
+    $ bundle exec rake db:populate
+
 You can now try it by running a server on a terminal with
 
     $ rails server # or rails s
 Then open a browser at the address `http://localhost:3000/`
 and should see openvoc in action running locally.
+
+You can visualize controllers and models in picture thanks to [railroady](http://railroady.prestonlee.com/)
+by installing graphviz (e.g. `sudo apt-get install graphviz`) and running
+
+    $ bundle exec rake diagram:all
+The pictures will be in the `doc` subdirectory.
+
+You can update the annotation of the models with (already done normally)
 
     $ annotate -p after -mi
