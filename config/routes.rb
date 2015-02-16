@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ### END LICENSE
 
-Openvoc::Application.routes.draw do
+Rails.application.routes.draw do
   resources :authentications, only: [:index, :create, :destroy]
   resources :registrations, only: [:new, :create, :edit, :update, :destroy]
 
