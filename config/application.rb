@@ -2,12 +2,7 @@ require File.expand_path('../boot', __FILE__)
 
 require 'rails/all'
 
-if defined?(Bundler)
-  # If you precompile assets before deploying to production, use this line
-  Bundler.require(*Rails.groups(:assets => %w(development test)))
-  # If you want your assets lazily compiled in production, use this line
-  # Bundler.require(:default, :assets, Rails.env)
-end
+Bundler.require(:default, Rails.env)
 
 module Openvoc
   class Application < Rails::Application
@@ -58,5 +53,7 @@ module Openvoc
 
     # Version of your assets, change this if you want to expire all your assets
     config.assets.version = '1.0'
+    # TODO set it to false or remove it ? it is not set to true :/
+    # see http://railscasts.com/episodes/415-upgrading-to-rails-4?view=asciicast
   end
 end

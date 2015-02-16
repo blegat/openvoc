@@ -21,7 +21,7 @@ Openvoc::Application.routes.draw do
 
   resources :languages, only: [:index, :show] do
     resources :words, only: [:new, :create]
-    match 'words' => "words#new"
+    get 'words', to: "words#new"
   end
   resources :words, only: [:show, :destroy] do
     resources :links, only: [:create, :new]
@@ -30,20 +30,20 @@ Openvoc::Application.routes.draw do
   resources :links, only: [:create, :new, :show, :destroy]
 
   root to: 'static_pages#home'
-  match '/contact', to: 'static_pages#contact'
+  get '/contact', to: 'static_pages#contact'
 
-  match "/auth/:provider/callback" => "authentications#create"
-  match "/signin" => "authentications#index", as: :signin
-  match "/signout" => "sessions#destroy", as: :signout
+  get "/auth/:provider/callback", to: "authentications#create"
+  get "/signin", to: "authentications#index", as: :signin
+  get "/signout", to: "sessions#destroy", as: :signout
   resources :sessions, only: [:new, :create]
   resources :users, only: [:update, :edit, :new, :show, :create]
   resources :lists, only: [:new, :create, :index, :show] do
-    match "/export" => "lists#export", as: :export
-    match "/moving" => "lists#moving", as: :moving
-    match "/move" => "lists#move", as: :move
-    match "/training" => "lists#training", as: :training
+    get "/export" => "lists#export", as: :export
+    get "/moving" => "lists#moving", as: :moving
+    get "/move" => "lists#move", as: :move
+    get "/training" => "lists#training", as: :training
     resources :trains, only: [:new, :create] do
-      match "/toggle_success" => "trains#toggle_success", as: :toggle_success
+      get "/toggle_success" => "trains#toggle_success", as: :toggle_success
     end
     resources :lists, only: [:new, :create]
     resources :words, only: [:destroy]
