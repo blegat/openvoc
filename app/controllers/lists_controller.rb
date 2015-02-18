@@ -56,7 +56,7 @@ class ListsController < ApplicationController
       if @dest.nil? or @dest.owner != current_user or
         @dest == @list or @dest.in?(@list.rec_parents)
         @moving = true
-        flash.now[:error] = "Invalid destination"
+        flash.now[:danger] = "Invalid destination"
       else
         @list.parent = @dest
         @list.save
@@ -92,7 +92,7 @@ class ListsController < ApplicationController
       redirect_to root_path and return
     end
     if max < 0 or max > 100
-      redirect_to list, flash: { error: 'Maximum success rate should be between 0 and 100' } and return
+      redirect_to list, flash: { danger: 'Maximum success rate should be between 0 and 100' } and return
     end
     redirect_to new_list_train_path(list, rec: rec, max: max)
   end

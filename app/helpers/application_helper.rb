@@ -34,7 +34,7 @@ module ApplicationHelper
 
   def flash_errors(object)
     unless object.errors.empty?
-      flash.now[:error] = object.errors.full_messages.to_sentence
+      flash.now[:danger] = object.errors.full_messages.to_sentence
     end
   end
 

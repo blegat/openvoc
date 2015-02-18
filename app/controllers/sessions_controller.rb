@@ -28,10 +28,10 @@ class SessionsController < ApplicationController
         sign_in registration.user
         redirect_back_or registration.user and return
       else
-        flash.now[:error] = 'Incorrect password'
+        flash.now[:danger] = 'Incorrect password'
       end
     else
-      flash.now[:error] = 'There is no registration with this email'
+      flash.now[:danger] = 'There is no registration with this email'
     end
     render 'new'
   end
@@ -39,6 +39,6 @@ class SessionsController < ApplicationController
   def destroy
     #session[:user_id] = nil
     sign_out
-    redirect_to root_path, :notice => "Signed out!"
+    redirect_to root_path, flash: { info: "Signed out!" }
   end
 end

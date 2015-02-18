@@ -10,6 +10,7 @@
  *
  *= require_self
  *= require_tree .
+ *= require rails_bootstrap_forms
  */
 
 .authentications {

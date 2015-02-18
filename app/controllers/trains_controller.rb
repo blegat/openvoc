@@ -12,7 +12,7 @@ class TrainsController < ApplicationController
     end
     if words.empty?
       redirect_to @list,
-        flash: { notice: "There is no word for training" } and return
+        flash: { info: "There is no word for training" } and return
     end
     not_trained_yet = words.select do |w|
       not w.trained_by(current_user)

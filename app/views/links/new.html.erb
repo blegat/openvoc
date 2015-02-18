@@ -1,7 +1,7 @@
 <% provide(:title, "New link") %>
 <h1>New link</h1>
 <div class="row">
-  <div class="span6 offset3">
+  <div class="col-md-6 col-md-offset-3">
     <%= form_for(:link, url: links_path) do |f| %>
 
       <%= render 'languages/select', f: f, language: @language1, n: 1 %>
@@ -11,7 +11,7 @@
       <%= render 'words/select', f: f, word_content: @word2_content, n: 2 %>
 
       <br/>
-      <%= f.submit "Create the link", class: "btn btn-large btn-primary" %>
+      <%= f.submit "Create the link", class: "btn btn-default btn-lg btn-primary" %>
     <% end %>
   </div>
 </div>

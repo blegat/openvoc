@@ -3,7 +3,7 @@
 <h1>Settings</h1>
 
 <div class="row">
-  <div class="span2">
+  <div class="col-md-2">
     <ul class="nav nav-tabs nav-stacked">
       <li <%= 'class="active"'.html_safe if @users_edit %>>
       <%= link_to "User", edit_user_path(@user) %>
@@ -16,7 +16,7 @@
         <% end %>
     </ul>
   </div>
-  <div class="span10">
+  <div class="col-md-10">
     <%= yield %>
   </div>
 </div>

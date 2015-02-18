@@ -3,10 +3,10 @@
 
 
 <div class="row">
-  <div class="span6">
+  <div class="col-md-6">
     <div class="btn-group">
-      <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-        Action <i class="icon-cog"></i>
+      <a class="btn btn-default dropdown-toggle" data-toggle="dropdown" href="#">
+        Action <i class="glyphicon-cog"></i>
         <span class="caret"></span>
       </a>
       <ul class="dropdown-menu">
@@ -44,7 +44,7 @@
           <%= f.collection_select("list_id", current_user.lists_outside(@list), :id, :path, prompt: "/") %>
       <% end %>
         <br />
-        <%= f.submit "Move", class: "btn" %>
+        <%= f.submit "Move", class: "btn btn-default" %>
       <% end %>
     <% end %>
     <% unless @new_list.nil? %>
@@ -52,7 +52,7 @@
         <%= f.label :name %>
         <%= f.text_field :name %>
         <br />
-        <%= f.submit "Create list here", class: "btn" %>
+        <%= f.submit "Create list here", class: "btn btn-default" %>
       <% end %>
     <% end %>
 
@@ -79,7 +79,7 @@
             <li>
             <%= link_to word.content, word %>
             <% if @list.owner == current_user %>
-              <%= link_to "", list_word_path(@list, word), method: :delete, class: "icon-remove" %>
+              <%= link_to "", list_word_path(@list, word), method: :delete, class: "glyphicon-remove" %>
             <% end %>
             </li>
           <% end %>
@@ -123,13 +123,13 @@
             <%= link_to_bug_tracker 'let us know' %>.
           </span>
         </fieldset>
-        <%= f.submit "Start training", class: 'btn btn-large btn-primary' %>
+        <%= f.submit "Start training", class: 'btn btn-default btn-lg btn-primary' %>
       <% end %>
     <% end %>
   </div>
 
   <% if not @list.nil? and @list.owner == current_user %>
-    <div class="span6">
+    <div class="col-md-6">
       <h2>New links</h2>
       <p>
       Quickly add new words to this list while ensuring your

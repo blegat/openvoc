@@ -59,9 +59,9 @@ class WordsController < ApplicationController
         # can only be removed by the owner if no list is using it and no link
         redirect_to root_path
       elsif not @word.lists.empty?
-        redirect_to @word, flash: { error: "The word is being used by a list" }
+        redirect_to @word, flash: { danger: "The word is being used by a list" }
       elsif not @word.links2.empty?
-        redirect_to @word, flash: { error: "The word is being used by a link" }
+        redirect_to @word, flash: { danger: "The word is being used by a link" }
       else
         language = @word.language
         @word.destroy

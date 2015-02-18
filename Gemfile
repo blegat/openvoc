@@ -2,6 +2,7 @@ source 'https://rubygems.org'
 
 gem 'rails', '4.1.0'
 gem 'bootstrap-sass', '3.3.3'
+gem 'bootstrap_form', github: 'bootstrap-ruby/rails-bootstrap-forms'
 gem 'bcrypt-ruby', '3.1.5'
 gem 'faker', '1.4.3'
 gem 'will_paginate', '3.0.7'
@@ -19,6 +20,7 @@ group :development, :test do
   gem 'railroady'
   gem 'sqlite3'
   gem 'rspec-rails', '3.2.0'
+  gem 'rspec-its', '1.1.0'
   gem 'random_record'
 end
 

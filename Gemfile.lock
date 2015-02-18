@@ -1,3 +1,9 @@
+GIT
+  remote: git://github.com/bootstrap-ruby/rails-bootstrap-forms.git
+  revision: 9c0eb5bd5ee865e4b99c753155793cdbfb28789e
+  specs:
+    bootstrap_form (2.2.0)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -165,6 +171,9 @@ GEM
     rspec-expectations (3.2.0)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.2.0)
+    rspec-its (1.1.0)
+      rspec-core (>= 3.0.0)
+      rspec-expectations (>= 3.0.0)
     rspec-mocks (3.2.0)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.2.0)
@@ -222,6 +231,7 @@ DEPENDENCIES
   bcrypt-ruby (= 3.1.5)
   bootstrap-sass (= 3.3.3)
   bootstrap-will_paginate (= 0.0.10)
+  bootstrap_form!
   capybara (= 2.4.4)
   coffee-rails (~> 4.1.0)
   database_cleaner (= 1.4.0)
@@ -240,6 +250,7 @@ DEPENDENCIES
   rails (= 4.1.0)
   rails-observers
   random_record
+  rspec-its (= 1.1.0)
   rspec-rails (= 3.2.0)
   sass-rails (~> 5.0.1)
   sqlite3

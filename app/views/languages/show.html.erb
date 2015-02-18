@@ -6,7 +6,7 @@
     <%= f.label 'Word' %>
     <%= f.text_field :content %>
     <br/>
-    <%= f.submit 'Create the word', class: "btn btn-large btn-primary" %>
+    <%= f.submit 'Create the word', class: "btn btn-default btn-lg btn-primary" %>
   <% end %>
 <% else %>
   <%= link_to "New word", new_language_word_path(@language) %>

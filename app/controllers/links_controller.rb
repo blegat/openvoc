@@ -55,7 +55,7 @@ class LinksController < ApplicationController
         if @list.words.find_by_id(@word1).nil?
           @list.add_word(@word1, current_user)
         else
-          flash.now[:notice] = "#{@word1.content} is already in #{@list.path}"
+          flash.now[:warning] = "#{@word1.content} is already in #{@list.path}"
         end
       end
       if @word2
@@ -87,11 +87,11 @@ class LinksController < ApplicationController
             end
           else
             if @list.nil?
-              flash.now[:error] = "This link already exists"
+              flash.now[:danger] = "This link already exists"
               redirect_to l
             else
               # At least it has been added to the list so it wasn't useless
-              flash.now[:notice] = "This link already exists"
+              flash.now[:warning] = "This link already exists"
               render_list_show
             end
           end

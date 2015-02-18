@@ -30,21 +30,21 @@ class AuthenticationsController < ApplicationController
       if signed_in?
         # Trying to add an authentication to a user
         if current_user?(authentication.user)
-          flash[:notice] = "You already have this authentication"
+          flash[:warning] = "You already have this authentication"
         else
-          flash[:error] = "This authentication is already used by another user"
+          flash[:danger] = "This authentication is already used by another user"
         end
         redirect_to authentications_path
       else
         # Trying to connect
-        flash[:notice] = "Logged in successfuly";
+        flash[:success] = "Logged in successfuly";
         sign_in(authentication.user)
         redirect_back_or authentication.user
       end
     elsif signed_in?
       authentication = current_user.build_omniauth(omniauth)
       if authentication.save
-        flash[:notice] = "Authentication successfully added."
+        flash[:success] = "Authentication successfully added."
         redirect_to authentications_path
         # redirect is necessary because @authentications
         # must be calculated for the views
@@ -66,7 +66,7 @@ class AuthenticationsController < ApplicationController
           render :index
         end
       else
-        #flash[:error] = "There is already a user with the same email"
+        #flash[:danger] = "There is already a user with the same email"
         flash_errors(user)
         # if session[:omniauth].nil? is not safe on UsersControlleer
         # because it could be the registration after an omniauth
@@ -87,7 +87,7 @@ class AuthenticationsController < ApplicationController
       redirect_to root_path
     end
     if @authentication.user.auth_number == 1
-      flash[:error] = "This is your last authentication."
+      flash[:danger] = "This is your last authentication."
     else
       @authentication.destroy
       flash[:success] = "Successfully destroyed authentication."

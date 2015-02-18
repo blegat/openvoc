@@ -21,7 +21,7 @@ class RegistrationsController < ApplicationController
 
   def new
     if signed_in? && current_user.registered?
-      flash.now[:notice] = "You already have a registration.
+      flash.now[:warning] = "You already have a registration.
         If you create another one, your existing registration
       will be destroyed."
     end
@@ -89,7 +89,7 @@ class RegistrationsController < ApplicationController
         @registration.password_confirmation =
           params[:registration][:new_password_confirmation]
       else
-        flash.now[:error] = "Incorrect password"
+        flash.now[:danger] = "Incorrect password"
         render_edit
       end
     end
@@ -102,7 +102,7 @@ class RegistrationsController < ApplicationController
   end
   def destroy
     if @registration.user.auth_number == 1
-      flash[:error] = "This is your last authentication."
+      flash[:danger] = "This is your last authentication."
     else
       @registration.destroy
       flash[:success] = "Successfully destroyed registration."

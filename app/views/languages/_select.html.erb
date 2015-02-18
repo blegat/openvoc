@@ -1,7 +1,7 @@
 <%= f.label "language#{n}_id", "Language #{['from','to'][n-1]}" %>
 <%= if language
-      f.collection_select("language#{n}_id", Language.all, :id, :name,
-                          selected: language.id)
+      f.collection_select "language#{n}_id", Language.all, :id, :name, {}, {class: 'form-control'},
+                          selected: language.id
     else
-      f.collection_select("language#{n}_id", Language.all, :id, :name)
+      f.collection_select "language#{n}_id", Language.all, :id, :name, {}, {class: 'form-control'}
     end %>

@@ -1,5 +1,4 @@
 @import "bootstrap";
-@import "bootstrap-responsive";
 
 /* universal */
 
@@ -13,17 +12,17 @@ body {
 
 /* footer */
 
-$grayMediumLight: #eaeaea;
+$gray-medium-light: #eaeaea;
 footer {
 	margin-top: 45px;
 	padding-top: 5px;
-	border-top: 1px solid $grayMediumLight;
-	color: $grayLight;
+	border-top: 1px solid $gray-medium-light;
+	color: $gray-light;
 	a {
 		color: $gray;
 
 		&:hover {
-			color: $grayDarker;
+			color: $gray-darker;
 		}
 	}
 
