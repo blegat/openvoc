@@ -16,7 +16,7 @@
 ### END LICENSE
 
 class Word < ActiveRecord::Base
-  attr_accessible :content
+  #attr_accessible :content
   #VALID_WORD_REGEX = /\A[[:alnum:]]+\z/
   validates :content, presence: true, length: { maximum: 64 }#,
     #format: { with: VALID_WORD_REGEX }

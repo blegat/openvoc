@@ -15,9 +15,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ### END LICENSE
 
-require 'spec_helper'
+require 'rails_helper'
 
-describe Word do
+RSpec.describe Word, type: :model do
 
   let (:language) { FactoryGirl.create(:language) }
   let (:owner) { FactoryGirl.create(:user) }
@@ -40,18 +40,6 @@ describe Word do
   it { should respond_to(:links2) }
   its(:language) { should == language }
   its(:owner) { should == owner }
-  describe "accessible attributes" do
-    it "should not allow access to language_id" do
-      expect do
-        Word.new(content:"test",language_id: language.id)
-      end.to raise_error(ActiveModel::MassAssignmentSecurity::Error)
-    end
-    it "should not allow access to owner_id" do
-      expect do
-        Word.new(content:"test",owner_id: owner.id)
-      end.to raise_error(ActiveModel::MassAssignmentSecurity::Error)
-    end
-  end
 
   describe "when content is not present" do
     before { @word.content = nil }
@@ -99,31 +87,31 @@ describe Word do
                                      word1: @word,
                                      word2: other_word) }
     it "should have a link" do
-      @word.links1.should include(link)
+      expect(@word.links1).to include(link)
     end
     it "should have a reverse link" do
-      other_word.links2.should include(link)
+      expect(other_word.links2).to include(link)
     end
     it "should have a valid other end" do
-      @word.links1.find_by_id(link.id).word2.should == other_word
+      expect(@word.links1.find_by_id(link.id).word2).to eq other_word
     end
     it "should have a valid other end" do
-      other_word.links2.find_by_id(link.id).word1.should == @word
+      expect(other_word.links2.find_by_id(link.id).word1).to eq @word
     end
     it "should be in translations" do
-      @word.translations.should include(other_word)
+      expect(@word.translations).to include(other_word)
     end
     describe "when the word is destroyed" do
       before { @word.destroy }
       it "should destroy all links" do
-        Link.find_by_id(link.id).should be_nil
+        expect(Link.find_by_id(link.id)).to be_nil
         # find raise an exceptions so find_by_id is better
       end
       it "should destroy the link of word1" do
-        @word.links1.should_not include(link)
+        expect(@word.links1).not_to include(link)
       end
       it "should destroy the link of word2" do
-        other_word.links2.should_not include(link)
+        expect(other_word.links2).not_to include(link)
       end
     end
   end

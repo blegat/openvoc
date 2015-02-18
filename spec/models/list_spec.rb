@@ -15,9 +15,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ### END LICENSE
 
-require 'spec_helper'
+require 'rails_helper'
 
-describe List do
+RSpec.describe List, type: :model do
 
   let(:owner) { FactoryGirl.create(:user) }
   let(:list_same_owner) { FactoryGirl.create(:list, owner: owner) }
@@ -35,18 +35,6 @@ describe List do
   it { should respond_to(:inclusions) }
   it { should respond_to(:words) }
   its(:owner) { should == owner }
-  describe "accessible attributes" do
-    it "should not allow access to owner_id" do
-      expect do
-        List.new(owner_id: owner.id)
-      end.to raise_error(ActiveModel::MassAssignmentSecurity::Error)
-    end
-    it "should not allow access to parent_id" do
-      expect do
-        List.new(parent_id: list_same_owner.id)
-      end.to raise_error(ActiveModel::MassAssignmentSecurity::Error)
-    end
-  end
 
   describe "when name is not present" do
     before { @list.name = nil }
@@ -67,7 +55,7 @@ describe List do
   end
   describe "when it has a child" do
     before { @list.save }
-    it { list_same_owner.childs.should include(@list) }
+    it { expect(list_same_owner.childs).to include(@list) }
   end
   describe "when the parent is destroyed" do
     before do
@@ -75,7 +63,7 @@ describe List do
       list_same_owner.destroy
     end
     it "should destroy all childs" do
-      List.find_by_id(@list.id).should be_nil
+      expect(List.find_by_id(@list.id)).to be_nil
     end
   end
 

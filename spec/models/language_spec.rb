@@ -15,9 +15,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ### END LICENSE
 
-require 'spec_helper'
+require 'rails_helper'
 
-describe Language do
+RSpec.describe Language, type: :model do
 
   before { @language = FactoryGirl.build(:language, name: "English") }
 
@@ -66,7 +66,7 @@ describe Language do
     end
     let!(:word) { FactoryGirl.create(:word, language: @language) }
     subject { word }
-    it { @language.words.should include(word) }
+    it { expect(@language.words).to include(word) }
     it "should destroy the word when the language is destroyed" do
       expect { @language.destroy }.to change(Word, :count).by -1
     end

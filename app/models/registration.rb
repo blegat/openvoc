@@ -17,7 +17,7 @@
 
 class Registration < ActiveRecord::Base
   attr_accessor :skip_user_validation
-  attr_accessible :email, :password, :password_confirmation
+  #attr_accessible :email, :password, :password_confirmation
   has_secure_password
   belongs_to :user
   validates :user_id, presence: true, unless: :skip_user_validation?

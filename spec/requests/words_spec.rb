@@ -15,9 +15,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ### END LICENSE
 
-require 'spec_helper'
+require 'rails_helper'
 
-describe "Words" do
+RSpec.describe "Words", type: :request do
   subject { page }
   let!(:language) { FactoryGirl.create(:language) }
   let!(:user) { FactoryGirl.create(:user) }
@@ -27,7 +27,7 @@ describe "Words" do
   describe "new word when signed out" do
     before { visit new_language_word_path(language) }
     it { should_not have_field "word_content" }
-    it { should have_selector('title', text: 'Sign In') }
+    it { should have_title('Sign In') }
   end
   describe "new word when signed in" do
     before do
@@ -39,7 +39,7 @@ describe "Words" do
   end
   describe "create word when signed out" do
     before { post language_words_path(language) }
-    specify { response.should redirect_to(signin_path) }
+    specify { expect(response).to redirect_to(signin_path) }
   end
 
   describe "show page" do

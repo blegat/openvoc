@@ -11,3 +11,6 @@ V4
 anonymous et semi anonymos (retiens pas les failed words)
 import
 notif quand new trucs à review + abonnement. Notif à n reviewer (si dans x jours, on forward)
+
+Tests
+test that we do not allow this http://code.tutsplus.com/tutorials/mass-assignment-rails-and-you--net-31695

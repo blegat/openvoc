@@ -23,4 +23,12 @@ class InclusionsController < ApplicationController
     #redirect_to root_path
   end
 
+  private
+
+  # Require that :user be a key in the params Hash,
+  # and only accept :first, :last, and :email attributes
+  # We use params.require(:episode) instead of params[:episode] to ensure that the parameters hash is available and to avoid a nil exception if they are not.
+  def user_params
+    params.require(:inclusion).permit(:list_id)
+  end
 end

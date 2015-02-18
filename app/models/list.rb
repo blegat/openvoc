@@ -16,7 +16,7 @@
 ### END LICENSE
 
 class List < ActiveRecord::Base
-  attr_accessible :name
+  #attr_accessible :name
   validates :name, presence: true
     # uniqueness: { scope: :parent } FIXME deal with root with owner
 

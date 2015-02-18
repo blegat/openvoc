@@ -1,12 +1,12 @@
-require 'spec_helper'
+require 'rails_helper'
 
-describe TrainsHelper do
+RSpec.describe TrainsHelper, type: :helper do
   describe "percentage" do
     describe "int" do
-      it { percentage(1, 5).should == "20.00%" }
+      it { expect(percentage(1, 5)).to eq "20.00%" }
     end
     describe "float" do
-      it { percentage(1, 3).should == "33.33%" }
+      it { expect(percentage(1, 3)).to eq "33.33%" }
     end
   end
 end

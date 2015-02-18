@@ -16,7 +16,7 @@
 ### END LICENSE
 
 class User < ActiveRecord::Base
-  attr_accessible :name, :email
+  #attr_accessible :name, :email
 
   validates :email, presence: true,
     format: { with: Registration::VALID_EMAIL_REGEX },

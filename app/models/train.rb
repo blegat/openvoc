@@ -16,7 +16,7 @@
 ### END LICENSE
 
 class Train < ActiveRecord::Base
-  attr_accessible :success, :guess
+  #attr_accessible :success, :guess
 
   # guess = nil means give up. '' means no guess.
   # So no validates presence: true.

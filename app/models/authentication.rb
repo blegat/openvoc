@@ -16,7 +16,7 @@
 ### END LICENSE
 
 class Authentication < ActiveRecord::Base
-  attr_accessible :provider, :uid, :user_id
+  #attr_accessible :provider, :uid, :user_id
 
   belongs_to :user
   validates :user_id, presence: true

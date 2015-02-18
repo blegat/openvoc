@@ -15,9 +15,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ### END LICENSE
 
-require 'spec_helper'
+require 'rails_helper'
 
-describe "Languages" do
+RSpec.describe "Languages", type: :request do
   subject { page }
   # without '!', let is lazy, it does not do its job until
   # language is used
@@ -41,7 +41,7 @@ describe "Languages" do
         href: new_language_word_path(language) }
       it { should have_link w1.content,
         href: word_path(w1) }
-      it { should have_content(w2.content),
+      it { should have_link w2.content,
         href: word_path(w2) }
       it { should have_content(language.words.count) }
     end

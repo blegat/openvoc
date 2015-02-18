@@ -15,9 +15,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ### END LICENSE
 
-require 'spec_helper'
+require 'rails_helper'
 
-describe Train do
+RSpec.describe Train, type: :model do
 
   let(:word) { FactoryGirl.create(:word) }
   let(:user) { FactoryGirl.create(:user) }
@@ -33,18 +33,6 @@ describe Train do
   it { should respond_to(:success) }
   its(:word) { should == word }
   its(:user) { should == user }
-  describe "accessible attributes" do
-    it "should not allow access to word_id" do
-      expect do
-        Train.new(guess:"test", word_id: word.id)
-      end.to raise_error(ActiveModel::MassAssignmentSecurity::Error)
-    end
-    it "should not allow access to user_id" do
-      expect do
-        Train.new(guess:"test", user_id: user.id)
-      end.to raise_error(ActiveModel::MassAssignmentSecurity::Error)
-    end
-  end
 
   describe "when word is not present" do
     before { @train.word = nil }

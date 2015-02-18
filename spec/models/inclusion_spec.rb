@@ -15,9 +15,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ### END LICENSE
 
-require 'spec_helper'
+require 'rails_helper'
 
-describe Inclusion do
+RSpec.describe Inclusion, type: :model do
 
   let(:word) { FactoryGirl.create(:word) }
   let(:author) { FactoryGirl.create(:user) }
@@ -35,23 +35,6 @@ describe Inclusion do
   its(:word) { should == word }
   its(:author) { should == author }
   its(:list) { should == list }
-  describe "accessible attributes" do
-    it "should not allow access to word_id" do
-      expect do
-        Inclusion.new(word_id: word.id)
-      end.to raise_error(ActiveModel::MassAssignmentSecurity::Error)
-    end
-    it "should not allow access to author_id" do
-      expect do
-        Inclusion.new(author_id: author.id)
-      end.to raise_error(ActiveModel::MassAssignmentSecurity::Error)
-    end
-    it "should not allow access to list_id" do
-      expect do
-        Inclusion.new(list_id: list.id)
-      end.to raise_error(ActiveModel::MassAssignmentSecurity::Error)
-    end
-  end
 
   describe "when word is not present" do
     before { @incl.word = nil }

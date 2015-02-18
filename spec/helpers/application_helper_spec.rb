@@ -15,21 +15,21 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ### END LICENSE
 
-require 'spec_helper'
+require 'rails_helper'
 
-describe ApplicationHelper do
+RSpec.describe ApplicationHelper, type: :helper do
 
 	describe "full_title" do
 		it "should include the page title" do
-			full_title("foo").should =~ /foo/
+			expect(full_title("foo")).to match /foo/
 		end
 
 		it "should include the base title" do
-			full_title("foo").should =~ /^Openvoc/
+			expect(full_title("foo")).to match /^Openvoc/
 		end
 
 		it "should not include a bar for the home page" do
-			full_title("").should_not =~ /-/
+			expect(full_title("")).not_to match /-/
 		end
 	end
 end

@@ -15,9 +15,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ### END LICENSE
 
-require 'spec_helper'
+require 'rails_helper'
 
-describe Link do
+RSpec.describe Link, type: :model do
 
   let!(:word1) { FactoryGirl.create(:word) }
   let!(:word2) { FactoryGirl.create(:word) }
@@ -29,21 +29,8 @@ describe Link do
   it { should respond_to(:word1) }
   it { should respond_to(:word2) }
   it { should be_valid }
-  it { word1.should == @link.word1 }
-  it { word2.should == @link.word2 }
-
-  describe "accessible attributes" do
-    it "should not allow access to language_id" do
-      expect do
-        Link.new(word1_id: word1)
-      end.to raise_error(ActiveModel::MassAssignmentSecurity::Error)
-    end
-    it "should not allow access to owner_id" do
-      expect do
-        Link.new(word2_id: word2)
-      end.to raise_error(ActiveModel::MassAssignmentSecurity::Error)
-    end
-  end
+  it { expect(word1).to eq @link.word1 }
+  it { expect(word2).to eq @link.word2 }
 
   describe "when there is no word1" do
     before { @link.word1 = nil }
@@ -66,11 +53,11 @@ describe Link do
       @link.save
       #@link_dup.save
     end
-    it { @link_dup.should_not be_valid }
+    it { expect(@link_dup).not_to be_valid }
   end
   describe "when it is a reverse duplicate" do
     let (:rlink) { FactoryGirl.build(:link, word1: word2, word2: word1) }
-    it { rlink.should be_valid }
+    it { expect(rlink).to be_valid }
   end
 
 end

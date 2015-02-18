@@ -15,15 +15,15 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ### END LICENSE
 
-require 'spec_helper'
+require 'rails_helper'
 
-describe "Static pages" do
+RSpec.describe "Static pages", type: :request do
 
 	subject { page }
 
 	shared_examples_for "all static pages" do
 		it { should have_selector('h1',    text: heading) }
-		it { should have_selector('title', text: full_title(page_title)) }
+		it { should have_title(full_title(page_title)) }
 	end
 
     describe "Home page" do
@@ -32,7 +32,7 @@ describe "Static pages" do
       let(:page_title) { '' }
 
       it_should_behave_like "all static pages"
-      it { should_not have_selector 'title', text: '| Home' }
+      it { should_not have_title('| Home') }
     end
 
 	describe "Contact page" do
@@ -46,8 +46,8 @@ describe "Static pages" do
 	it "should have the right links on the layout" do
 		visit root_path
 		click_link "Contact"
-		page.should have_selector 'title', text: full_title('Contact')
-		click_link "Openvoc"
-		page.should have_selector 'title', text: full_title('')
+		expect(page).to have_title(full_title('Contact'))
+		first(:link, "Openvoc").click
+		expect(page).to have_title(full_title(''))
 	end
 end

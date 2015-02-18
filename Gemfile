@@ -44,7 +44,6 @@ end
 
 # To ease Transition Rails 3 -> Rails 4
 # see http://railscasts.com/episodes/415-upgrading-to-rails-4?view=asciicast
-gem 'protected_attributes'
 gem 'rails-observers'
 gem 'actionpack-page_caching'
 gem 'actionpack-action_caching'
