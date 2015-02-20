@@ -16,6 +16,8 @@
 ### END LICENSE
 
 Rails.application.routes.draw do
+  resources :meanings
+
   resources :authentications, only: [:index, :create, :destroy]
   resources :registrations, only: [:new, :create, :edit, :update, :destroy]
 

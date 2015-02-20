@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20130822154326) do
+ActiveRecord::Schema.define(version: 20150219143426) do
 
   create_table "authentications", force: true do |t|
     t.integer  "user_id"
@@ -40,15 +40,15 @@ ActiveRecord::Schema.define(version: 20130822154326) do
   add_index "languages", ["name"], name: "index_languages_on_name", unique: true
 
   create_table "links", force: true do |t|
-    t.integer  "word1_id"
-    t.integer  "word2_id"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "owner_id"
+    t.integer  "word_id"
+    t.integer  "meaning_id"
   end
 
-  add_index "links", ["word1_id"], name: "index_links_on_word1_id"
-  add_index "links", ["word2_id"], name: "index_links_on_word2_id"
+  add_index "links", ["meaning_id"], name: "index_links_on_meaning_id"
+  add_index "links", ["word_id"], name: "index_links_on_word_id"
 
   create_table "lists", force: true do |t|
     t.string   "name"
@@ -60,6 +60,11 @@ ActiveRecord::Schema.define(version: 20130822154326) do
 
   add_index "lists", ["owner_id"], name: "index_lists_on_owner_id"
   add_index "lists", ["parent_id"], name: "index_lists_on_parent_id"
+
+  create_table "meanings", force: true do |t|
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "registrations", force: true do |t|
     t.string   "email"
@@ -97,7 +102,6 @@ ActiveRecord::Schema.define(version: 20130822154326) do
     t.integer  "language_id"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "link_id"
     t.integer  "owner_id"
   end
 

@@ -17,6 +17,7 @@ gem 'algorithms'
 
 
 group :development, :test do
+  gem 'byebug'
   gem 'railroady'
   gem 'sqlite3'
   gem 'rspec-rails', '3.2.0'

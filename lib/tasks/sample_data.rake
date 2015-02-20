@@ -86,11 +86,18 @@ def make_links
   99.times do |n|
     latin_word_id = latin_words[rand(0..98)]
     random_word_id = random_words[rand(0..98)]
-    link = Link.new
-    link.word1 = latin_word_id
-    link.word2 = random_word_id
-    link.owner = User.random
-    link.save # it could fail for same word1, word2
+    link1 = Link.new
+    link2 = Link.new
+    meaning = Meaning.create
+    link1.word = latin_word_id
+    link2.word = random_word_id
+    link1.meaning = meaning
+    link2.meaning = meaning
+    owner = User.random
+    link1.owner = owner
+    link2.owner = owner
+    link1.save
+    link2.save
   end
 end
 

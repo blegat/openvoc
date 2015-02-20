@@ -32,9 +32,13 @@ module ApplicationHelper
     end
   end
 
-  def flash_errors(object)
+  def flash_errors(object, now = true)
     unless object.errors.empty?
-      flash.now[:danger] = object.errors.full_messages.to_sentence
+      if now
+        flash.now[:danger] = object.errors.full_messages.to_sentence
+      else
+        flash[:danger] = object.errors.full_messages.to_sentence
+      end
     end
   end
 

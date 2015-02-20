@@ -31,10 +31,15 @@ class Word < ActiveRecord::Base
   has_many :lists, dependent: :destroy, through: :inclusions
 
   belongs_to :language
-  has_many :links1, class_name: "Link", dependent: :destroy, foreign_key: "word1_id"
-  has_many :links2, class_name: "Link", dependent: :destroy, foreign_key: "word2_id"
+  has_many :links, class_name: "Link", dependent: :destroy, foreign_key: "word_id"
 
-  has_many :translations, through: :links1, source: :word2
+  has_many :meanings, through: :links, source: :meaning
+
+  def common_meanings(other_word)
+    # TODO use INTERSECT with to_sql
+    # Meaning.find_by_sql(word.meanings.to_sql + " INTERSECT " other_word.meanings.to_sql)
+    self.meanings & other_word.meanings
+  end
 
   # if need has_many inclusions
   # need to add index for :word_id in table
@@ -86,4 +91,3 @@ end
 #  index_words_on_language_id  (language_id)
 #  index_words_on_content      (content)
 #
-

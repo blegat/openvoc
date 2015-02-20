@@ -1,0 +1,12 @@
+<% provide(:title, "Meaning") %>
+<h1>Meaning <%= @meaning.id %></h1>
+<% if @meaning.words.empty? %>
+<p>ERROR, no words, this meaning should be automatically destroyed, please warn us on Github of this bug</p>
+<% else %>
+<p>Words that have this meaning:</p>
+<% @meaning.links.each do |link| %>
+<ul>
+  <li><%= link_to link.word.content, link_path(link) %></li>
+</ul>
+<% end %>
+<% end %>

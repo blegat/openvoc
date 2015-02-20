@@ -9,20 +9,20 @@
 </h2>
 <div class="row">
   <div class="col-md-3">
-    <h3>Links</h3>
+    <h3>Meanings</h3>
     <div class="well">
       <ul class="navbar nav-list">
         <li <%= 'class="active"'.html_safe unless @link %>><%= link_to new_word_link_path(@word) do %>
-          <i class="glyphicon-magnet <%= "icon_white" unless @link %>"></i>
+          <i class="glyphicon-magnet <%= "glyphicon_white" unless @link %>"></i>
           New link
         <% end %>
         </li>
-        <% @word.links1.each do |l| %>
+        <% @word.links.each do |l| %>
           <% unless l.id.nil? %> <!-- not registered -->
             <li <%= 'class="active"'.html_safe if @link == l %>>
             <%= link_to link_path(l) do %>
-              <i class="glyphicon-edit <%= "icon_white" unless @link %>"></i>
-              <%= l.word2.content %>
+              <i class="glyphicon-edit <%= "glyphicon_white" unless @link %>"></i>
+              <%= l.meaning.id %>
             <% end %>
           <% end %>
           </li>
@@ -50,7 +50,7 @@
           <h4>Created by <%= @link.owner.name %></h4>
           <p>
           <i class="glyphicon-magnet"></i>
-          <%= link_to @link.word2.content, word_path(@link.word2) %>
+          <%= link_to @link.meaning.id, meaning_path(@link.meaning) %>
           <% if @link.owner == current_user %>
             <%= link_to "", link_path(@link), method: :delete, class: "glyphicon-remove" %>
           <% end %>
