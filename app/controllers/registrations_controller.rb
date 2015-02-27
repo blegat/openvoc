@@ -31,6 +31,7 @@ class RegistrationsController < ApplicationController
     end
     # FIXME prefill with name
   end
+  
   def create
     #@registration = Registration.from_hash(params[:registration])
     if signed_in?
@@ -46,7 +47,7 @@ class RegistrationsController < ApplicationController
       # Need to first verify if the registration is valid.
       # It is weird to show that the user is not valid
       # while the registration is not even valid yet.
-      @registration = Registration.new(params[:registration])
+      @registration = Registration.new(registration_params)
       @registration.skip_user_validation = true
       unless @registration.save
         flash_errors(@registration)
@@ -77,6 +78,7 @@ class RegistrationsController < ApplicationController
       end
     end
   end
+  
   def edit
     render_edit
   end
@@ -128,4 +130,10 @@ class RegistrationsController < ApplicationController
       redirect_to root_path
     end
   end
+  
+  private
+    def registration_params
+      params.require(:registration).permit(:name,  :email, :password, :password_confirmation)
+    end
+  
 end

@@ -1,20 +1,22 @@
 <% provide(:title, "Register") %>
 
-<%= bootstrap_form_for @registration, url: registrations_path do |f| %>
-  <div class="form-group">
-    <% unless signed_in? %>
-      <%= label_tag :name %>
-      <%= text_field_tag :name %>
+
+<div class="row">
+  <div class="col-md-6 col-md-offset-3">
+	  <%= form_for @registration do |f| %>
+	    <%= label_tag :name %>
+		<input type="text" class="form-control">
+		
+	    <%= f.label :email %>
+	    <%= f.text_field :email, class: 'form-control' %>
+
+	    <%= f.label :password %>
+	    <%= f.password_field :password, class: 'form-control' %>
+
+	    <%= f.label :password_confirmation, "Confirm password" %>
+	    <%= f.password_field :password_confirmation, class: 'form-control' %>
+	    <br />
+	    <%= f.submit 'Register', class: "btn btn-default btn-lg btn-primary" %>
     <% end %>
-    <%= f.label :email %>
-    <%= f.text_field :email %>
-
-    <%= f.label :password %>
-    <%= f.password_field :password %>
-
-    <%= f.label :password_confirmation, "Confirm password" %>
-    <%= f.password_field :password_confirmation %>
-    <br />
-    <%= f.submit 'Register', class: "btn btn-default btn-lg btn-primary" %>
   </div>
-<% end %>
+</div>
