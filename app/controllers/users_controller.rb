@@ -21,6 +21,7 @@ class UsersController < ApplicationController
 
   def new
   end
+  
   def create
     # When there is a missing name in an omniauth,
     # users/new is called and here we are
@@ -58,12 +59,15 @@ class UsersController < ApplicationController
     end
     render :new
   end
+  
   def show
   end
+  
   def edit
     @users_edit = true
     render layout: 'settings'
   end
+  
   def update
     @user.name = params[:user][:name]
     @user.email = params[:user][:email]
@@ -84,6 +88,7 @@ class UsersController < ApplicationController
       redirect_to root_path
     end
   end
+  
   def allowed_user
     unless current_user?(@user)
       redirect_to root_path
