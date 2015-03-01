@@ -1,5 +1,12 @@
 V1
-obvious
+* créer WordSet (lien entre des mots au sein d'une même liste) 
+  (presque équivalent à l'ancien "Link")                       DONE
+* mettre à jour la vue des listes (views->list->show), 
+  pour que la liste de mots s'affiche clairement (sur base des WordSet" de la liste)
+* mettre à jour le feed automatique de la db de manière à ce que
+  les champs "language1_id" et "language2_id" aient une valeur par défaut
+* à déterminer...
+
 V2
 add failed word in train (also if "marked as accepted" ?)
 ajouter un tableau rentré sur le site

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150219143426) do
+ActiveRecord::Schema.define(version: 20150301123530) do
 
   create_table "authentications", force: true do |t|
     t.integer  "user_id"
@@ -56,6 +56,8 @@ ActiveRecord::Schema.define(version: 20150219143426) do
     t.integer  "owner_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "language1_id"
+    t.integer  "language2_id"
   end
 
   add_index "lists", ["owner_id"], name: "index_lists_on_owner_id"
@@ -96,6 +98,20 @@ ActiveRecord::Schema.define(version: 20150219143426) do
 
   add_index "users", ["email"], name: "index_users_on_email", unique: true
   add_index "users", ["remember_token"], name: "index_users_on_remember_token"
+
+  create_table "word_sets", force: true do |t|
+    t.integer  "word1_id"
+    t.integer  "word2_id"
+    t.integer  "meaning1_id"
+    t.integer  "meaning2_id"
+    t.integer  "user_id"
+    t.integer  "list_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "word_sets", ["list_id"], name: "index_word_sets_on_list_id"
+  add_index "word_sets", ["user_id"], name: "index_word_sets_on_user_id"
 
   create_table "words", force: true do |t|
     t.string   "content"

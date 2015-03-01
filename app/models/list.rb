@@ -35,6 +35,7 @@ class List < ActiveRecord::Base
   #(i.e. passing the tests)
   has_many :words, through: :inclusions
   has_many :inclusions, dependent: :destroy
+  has_many :wordsets, foreign_key: :list_id, class_name: "WordSet"
 
   validate :parent_of_same_owner
 
