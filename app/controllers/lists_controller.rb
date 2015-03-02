@@ -38,6 +38,10 @@ class ListsController < ApplicationController
     @path = @list.path
     @lists = @list.childs
     @words = get_words(@list)
+    @wordsets = get_wordsets(@list)
+    @language1_name = Language.find_by(id:@list.language1_id).name
+    @language2_name = Language.find_by(id:@list.language2_id).name
+    
   end
   def moving
     @moving = true
@@ -128,6 +132,13 @@ class ListsController < ApplicationController
       nil
     else
       list.words.order(:content).paginate(page: params[:page])
+    end
+  end
+  def get_wordsets(list)
+    if list.nil?
+      nil
+    else
+      list.wordsets#.paginate(page: params[:page])
     end
   end
 end

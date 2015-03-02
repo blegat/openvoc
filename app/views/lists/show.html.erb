@@ -3,7 +3,7 @@
 
 
 <div class="row">
-  <div class="col-md-6">
+  <div class="col-md-12">
     <div class="btn-group">
       <a class="btn btn-default dropdown-toggle" data-toggle="dropdown" href="#">
         Action <i class="glyphicon-cog"></i>
@@ -42,7 +42,7 @@
           <%= f.collection_select("list_id", current_user.lists_outside(@list), :id, :path) %>
         <% else %>
           <%= f.collection_select("list_id", current_user.lists_outside(@list), :id, :path, prompt: "/") %>
-      <% end %>
+        <% end %>
         <br />
         <%= f.submit "Move", class: "btn btn-default" %>
       <% end %>
@@ -71,21 +71,27 @@
 	
     <% unless @list.nil? %>
       <h2>Words</h2>
-      <% if @words.empty? %>
+      <% if @wordsets.empty? %>
         <p>No word.</p>
-      <% else %>
-        <%= will_paginate @words %>
-        <ul>
-          <% @words.each do |word| %>
-            <li>
-            <%= link_to word.content, word %>
-            <% if @list.owner == current_user %>
-              <%= link_to "", list_word_path(@list, word), method: :delete, class: "glyphicon-remove" %>
-            <% end %>
-            </li>
-          <% end %>
-        </ul>
-        <%= will_paginate @words %>
+      <% else %> 
+		<section class="col-md-12 table-responsive">
+		  <table class="table table-bordered table-striped table-condensed">
+		    <thead>
+			  <tr>
+			    <th><%= @language1_name %></th>
+			    <th><%= @language2_name %></th>
+			  </tr>
+			</thead>
+		    <tbody>
+	          <tr>
+		        <% @wordsets.each do |w| %>
+		        	<td><%= Word.find_by(id:w.word1_id).content %></td>
+		        	<td><%= Word.find_by(id:w.word2_id).content %></td>
+				<% end %>
+		      </tr>
+		    </tbody>
+		  </table>
+	    </section>
       <% end %>
 
       <h2>Training</h2>
