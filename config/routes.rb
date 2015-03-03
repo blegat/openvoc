@@ -17,7 +17,9 @@
 
 Rails.application.routes.draw do
   resources :meanings
-
+  
+  resources :wordsets, controller: :word_sets
+  
   resources :authentications, only: [:index, :create, :destroy]
   resources :registrations, only: [:new, :create, :edit, :update, :destroy]
 
@@ -39,7 +41,7 @@ Rails.application.routes.draw do
   get "/signout", to: "sessions#destroy", as: :signout
   resources :sessions, only: [:new, :create]
   resources :users, only: [:update, :edit, :new, :show, :create]
-  resources :lists, only: [:new, :create, :index, :show] do
+  resources :lists, only: [:new, :create, :index, :show, :edit] do
     get "/export" => "lists#export", as: :export
     get "/moving" => "lists#moving", as: :moving
     get "/move" => "lists#move", as: :move
@@ -47,7 +49,7 @@ Rails.application.routes.draw do
     resources :trains, only: [:new, :create] do
       get "/toggle_success" => "trains#toggle_success", as: :toggle_success
     end
-    resources :lists, only: [:new, :create]
+    resources :lists, only: [:new, :create, :edit]
     resources :words, only: [:destroy]
   end
 end

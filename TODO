@@ -1,11 +1,18 @@
 V1
-* créer WordSet (lien entre des mots au sein d'une même liste) 
-  (presque équivalent à l'ancien "Link")                       DONE
-* mettre à jour la vue des listes (views->list->show), 
-  pour que la liste de mots s'affiche clairement (sur base des WordSet de la liste) DONE
-* mettre à jour le feed automatique de la db de manière à ce que
-  les champs "language1_id" et "language2_id" aient une valeur par défaut
-* à déterminer...
+* OK créer WordSet (lien entre des mots au sein d'une même liste) 
+     (presque équivalent à l'ancien "Link")
+* OK mettre à jour la vue des listes (views->list->show), 
+     pour que la liste de mots s'affiche clairement (sur base des WordSet de la liste)
+* OK permettre de modifier la liste en ajoutant 
+     directement des mots (du type "word1=word2")
+     + créer les mots dans la db
+     + créer les meanings dans la db
+*    mettre à jour le feed automatique de la db de manière à ce que
+     les champs "language1_id" et "language2_id" aient une valeur par défaut
+*    permettre de changer la langue d'une colonne de la liste
+*    permettre de faire des training (revoir view->trains->new)
+*    générer une vue intermédiaire entre "word1=word2" et l'intégration dans la liste
+     + y proposer les différents meanings
 
 V2
 add failed word in train (also if "marked as accepted" ?)
@@ -15,7 +22,7 @@ V3
 texte à trou
 drag and drop order of mode of training
 V4
-anonymous et semi anonymos (retiens pas les failed words)
+anonymous et semi anonymous (retiens pas les failed words)
 import
 notif quand new trucs à review + abonnement. Notif à n reviewer (si dans x jours, on forward)
 

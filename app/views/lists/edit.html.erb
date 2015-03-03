@@ -1,0 +1,60 @@
+<% provide(:title, 'List editing') %>
+<h1><%= @path %></h1>
+
+<div class="col-md-12">
+    <% unless @list.nil? %>
+      <% if @wordsets.empty? %>
+        <p>No word.</p>
+      <% else %> 
+		<section class="col-md-12 table-responsive">
+		  <table class="table table-bordered table-striped table-condensed">
+		    <thead>
+			  <tr>
+			    <th><select id="select" class="form-control">
+					<% @languages.each do |l|%>         <!--  #TODO gérer le changement de langue -->
+						<% if @list.language1_id == l.id %>
+      			  		 <option selected> <%= l.name %></option>
+						<% else%>
+     			  		 <option> <%= l.name %></option>
+						<% end %>
+      			    <% end %>
+                    </select>
+				</th>
+			    <th><select id="select" class="form-control">
+					<% @languages.each do |l|%>
+						<% if @list.language2_id == l.id %>
+      			  		 <option selected> <%= l.name %></option>
+						<% else%>
+     			  		 <option> <%= l.name %></option>
+						<% end %>
+      			    <% end %>
+                    </select>
+				</th>
+			  </tr>
+			</thead>
+		    <tbody>
+			  <% @wordsets.each do |w| %>
+	            <tr>
+		        	<td><%= Word.find_by(id:w.word1_id).content %></td>
+		        	<td><%= Word.find_by(id:w.word2_id).content %></td>
+		        </tr>
+			  <% end %>
+		    </tbody>
+		  </table>
+	    </section>
+      <% end %>
+	  
+	  
+	  <%= render 'word_sets/new' %>
+	  
+	<% end %>
+</div>
+</br>
+</br>
+</br>
+</br>
+</br>
+</br>
+</br>
+</br>
+</br>

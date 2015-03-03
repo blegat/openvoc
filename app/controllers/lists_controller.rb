@@ -1,6 +1,6 @@
 class ListsController < ApplicationController
   before_filter :signed_in_user
-  before_filter :list_exists1, only: [:show]
+  before_filter :list_exists1, only: [:show, :edit]
   before_filter :list_exists2, only: [:moving, :move, :export]
   def new
     @list = List.find_by_id(params[:list_id])
@@ -40,9 +40,17 @@ class ListsController < ApplicationController
     @words = get_words(@list)
     @wordsets = get_wordsets(@list)
     @language1_name = Language.find_by(id:@list.language1_id).name
-    @language2_name = Language.find_by(id:@list.language2_id).name
-    
+    @language2_name = Language.find_by(id:@list.language2_id).name    
   end
+  
+  def edit
+    @path = @list.path
+    @wordsets = get_wordsets(@list)
+    @language1_name = Language.find_by(id:@list.language1_id).name
+    @language2_name = Language.find_by(id:@list.language2_id).name
+    @languages = Language.all    
+  end
+  
   def moving
     @moving = true
     @path = @list.path
