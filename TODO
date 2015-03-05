@@ -5,14 +5,19 @@ V1
      pour que la liste de mots s'affiche clairement (sur base des WordSet de la liste)
 * OK permettre de modifier la liste en ajoutant 
      directement des mots (du type "word1=word2")
-     + créer les mots dans la db
-     + créer les meanings dans la db
-*    mettre à jour le feed automatique de la db de manière à ce que
-     les champs "language1_id" et "language2_id" aient une valeur par défaut
-*    permettre de changer la langue d'une colonne de la liste
+  OK + créer les mots dans la db
+  OK + créer les meanings dans la db
+*    prendre en compte le cas où un des mots a déjà un meaning
 *    permettre de faire des training (revoir view->trains->new)
 *    générer une vue intermédiaire entre "word1=word2" et l'intégration dans la liste
      + y proposer les différents meanings
+
+OPTIONALS
+---------
+*    mettre à jour le feed automatique de la db de manière à ce que
+     les champs "language1_id" et "language2_id" aient une valeur par défaut
+*    permettre de changer la langue d'une colonne de la liste
+
 
 V2
 add failed word in train (also if "marked as accepted" ?)

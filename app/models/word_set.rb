@@ -6,8 +6,8 @@ class WordSet < ActiveRecord::Base
   #validates :list_id, presence: true
   validates :word1_id, presence: true
   validates :word2_id, presence: true
-  validates :meaning1_id, presence: true
-  validates :meaning2_id, presence: true
+  #validates :meaning1_id, presence: true
+  #validates :meaning2_id, presence: true
   
   
 end
