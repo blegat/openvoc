@@ -34,15 +34,29 @@
 			</thead>
 		    <tbody>
 			  <% @wordsets.each do |w| %>
-	            <tr>
-		        	<td><%= Word.find_by(id:w.word1_id).content %></td>
-		        	<td><%= Word.find_by(id:w.word2_id).content %></td>
-		        </tr>
+			  	<% if w.meaning1_id && w.meaning2_id %>
+	            	<tr>
+		        		<td><%= Word.find_by(id:w.word1_id).content %></td>
+		        		<td><%= Word.find_by(id:w.word2_id).content %></td>
+		        	</tr>
+			    <% else @wordsWithoutMeaning = true end%>
 			  <% end %>
 		    </tbody>
 		  </table>
 	    </section>
       <% end %>
+	  
+	  
+	  <% if @wordsWithoutMeaning %>
+	  	Please associate a meaning to the following words:
+	  	<% @wordsets.each do |w| %>
+	  		<% if !w.meaning1_id && !w.meaning2_id %>
+			 	<%= render 'meanings/new', word1:Word.find_by(id:w.word1_id), 					word2:Word.find_by(id:w.word2_id) %>
+			    </br>
+          	<% end %>
+	  	<% end %>
+		
+	  <% end%>
 	  
 	  
 	  <%= render 'word_sets/new' %>

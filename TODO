@@ -11,6 +11,7 @@ V1
 *    permettre de faire des training (revoir view->trains->new)
 *    générer une vue intermédiaire entre "word1=word2" et l'intégration dans la liste
      + y proposer les différents meanings
+*    créer un champs "confidence" pour les links
 
 OPTIONALS
 ---------

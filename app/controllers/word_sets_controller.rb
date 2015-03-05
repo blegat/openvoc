@@ -9,7 +9,7 @@ class WordSetsController < ApplicationController
   def create
     @dataToAdd = params[:wordset][:data_to_add].split("\n")
     @list = List.find_by(id:params[:wordset][:list_id])
-    puts @dataToAdd[0]
+
     
     
     @dataToAdd.each do |dta|
@@ -18,8 +18,8 @@ class WordSetsController < ApplicationController
       @language1 = Language.find(@list.language1_id)
       @language1 = Language.find(@list.language2_id)
       
-      @word1 = Word.find_by(content:@newWords[0])
-      @word2 = Word.find_by(content:@newWords[1])
+      @word1 = Word.find_by(content:@newWords[0], language_id:@list.language1_id)
+      @word2 = Word.find_by(content:@newWords[1], language_id:@list.language2_id)
       if !@word1
         @word1 = Word.new(content:@newWords[0], language_id:@list.language1_id)
         @word1.owner = current_user
@@ -42,13 +42,13 @@ class WordSetsController < ApplicationController
       @newWordSet = WordSet.new(word1_id: @word1.id, word2_id: @word2.id, list_id:@list.id)
       @newWordSet.user = current_user
       
+      @common_meanings = @word1.common_meanings(@word2)
       
       if !@word1.has_meaning? && !@word2.has_meaning?
         @newMeaning = Meaning.create()
         [@word1, @word2].each do |word|
           unless @newMeaning.words.include?(word)
             @link = @newMeaning.links.create(word:word, owner: current_user)
-            puts 'ICIIII'
             if !@link.save
               flash_errors(@link, false)
               redirect_to edit_list_url(@list)
@@ -58,7 +58,14 @@ class WordSetsController < ApplicationController
         end
         @newWordSet.meaning1_id = @newMeaning.id
         @newWordSet.meaning2_id = @newMeaning.id
+      
+      elsif  @common_meanings.length==1
+        @newWordSet.meaning1_id = @common_meanings[0].id
+        @newWordSet.meaning2_id = @common_meanings[0].id
       end
+      
+      
+
       
       
       

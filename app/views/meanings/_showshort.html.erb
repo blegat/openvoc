@@ -1,0 +1,21 @@
+<!-- Params:
+     * meaning
+     * withoutWord : word
+     * language
+               -->
+<% if meaning.words.empty? %>
+ERROR, no words are associated to this meaning. This meaning should be automatically destroyed, please warn us on Github of this bug
+<% else %>
+	<% first = true %>
+	<% meaning.links.each do |link| %>
+		<% if link.word != withoutWord %>
+		 	<% if link.word.language == language %>
+				<% if !first %>
+					,
+				<% else first = false %>
+				<% end%>
+  				<%= link_to link.word.content, link_path(link) %> (<%= link.word.language.name %>)
+			<% end %>
+		<% end %>
+	<% end %>
+<% end %>

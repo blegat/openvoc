@@ -75,6 +75,21 @@ class Word < ActiveRecord::Base
       trains.where(user_id: user.id).count
     end
   end
+  
+  def has_common_meaning(other_meanings = nil)
+    @common_meanings = []
+
+    self.meanings.each do |m|
+      @actual_meaning = true
+      other_meanings.each do |m2|
+        if (m.id == m2.id) && @actual_meaning
+          @common_meanings << m.id
+          @actual_meaning = false
+        end
+      end
+    end
+    @common_meanings
+  end
 
 end
 # == Schema Information
