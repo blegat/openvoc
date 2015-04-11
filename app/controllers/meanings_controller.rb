@@ -6,12 +6,12 @@ class MeaningsController < ApplicationController
     if @list.nil?
       redirect_to new_link_path and return true
     else
-      redirect_to @list and return true
+      redirect_to edit_list_url(@list) and return true
     end
   end
 
   def create
-    choice = params[:meaning][:meaning]
+    choice = params[:meaning][:action]
     if choice == "donothing"
       redirect_appropriately and return
     end
@@ -21,31 +21,38 @@ class MeaningsController < ApplicationController
       redirect_to root_path and return
     end
 
+
     if choice == "new"
-      meaning = Meaning.create!
+      newmeaning = Meaning.create!
     else
-      meaning.find_by_id(params[:meaning][:meaning].to_i)
-      if meaning.nil?
+      newmeaning = Meaning.find_by(id:eval(params[:meaning][:action]).to_i)
+      if newmeaning.nil?
+        flash[:error] = "An error occured"
         redirect_to root_path and return
       end
     end
     [@word1, @word2].each do |word|
-      unless meaning.words.include?(word)
-        link = meaning.links.create(word:word, owner: current_user)
+      unless newmeaning.words.include?(word)
+        link = newmeaning.links.create(word:word, owner: current_user)
         if link.save
-          flash[:success] = "New link from
-          #{view_context.link_to(word.content,
-          word_path(word))}
-          to
-          #{view_context.link_to(meaning.id,
-          meaning_path(meaning))}
-          created".html_safe
+          flash[:success] = "Meaning updated : TODO" 
         else
           flash_errors(link, false)
           break
         end
       end
     end
+    
+    theWS = WordSet.find_by(id:params[:meaning][:wordset_id])
+    if theWS
+      theWS.meaning1_id = newmeaning.id
+      theWS.meaning2_id = newmeaning.id
+      if not theWS.save
+        flash[:error] = "Error while save the WordSet"
+      end
+    else
+    end
+    
     redirect_appropriately and return
   end
 

@@ -37,7 +37,6 @@ class LinksController < ApplicationController
   def create
     @word1 = Word.find_by_id(params[:word_id])
     if @word1
-
       @word1_content = @word1.content
     else
       @word1_content = params[:link][:word1] # used by links/new.html.erb

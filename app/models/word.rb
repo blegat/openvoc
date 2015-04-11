@@ -35,6 +35,10 @@ class Word < ActiveRecord::Base
 
   has_many :meanings, through: :links, source: :meaning
 
+  def has_meaning?
+    return self.meanings.any?
+  end
+  
   def common_meanings(other_word)
     # TODO use INTERSECT with to_sql
     # Meaning.find_by_sql(word.meanings.to_sql + " INTERSECT " other_word.meanings.to_sql)
@@ -70,6 +74,21 @@ class Word < ActiveRecord::Base
     else
       trains.where(user_id: user.id).count
     end
+  end
+  
+  def has_common_meaning(other_meanings = nil)
+    @common_meanings = []
+
+    self.meanings.each do |m|
+      @actual_meaning = true
+      other_meanings.each do |m2|
+        if (m.id == m2.id) && @actual_meaning
+          @common_meanings << m.id
+          @actual_meaning = false
+        end
+      end
+    end
+    @common_meanings
   end
 
 end

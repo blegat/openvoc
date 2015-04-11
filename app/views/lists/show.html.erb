@@ -51,6 +51,18 @@
       <%= form_for @new_list, url: path_to_create_list(@list) do |f| %>
         <%= f.label :name %>
         <%= f.text_field :name %>
+		<%= f.label :language_1 %>
+		<select name="language1_id" id="language1_id">
+			<% Language.all.each do |l|%>
+	  		 	<option value=<%=l.id%>> <%= l.name %></option>
+	    	<% end %>
+		</select>
+		<%= f.label :language_2 %>
+		<select name="language2_id" id="language2_id">
+			<% Language.all.each do |l|%>
+	  		 	<option value=<%=l.id%>> <%= l.name %></option>
+	    	<% end %>
+		</select>
         <br />
         <%= f.submit "Create list here", class: "btn btn-default" %>
       <% end %>
@@ -83,55 +95,21 @@
 			  </tr>
 			</thead>
 		    <tbody>
-	          <tr>
-		        <% @wordsets.each do |w| %>
+		      <% @wordsets.each do |w| %>
+  	            <tr>
 		        	<td><%= Word.find_by(id:w.word1_id).content %></td>
 		        	<td><%= Word.find_by(id:w.word2_id).content %></td>
-				<% end %>
-		      </tr>
+	  		    </tr>	
+		      <% end %>
 		    </tbody>
 		  </table>
 	    </section>
       <% end %>
-
-      <h2>Training</h2>
-      <%= form_for(:train, url: list_training_path(@list)) do |f| %>
-        <fieldset>
-          <legend>Filter</legend>
-          <span class="help-block">
-            By default, all the words can be asked.
-            Here is filters you can apply.
-            If you have an idea for another filter, please
-            <%= link_to_bug_tracker 'let us know' %>.
-          </span>
-          <%= f.label :max, "Maximum success rate" %>
-          <%= f.number_field :max, value: 100 %>
-          <span class="help-block">
-            A word with a success rate higher than this
-            won't be asked.
-            This is the average success rate of every user.
-          </span>
-          <%= f.label :rec do %>
-            <%= f.check_box :rec %>
-            pick words from sublists too
-          <% end %>
-        </fieldset>
-        <fieldset>
-          <legend>Priority</legend>
-          <span class="help-block">
-            You are first asked the words that you have never tried and that
-            have a success rate lower or equal than the maximum success rate.
-            Once you have tried every word or all the words you haven't
-            tried are too easy according to your filters,
-            you are asked the words you have not tried
-            for the longest time first.
-            More options will be added.
-            If you have an idea for an option, please
-            <%= link_to_bug_tracker 'let us know' %>.
-          </span>
-        </fieldset>
-        <%= f.submit "Start training", class: 'btn btn-default btn-lg btn-primary' %>
-      <% end %>
+	  
+	  
+	  <%= link_to "Edit list", edit_list_path(@list) %>
+	  
+	  #add links to "modify table" and "training"
     <% end %>
   </div>
 
