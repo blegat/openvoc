@@ -44,8 +44,9 @@ class WordSetsController < ApplicationController
       
       @common_meanings = @word1.common_meanings(@word2)
       
-      if !@word1.has_meaning? && !@word2.has_meaning?
-        @newMeaning = Meaning.create()
+      
+      if @common_meanings.length == 0 #!@word1.has_meaning? && !@word2.has_meaning?
+        @newMeaning = Meaning.create(pro:1, contra:9, confidence:0.1)
         [@word1, @word2].each do |word|
           unless @newMeaning.words.include?(word)
             @link = @newMeaning.links.create(word:word, owner: current_user)
@@ -59,7 +60,15 @@ class WordSetsController < ApplicationController
         @newWordSet.meaning1_id = @newMeaning.id
         @newWordSet.meaning2_id = @newMeaning.id
       
-      elsif  @common_meanings.length==1
+      elsif  @common_meanings.length == 1
+        @common_meanings[0].pro = @common_meanings[0].pro + 1
+        @common_meanings[0].confidence = (@common_meanings[0].pro.to_f) / (@common_meanings[0].contra.to_f + @common_meanings[0].pro.to_f)
+        
+        if !@common_meanings[0].save 
+            flash_errors(@common_meanings[0], false) 
+            redirect_to edit_list_url(@list)
+            return
+        end                
         @newWordSet.meaning1_id = @common_meanings[0].id
         @newWordSet.meaning2_id = @common_meanings[0].id
       end
@@ -90,6 +99,14 @@ class WordSetsController < ApplicationController
   end
   
   
-  def show
+
+  
+  def destroy
+    @list = List.find_by(id:params[:list_id])
+    WordSet.find(params[:id]).destroy
+    flash[:success] = "WordSet deleted"
+    redirect_to edit_list_url(@list)
   end
+  
+  
 end

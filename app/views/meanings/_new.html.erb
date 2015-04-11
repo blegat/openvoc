@@ -1,6 +1,8 @@
 <!-- Params:
 	 * word1 : Word
      * word2 : Word
+     * act_list: List
+     * ws    : Word_set
               -->
 
 <div class="row">
@@ -9,6 +11,8 @@
     <%= form_for(:meaning, url: meanings_path) do |f| %>
       <%= f.hidden_field :word1_id, value: word1.id %>
 	  <%= f.hidden_field :word2_id, value: word2.id %>
+	  <%= f.hidden_field :list_id , value: act_list.id %>
+	  <%= f.hidden_field :wordset_id, value: ws.id %>
 
       <% @common_m = word1.common_meanings(word2) %>
       <%= f.label :meaning %><br />
@@ -22,7 +26,7 @@
         <% end %>
         <div class="input-group">
           <span class="input-group-addon">
-            <%= f.radio_button :meaning, "donothing", checked: true %>
+            <%= f.radio_button :action, "donothing", checked: true %>
           </span>
           <%= f.label :meaning, "This is exactly their common meaning I wanted. No meaning to add :)", value: "donothing", class: 'form-control'  %>
         </div><!-- /input-group -->
@@ -31,7 +35,7 @@
       <% end %>
       <div class="input-group">
         <span class="input-group-addon">
-          <%= f.check_box :meaning, value: "new", checked: @new_by_default %>
+          <%= f.radio_button :action, "new", checked: @new_by_default %>
         </span>
         <%= f.label :meaning, "Create a new meaning and link both words to it", value: "new", class: 'form-control'  %>
       </div><!-- /input-group -->
@@ -50,7 +54,7 @@
             <% end %>
             <div class="input-group">
               <span class="input-group-addon">
-                <%= f.check_box :my_meaning, value:m.id %>
+                <%= f.radio_button :action, m.id %>
               </span>
 			  <% if word == word1
 			  		lang = word2.language

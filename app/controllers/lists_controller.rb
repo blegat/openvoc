@@ -15,6 +15,8 @@ class ListsController < ApplicationController
   def create
     @list = List.find_by_id(params[:list_id])
     @new_list = current_user.lists.build(name: params[:list][:name])
+    @new_list.language1_id = params["language1_id"].to_i
+    @new_list.language2_id = params["language2_id"].to_i
     if @list
       @new_list.parent = @list
     end

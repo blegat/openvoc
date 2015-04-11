@@ -38,6 +38,8 @@
 	            	<tr>
 		        		<td><%= Word.find_by(id:w.word1_id).content %></td>
 		        		<td><%= Word.find_by(id:w.word2_id).content %></td>
+						<td><%= link_to "delete", wordset_path(w, {list_id: @list.id}), controller: :word_sets, method: :delete, params: {ws_id: w.id, list_id: @list.id} %></td>
+						<% if false%><td><%= links_to "Delete list", edit_list_path(@list)%></td> <%end%>
 		        	</tr>
 			    <% else @wordsWithoutMeaning = true end%>
 			  <% end %>
@@ -51,7 +53,7 @@
 	  	Please associate a meaning to the following words:
 	  	<% @wordsets.each do |w| %>
 	  		<% if !w.meaning1_id && !w.meaning2_id %>
-			 	<%= render 'meanings/new', word1:Word.find_by(id:w.word1_id), 					word2:Word.find_by(id:w.word2_id) %>
+			 	<%= render 'meanings/new', word1:Word.find_by(id:w.word1_id), 					word2:Word.find_by(id:w.word2_id), act_list:@list, ws:w %>
 			    </br>
           	<% end %>
 	  	<% end %>
