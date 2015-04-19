@@ -8,16 +8,26 @@ V1
   OK + créer les mots dans la db
   OK + créer les meanings dans la db
 * OK créer un champs "confidence" pour les links
-*    prendre en compte le cas où un des mots a déjà un meaning
-*    permettre de faire des training (revoir view->trains->new)
+* OK prendre en compte le cas où un des mots a déjà un meaning
 * OK permettre de supprimer un WordSet
-*    permettre de créer un liste dans une autre liste
+* OK permettre de créer un liste dans une autre liste
+* OK mettre un bouton pour passer de la vue edit à show (dans une liste)
+* OK faire des training (revoir view->trains->new)
+* OK créer un train
+* OK afficher un train
+*    supprimer une liste
+*    afficher pour chaque ws les nombres : asked, succeed, succeed_ratio
+*    afficher un historique des trains
+*    dans les trains, enregistrer les erreurs/réussites
+*    durant les trains, afficher un feedback de la réponse précédente
+
 
 OPTIONALS
 ---------
 *    mettre à jour le feed automatique de la db de manière à ce que
      les champs "language1_id" et "language2_id" aient une valeur par défaut
 *    permettre de changer la langue d'une colonne de la liste
+*    permettre de faire des exports
 
 
 V2

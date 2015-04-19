@@ -1,0 +1,7 @@
+<%= form_for(@train)  do |f| %>
+  <%= f.label :max, "Max:" %>
+  <%= f.text_field :max %>
+	<%= f.hidden_field :rec, value: 0 %>
+	<%= f.hidden_field :list_id, value:@list.id %>
+  <%= f.submit "Let's train!", class: "btn btn-default" %>
+<% end %>

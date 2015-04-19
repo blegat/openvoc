@@ -21,13 +21,13 @@ class Train < ActiveRecord::Base
   # guess = nil means give up. '' means no guess.
   # So no validates presence: true.
 
-  validates :success, inclusion: { in: [true, false] }
+  validates :finished, inclusion: { in: [true, false] }
 
   belongs_to :user
   validates :user_id, presence: true
 
-  belongs_to :word
-  validates :word_id, presence: true
+  belongs_to :list
+  validates :list_id, presence: true
 
 end
 # == Schema Information

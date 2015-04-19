@@ -107,9 +107,11 @@
       <% end %>
 	  
 	  
-	  <%= link_to "Edit list", edit_list_path(@list) %>
-	  
-	  #add links to "modify table" and "training"
+	  <%= link_to "Edit list", edit_list_path(@list), class: "btn btn-default btn-lg btn-primary"  %>
+		
+    <%= render 'trains/new'%>
+		
+	  <%= link_to "Delete list", edit_list_path(@list), class: "btn btn-default btn-lg btn-primary"  %>
     <% end %>
   </div>
 

@@ -8,6 +8,7 @@ class ListsController < ApplicationController
     @path = get_path(@list)
     @lists = get_childs(@list)
     @words = get_words(@list)
+    @wordsets = get_wordsets(@list)
     @new_list = current_user.lists.build
     #@new_list.parent = @list # yet useless
     render :show
@@ -42,7 +43,8 @@ class ListsController < ApplicationController
     @words = get_words(@list)
     @wordsets = get_wordsets(@list)
     @language1_name = Language.find_by(id:@list.language1_id).name
-    @language2_name = Language.find_by(id:@list.language2_id).name    
+    @language2_name = Language.find_by(id:@list.language2_id).name  
+    @train = Train.new  
   end
   
   def edit
@@ -58,6 +60,7 @@ class ListsController < ApplicationController
     @path = @list.path
     @lists = @list.childs
     @words = get_words(@list)
+    @wordsets = get_wordsets(@list)
     render :show
   end
   def move
@@ -146,7 +149,7 @@ class ListsController < ApplicationController
   end
   def get_wordsets(list)
     if list.nil?
-      nil
+      []
     else
       list.wordsets#.paginate(page: params[:page])
     end

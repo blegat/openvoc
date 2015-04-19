@@ -1,0 +1,21 @@
+<% provide(:title, 'Training' ) %>
+<h1>Training
+  <% if @guess.nil? %>
+    <i class="glyphicon-remove-sign"></i>
+  <% else %>
+    <i class="glyphicon-ok-sign"></i>
+  <% end %>
+</h1>
+
+<%= form_for(:guess, url: train_path(@train), method: :get)  do %>
+  <%= label_tag :translation, "What is the translation for #{@word1.content}?" %>
+  <%= text_field_tag :translation %>
+  <%= submit_tag "Submit", class: "btn btn-default" %>
+<% end %>
+
+
+<%= @word1.content %>
+
+
+
+<%= back_to_list %>

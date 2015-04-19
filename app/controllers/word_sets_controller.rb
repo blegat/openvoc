@@ -39,7 +39,7 @@ class WordSetsController < ApplicationController
         end
       end
       
-      @newWordSet = WordSet.new(word1_id: @word1.id, word2_id: @word2.id, list_id:@list.id)
+      @newWordSet = WordSet.new(word1_id: @word1.id, word2_id: @word2.id, list_id:@list.id, asked:0, success:0, success_ratio:0.0)
       @newWordSet.user = current_user
       
       @common_meanings = @word1.common_meanings(@word2)

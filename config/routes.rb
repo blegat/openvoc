@@ -41,6 +41,7 @@ Rails.application.routes.draw do
   get "/signout", to: "sessions#destroy", as: :signout
   resources :sessions, only: [:new, :create]
   resources :users, only: [:update, :edit, :new, :show, :create]
+  resources :trains, only: [:new, :create, :show]
   resources :lists, only: [:new, :create, :index, :show, :edit] do
     get "/export" => "lists#export", as: :export
     get "/moving" => "lists#moving", as: :moving
