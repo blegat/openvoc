@@ -7,15 +7,21 @@
   <% end %>
 </h1>
 
+<% if @guessTrue %>
+	<p>Yes! The translation of "<%= @previous_word1.content %>" is indeed "<%= @previous_word2.content %>"! Your success ratio for this wordset is : <%= @previous_ws.success_ratio.to_int %> %</p>
+	<p>Think you were wrong? Click <%= link_to("here", train_path(@train, modif_guess: {to: false, ws_id: @previous_ws_id}))%>.</p>
+<% end %>
+	
+<% if @guessFalse %>
+		<p>No! The translation of "<%= @previous_word1.content %>" was "<%= @previous_word2.content %>", not "<%= params[:translation] %>"! Your success ratio for this wordset is : <%= @previous_ws.success_ratio.to_int %> %</p>
+		<p>Think you were right? Click <%= link_to("here", train_path(@train, modif_guess: {to: true, ws_id: @previous_ws_id}))%>.</p>
+<% end %>
+
 <%= form_for(:guess, url: train_path(@train), method: :get)  do %>
   <%= label_tag :translation, "What is the translation for #{@word1.content}?" %>
   <%= text_field_tag :translation %>
   <%= submit_tag "Submit", class: "btn btn-default" %>
 <% end %>
-
-
-<%= @word1.content %>
-
 
 
 <%= back_to_list %>

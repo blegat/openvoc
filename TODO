@@ -16,10 +16,13 @@ V1
 * OK créer un train
 * OK afficher un train
 *    supprimer une liste
-*    afficher pour chaque ws les nombres : asked, succeed, succeed_ratio
+* OK afficher pour chaque ws les nombres : asked, success, success_ratio
 *    afficher un historique des trains
 *    dans les trains, enregistrer les erreurs/réussites
-*    durant les trains, afficher un feedback de la réponse précédente
+* OK durant les trains, afficher un feedback de la réponse précédente, 
+     et pouvoir la changer
+*    créer une page pour la création des trains
+*    ajouter une page récapitulative à la fin d'un train
 
 
 OPTIONALS
