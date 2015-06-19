@@ -1,14 +1,22 @@
 class TrainsController < ApplicationController
   before_filter :signed_in_user
-  before_filter :list_exists, only: [:create] 
+  before_filter :get_train,   only: [:show]
+  before_filter :get_train2,  only: [:summary]
+  before_filter :list_exists, only: [:create]
+  before_filter :get_list,    only: [:show, :summary]  
   before_filter :set_rec,     only: [:create] 
   before_filter :set_max,     only: [:create]
+  before_filter :init_create, only: [:create]
    
-  def new    
+  def new   
+    @train = Train.new
+    @list = List.find_by_id(params[:list_id])
   end
   
   def create
-    @new_train = current_user.trains.build(list_id: @list.id, finished: false, success_ratio: 0.0, max: @max, actual_ws_id: -1)
+    @new_train = current_user.trains.build(list_id: @list.id, finished: false, success_ratio: 0.0, 
+          max: @max, actual_ws_id: -1, word_sets_ids_succeeded: "", word_sets_ids_failed: "", 
+          type_of_train: params[:type_of_train].to_f, include_sub_lists: params[:sub_lists].to_i, ask_policy: params[:ask_policy].to_i)
     
     initialize_ws(@new_train, @list)
     
@@ -26,31 +34,32 @@ class TrainsController < ApplicationController
     end
   end
   
-  
   def show
-    @train = Train.find(params[:id]) 
     @guessTrue = false
     @guessFalse = false
     
     if params[:modif_guess]
       @previous_ws = WordSet.find(params[:modif_guess][:ws_id])
+      @previous_ws_id = params[:modif_guess][:ws_id]
       @previous_word1 = Word.find(@previous_ws.word1_id) 
       @previous_word2 = Word.find(@previous_ws.word2_id)
       if params[:modif_guess][:to] == "true"
         @guessTrue = true
         @previous_ws.success += 1
+        last_id=pop_last_failed
+        add_id_to_succeeded(last_id)
       else
         @guessFalse = true
         @previous_ws.success -= 1
+        last_id=pop_last_succeeded
+        add_id_to_failed(last_id)
       end
       @previous_ws.success_ratio = @previous_ws.success*100 / @previous_ws.asked
       if not @previous_ws.save
         redirect_to root_path and return
       end
-    end
     
-    else if not @train.actual_ws_id == -1
-      puts 'TRALALA'
+    elsif (not @train.actual_ws_id == -1)
       @previous_ws_id = @train.actual_ws_id
       if not params[:translation].nil?
         check_answer
@@ -66,16 +75,17 @@ class TrainsController < ApplicationController
       if not @train.save
         redirect_to root_path and return
       end
-      redirect_to List.find(@train.list_id),
-        flash: { success: "Train successfully ended" } and return
+      
+    else
+      actual_ws = WordSet.find(@train.actual_ws_id)
+      @word1 = Word.find(actual_ws.word1_id)
     end
-    
-    actual_ws = WordSet.find(@train.actual_ws_id)
-    
-    
-    @word1 = Word.find(actual_ws.word1_id)
-    @word2 = Word.find(actual_ws.word2_id)
-    
+
+  end
+  
+  def summary
+    @list_id_succeeded = @train.word_sets_ids_succeeded.split(',')
+    @list_id_failed = @train.word_sets_ids_failed.split(',')
   end
 
   
@@ -91,7 +101,7 @@ class TrainsController < ApplicationController
     end
     ws_ids = []
     wordsets.each do |ws|
-      if ws.success_ratio < @max
+      if ws.success_ratio <= @max
         ws_ids.push(ws.id)
       end
     end
@@ -129,8 +139,11 @@ class TrainsController < ApplicationController
     if @previous_word2.content == params[:translation]
       @guessTrue = true
       @previous_ws.success += 1
+      add_id_to_succeeded(@previous_ws.id)
     else
       @guessFalse = true
+      ws_ids_failded = @train.word_sets_ids_failed
+      add_id_to_failed(@previous_ws.id)
     end
     @previous_ws.asked += 1
     @previous_ws.success_ratio = @previous_ws.success*100 / @previous_ws.asked
@@ -162,11 +175,122 @@ class TrainsController < ApplicationController
     end
   end
 
+  def get_list
+    @list = List.find_by_id(@train.list_id)
+    if @list.nil?
+      redirect_to root_path and return
+    end
+  end
+  
+  def get_train
+    @train = Train.find_by_id(params[:id])
+    if @train.nil?
+      redirect_to root_path and return
+    end
+  end
+  
+  def get_train2
+    @train = Train.find_by_id(params[:train_id])
+    if @train.nil?
+      redirect_to root_path and return
+    end
+  end
+  
   def get_wordsets(list)
     if list.nil?
       []
     else
-      list.wordsets#.paginate(page: params[:page])
+      list.wordsets
+    end
+  end
+
+  def add_id_to_succeeded(id)
+    ws_ids_succeeded = @train.word_sets_ids_succeeded
+    if ws_ids_succeeded.nil?
+      redirect_to root_path,
+          flash: { error: "An error occured" }  and return
+    else 
+      ws_ids_array = ws_ids_succeeded.split(',')
+      if ws_ids_array.empty?
+        @train.word_sets_ids_succeeded = id.to_s
+      else
+        ws_ids_array.push(id.to_s)
+        @train.word_sets_ids_succeeded = ws_ids_array.join(',')        
+      end
+    end
+    if not @train.save
+      flash_errors(@train)
+      redirect_to root_path and return
+    end
+  end
+  
+  def add_id_to_failed(id)
+    ws_ids_fail = @train.word_sets_ids_failed
+    if ws_ids_fail.nil?
+      redirect_to root_path,
+          flash: { error: "An error occured" }  and return
+    else 
+      ws_ids_array = ws_ids_fail.split(',')
+      if ws_ids_array.empty?
+        @train.word_sets_ids_failed = id.to_s
+      else
+        ws_ids_array.push(id.to_s)
+        @train.word_sets_ids_failed = ws_ids_array.join(',')        
+      end
+    end
+    if not @train.save
+      flash_errors(@train)
+      redirect_to root_path and return
+    end
+  end
+  
+  def pop_last_failed
+    ws_ids_fail = @train.word_sets_ids_failed
+    if ws_ids_fail.nil?
+      redirect_to root_path,
+          flash: { error: "An error occured" }  and return
+    else 
+      ws_ids_array = ws_ids_fail.split(',')
+      if ws_ids_array.empty?
+        redirect_to root_path,
+            flash: { error: "An error occured: array is not empty" }  and return
+      else
+        last_id=ws_ids_array.pop
+        @train.word_sets_ids_failed = ws_ids_array.join(',')        
+      end
+    end
+    if not @train.save
+      flash_errors(@train)
+      redirect_to root_path and return
+    end
+    last_id
+  end
+  
+  def pop_last_succeeded
+    ws_ids_succeeded = @train.word_sets_ids_succeeded
+    if ws_ids_succeeded.nil?
+      redirect_to root_path,
+          flash: { error: "An error occured" }  and return
+    else 
+      ws_ids_array = ws_ids_succeeded.split(',')
+      if ws_ids_array.empty?
+        redirect_to root_path,
+            flash: { error: "An error occured" }  and return
+      else
+        last_id=ws_ids_array.pop
+        @train.word_sets_ids_succeeded = ws_ids_array.join(',')        
+      end
+    end
+    if not @train.save
+      flash_errors(@train)
+      redirect_to root_path and return
+    end
+    last_id
+  end
+  
+  def init_create
+    if params[:type_of_train].nil? || params[:sub_lists].nil? || params[:ask_policy].nil?
+      redirect_to @list and return
     end
   end
   

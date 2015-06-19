@@ -1,0 +1,24 @@
+<% provide(:title, 'Training' ) %>
+<h1>Summary</h1>
+<p>Here is a summary of your training:</p>
+
+<p>Failed words:</p>
+<ul>
+  <% @list_id_failed.each do |id| %>
+    <li>
+       <%= Word.find(WordSet.find(id).word1_id).content %>
+    </li>
+  <% end %>
+</ul>
+
+<p>Succeeded words:</p>
+<ul>
+  <% @list_id_succeeded.each do |id| %>
+    <li>
+       <%= Word.find(WordSet.find(id).word1_id).content %>
+    </li>
+  <% end %>
+</ul>
+
+
+<%= back_to_list %>

@@ -28,6 +28,10 @@ class Train < ActiveRecord::Base
 
   belongs_to :list
   validates :list_id, presence: true
+  validates :type_of_train, presence: true
+  validates :ask_policy, presence: true
+  # validates :include_sub_lists, presence: true # TODO PROBLEM!?
+  
 
 end
 # == Schema Information

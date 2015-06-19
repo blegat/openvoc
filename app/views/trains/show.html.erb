@@ -17,11 +17,18 @@
 		<p>Think you were right? Click <%= link_to("here", train_path(@train, modif_guess: {to: true, ws_id: @previous_ws_id}))%>.</p>
 <% end %>
 
+
+
+<% if @train.finished? %>
+<p> <%= link_to("Finalize the train", train_summary_path(@train))%> </p>
+
+<% else %>
 <%= form_for(:guess, url: train_path(@train), method: :get)  do %>
   <%= label_tag :translation, "What is the translation for #{@word1.content}?" %>
   <%= text_field_tag :translation %>
   <%= submit_tag "Submit", class: "btn btn-default" %>
 <% end %>
 
+<% end%>
 
 <%= back_to_list %>

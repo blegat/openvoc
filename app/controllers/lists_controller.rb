@@ -10,6 +10,7 @@ class ListsController < ApplicationController
     @words = get_words(@list)
     @wordsets = get_wordsets(@list)
     @new_list = current_user.lists.build
+    #@train = Train.new
     #@new_list.parent = @list # yet useless
     render :show
   end
@@ -42,9 +43,14 @@ class ListsController < ApplicationController
     @lists = @list.childs
     @words = get_words(@list)
     @wordsets = get_wordsets(@list)
-    @language1_name = Language.find_by(id:@list.language1_id).name
-    @language2_name = Language.find_by(id:@list.language2_id).name  
-    @train = Train.new  
+    @language1_name = Language.find_by_id(@list.language1_id).name
+    @language2_name = Language.find_by_id(@list.language2_id).name  
+    #@train = Train.new  
+  end
+  def destroy
+    List.find(params[:id]).destroy
+    redirect_to lists_path, 
+        flash: { success: "List deleted" } and return
   end
   
   def edit
@@ -84,17 +90,31 @@ class ListsController < ApplicationController
     @words = get_words(@list)
     render :show
   end
+  
+  def import
+      post = DataFile.save(params[:upload])
+      render :text => "File has been uploaded successfully"
+  end
+  
   def export
-    content = @list.words.inject("") do |sum, word|
-      "#{sum}#{word.content}|#{word.translations.inject("") do |s, w|
-        if s.blank?
-          "#{w.content}"
-        else
-          "#{s},#{w.content}"
-        end
-      end}\n"
+    content = "" 
+    @list.wordsets.each do |ws|
+      word1 = Word.find_by_id(ws.word1_id)
+      word2 = Word.find_by_id(ws.word2_id)
+      content = content + word1.content + ", "+ word2.content + "\n"
+    end    
+    if false
+      content = @list.words.inject("") do |sum, word|
+        "#{sum}#{word.content}|#{word.translations.inject("") do |s, w|
+          if s.blank?
+            "#{w.content}"
+          else
+            "#{s},#{w.content}"
+          end
+        end}\n"
+      end
     end
-    send_data content, filename: 'export.txt'
+    send_data content, filename: @list.name + '.txt' # TODO no safe
   end
   def training
     list = List.find_by_id(params[:list_id])
@@ -112,7 +132,10 @@ class ListsController < ApplicationController
       redirect_to list, flash: { danger: 'Maximum success rate should be between 0 and 100' } and return
     end
     redirect_to new_list_train_path(list, rec: rec, max: max)
-  end
+   end
+  
+  
+  
   private
   def list_exists1
     @list = List.find_by_id(params[:id])

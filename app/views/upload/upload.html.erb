@@ -1,0 +1,12 @@
+<% provide(:title, 'Upload a file') %>
+<h1>File upload</h1>
+
+
+<div class="row">
+  <div class="col-md-12">
+			<%= form_tag(list_save_upload_path, multipart: true) %>
+			<p><label for="upload_file">Select File</label> : 
+			<%= file_field 'upload', 'datafile' %></p>
+			<%= submit_tag "Upload" %>
+	</div>
+</div>

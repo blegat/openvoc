@@ -41,16 +41,22 @@ Rails.application.routes.draw do
   get "/signout", to: "sessions#destroy", as: :signout
   resources :sessions, only: [:new, :create]
   resources :users, only: [:update, :edit, :new, :show, :create]
-  resources :trains, only: [:new, :create, :show]
-  resources :lists, only: [:new, :create, :index, :show, :edit] do
+  resources :trains, only: [:new, :create, :show] do
+    get "/summary", to: "trains#summary", as: :summary
+  end
+
+  resources :lists, only: [:new, :create, :index, :show, :edit, :destroy] do
     get "/export" => "lists#export", as: :export
     get "/moving" => "lists#moving", as: :moving
     get "/move" => "lists#move", as: :move
+    get "/import" => "lists#import", as: :import
+    get "/upload" => "upload#upload", as: :upload
+    match "/save_upload" => "upload#save_upload", via: :post, as: :save_upload
     get "/training" => "lists#training", as: :training
     resources :trains, only: [:new, :create] do
       get "/toggle_success" => "trains#toggle_success", as: :toggle_success
     end
-    resources :lists, only: [:new, :create, :edit]
+    resources :lists, only: [:new, :create, :edit, :destroy]
     resources :words, only: [:destroy]
   end
 end

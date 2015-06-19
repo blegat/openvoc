@@ -1,0 +1,27 @@
+<% provide(:title, 'Training' ) %>
+<h1>Configure your training</h1>
+
+
+<%= form_for(@train)  do |f| %>
+  <%= f.label :max, "Max:" %>
+  <%= f.text_field :max %>
+	<%= f.hidden_field :rec, value: 0 %>
+	<%= f.hidden_field :list_id, value:params[:list_id] %>
+	<br>
+	<%= hidden_field_tag :sub_lists, 0 %>
+	<%= label_tag(:sub_lists, "Ask words in the sub-lists") %>
+	<%= check_box_tag(:sub_lists) %>
+	
+	<br>
+	<%= label_tag(:ask_policy, "If I'm wrong:") %>
+	<%= select_tag(:ask_policy, options_for_select([['Ask just once', 1], ['Ask again until I know the word', 2]], 1)) %>
+	<br>
+	
+	<%= label_tag(:type_of_train, "Kind of test") %>
+	<%= select_tag(:type_of_train, options_for_select([['Fill-in', 1], ['Multiple choice', 2]], 1)) %>
+	<br>
+	
+  <%= f.submit "Let's train!", class: "btn btn-default" %>
+<% end %>
+
+<%= back_to_list %>

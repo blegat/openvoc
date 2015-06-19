@@ -15,14 +15,19 @@ V1
 * OK faire des training (revoir view->trains->new)
 * OK créer un train
 * OK afficher un train
-*    supprimer une liste
+* OK supprimer une liste et ses sous-listes
 * OK afficher pour chaque ws les nombres : asked, success, success_ratio
 *    afficher un historique des trains
-*    dans les trains, enregistrer les erreurs/réussites
+* OK dans les trains, enregistrer les erreurs/réussites
 * OK durant les trains, afficher un feedback de la réponse précédente, 
      et pouvoir la changer
-*    créer une page pour la création des trains
+* OK créer une page pour la création des trains
 *    ajouter une page récapitulative à la fin d'un train
+*    lors d'un train, pouvoir ajouter les mots d'une sous-liste
+*    lors d'un train, demander le ask_policy
+* OK créer un modèle séparé pour gérer les upload
+*    gérer les import dans les listes
+*    corriger l'importation de nouveaux mots
 
 
 OPTIONALS

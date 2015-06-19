@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150419131247) do
+ActiveRecord::Schema.define(version: 20150618153036) do
 
   create_table "authentications", force: true do |t|
     t.integer  "user_id"
@@ -91,6 +91,9 @@ ActiveRecord::Schema.define(version: 20150419131247) do
     t.text     "word_sets_ids_failed"
     t.text     "word_sets_ids_succeeded"
     t.integer  "max"
+    t.integer  "type_of_train"
+    t.integer  "ask_policy"
+    t.boolean  "include_sub_lists"
   end
 
   add_index "trains", ["list_id"], name: "index_trains_on_list_id"
