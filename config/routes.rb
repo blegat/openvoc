@@ -16,6 +16,8 @@
 ### END LICENSE
 
 Rails.application.routes.draw do
+  get 'train_fragment/new'
+
   resources :meanings
   
   resources :wordsets, controller: :word_sets

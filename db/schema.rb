@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150618153036) do
+ActiveRecord::Schema.define(version: 20150710220218) do
 
   create_table "authentications", force: true do |t|
     t.integer  "user_id"
@@ -79,6 +79,19 @@ ActiveRecord::Schema.define(version: 20150618153036) do
     t.datetime "updated_at"
   end
 
+  create_table "train_fragments", force: true do |t|
+    t.integer  "train_id"
+    t.integer  "word_set_id"
+    t.integer  "sort"
+    t.boolean  "q_to_a"
+    t.integer  "word1_id"
+    t.integer  "word2_id"
+    t.string   "answer"
+    t.boolean  "is_correct"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "trains", force: true do |t|
     t.integer  "user_id"
     t.datetime "created_at"
@@ -94,6 +107,8 @@ ActiveRecord::Schema.define(version: 20150618153036) do
     t.integer  "type_of_train"
     t.integer  "ask_policy"
     t.boolean  "include_sub_lists"
+    t.text     "fragments_list"
+    t.integer  "fragment_pos"
   end
 
   add_index "trains", ["list_id"], name: "index_trains_on_list_id"

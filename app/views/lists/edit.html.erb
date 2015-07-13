@@ -40,8 +40,9 @@
 	            	<tr>
 		        		<td><%= Word.find_by(id:w.word1_id).content %></td>
 		        		<td><%= Word.find_by(id:w.word2_id).content %></td>
-						<td><%= link_to "delete", wordset_path(w, {list_id: @list.id}), controller: :word_sets, method: :delete %></td>
-						<% if false%><td><%= links_to "Delete list", edit_list_path(@list)%></td> <%end%>
+						    <td><%= link_to "delete", wordset_path(w, {list_id: @list.id}), 
+										controller: :word_sets, method: :delete %></td>
+					<% if false%><td><%= links_to "Delete list", edit_list_path(@list)%></td> <%end%> <!-- TODO -->
 		        	</tr>
 			    <% else @wordsWithoutMeaning = true end%>
 			  <% end %>

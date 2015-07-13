@@ -1,4 +1,5 @@
 V1
+----
 * OK créer WordSet (lien entre des mots au sein d'une même liste) 
      (presque équivalent à l'ancien "Link")
 * OK mettre à jour la vue des listes (views->list->show), 
@@ -17,17 +18,43 @@ V1
 * OK afficher un train
 * OK supprimer une liste et ses sous-listes
 * OK afficher pour chaque ws les nombres : asked, success, success_ratio
-*    afficher un historique des trains
 * OK dans les trains, enregistrer les erreurs/réussites
 * OK durant les trains, afficher un feedback de la réponse précédente, 
      et pouvoir la changer
 * OK créer une page pour la création des trains
-*    ajouter une page récapitulative à la fin d'un train
-*    lors d'un train, pouvoir ajouter les mots d'une sous-liste
-*    lors d'un train, demander le ask_policy
+* OK ajouter une page récapitulative à la fin d'un train
 * OK créer un modèle séparé pour gérer les upload
-*    gérer les import dans les listes
-*    corriger l'importation de nouveaux mots
+
+
+V1.1
+----
+* OK create TrainFragments
+*    re-write trains with fragments
+	-> mix words
+	-> save success ratio when finalising
+* OK correct bugs when adding words
+	-> delete blank
+	-> multiple lines input
+*    show a full history of trains
+
+
+
+
+v1.2
+----
+*    in a train:
+	-> add words from a sub list
+	-> apply the "ask_policy"
+*    clean-up code of Trains and TrainFragments
+
+
+
+v1.3
+----
+*    review export files
+*    make "import" option possible
+
+
 
 
 OPTIONALS

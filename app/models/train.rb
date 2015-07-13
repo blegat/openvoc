@@ -20,16 +20,20 @@ class Train < ActiveRecord::Base
 
   # guess = nil means give up. '' means no guess.
   # So no validates presence: true.
-
-  validates :finished, inclusion: { in: [true, false] }
-
+  
   belongs_to :user
   validates :user_id, presence: true
-
+  
   belongs_to :list
   validates :list_id, presence: true
-  validates :type_of_train, presence: true
-  validates :ask_policy, presence: true
+  
+  has_many :fragments, foreign_key: :train_id, class_name: "TrainFragment"
+  
+  validates :finished, inclusion: { in: [true, false] }
+  validates :type_of_train, presence: true # 1 = Fill-in         2 = Multiple choice
+  validates :ask_policy, presence: true    # 1 = Ask just once   2 = Ask again
+  
+  
   # validates :include_sub_lists, presence: true # TODO PROBLEM!?
   
 
