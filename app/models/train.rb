@@ -31,7 +31,9 @@ class Train < ActiveRecord::Base
   
   validates :finished, inclusion: { in: [true, false] }
   validates :type_of_train, presence: true # 1 = Fill-in         2 = Multiple choice
-  validates :ask_policy, presence: true    # 1 = Ask just once   2 = Ask again
+  validates :error_policy, presence: true    # 1 = Ask just once   2 = Ask again
+  validates :q_to_a, presence: true    # 1 = q->a   2 = q<-a   3 = q<->a
+  
   
   
   # validates :include_sub_lists, presence: true # TODO PROBLEM!?

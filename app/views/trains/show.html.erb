@@ -7,35 +7,7 @@
   <% end %>
 </h1>
 
-<% if false%>
 
-<% if @guessTrue %>
-	<p>Yes! The translation of "<%= @previous_word1.content %>" is indeed "<%= @previous_word2.content %>"! Your success ratio for this wordset is : <%= @previous_ws.success_ratio.to_int %> %</p>
-	<p>Think you were wrong? Click <%= link_to("here", train_path(@train, modif_guess: {to: false, ws_id: @previous_ws_id}))%>.</p>
-<% end %>
-	
-<% if @guessFalse %>
-		<p>No! The translation of "<%= @previous_word1.content %>" was "<%= @previous_word2.content %>", not "<%= params[:translation] %>"! Your success ratio for this wordset is : <%= @previous_ws.success_ratio.to_int %> %</p>
-		<p>Think you were right? Click <%= link_to("here", train_path(@train, modif_guess: {to: true, ws_id: @previous_ws_id}))%>.</p>
-<% end %>
-
-
-
-<% if @train.finished? %>
-<p> <%= link_to("Finalize the train", train_summary_path(@train))%> </p>
-
-<% else %>
-<%= form_for(:guess, url: train_path(@train), method: :get)  do %>
-  <%= label_tag :translation, "What is the translation for #{@word1.content}?" %>
-  <%= text_field_tag :translation %>
-  <%= submit_tag "Submit", class: "btn btn-default" %>
-<% end %>
-
-<% end%>
-
-<% end %>
-
-<!--Train fragments -->
 <% if @previous_frag %>
 <% if @prev_correct == true %>
 	<p>Yes! The translation of "<%= @prev_word1.content %>" is indeed "<%= @prev_answer %>" (Expected: "<%= @prev_word2.content %>")!</p>
@@ -50,11 +22,11 @@
 
 
 <% if @train.finished? %>
-<p> <%= link_to("Finalize the train", train_summary_path(@train))%> </p>
+<p> <%= link_to("Finalize the train", train_finalize_path(@train))%> </p>
 
 <% else %>
 <%= form_for(:guess, url: train_path(@train), method: :get)  do %>
-  <%= label_tag :translation, "What is the translation for #{@word1f.content}?" %>
+  <%= label_tag :translation, "What is the translation for \"#{@word1f.content}\"?" %>
   <%= text_field_tag :translation %>
   <%= submit_tag "Submit", class: "btn btn-default" %>
 <% end %>

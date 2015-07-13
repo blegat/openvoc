@@ -94,23 +94,23 @@
 		  <table class="table table-bordered table-striped table-condensed">
 		    <thead>
 			  <tr>
+			    <th>Nb</th>
 			    <th><%= @language1_name %></th>
 			    <th><%= @language2_name %></th>
-					<th>Asked</th>
-					<th>Succeeded</th>
-					<th>Success ratio (%)</th>
+					<th>Success ratio q->a (%)</th>
+					<th>Success ratio q<-a (%)</th>
 			  </tr>
 			</thead>
 		    <tbody>
 		      <% @wordsets.each do |w| %>
-  	            <tr>
+  	        <tr>
+							<td><%= @i %></td>
 		        	<td><%= Word.find_by(id:w.word1_id).content %></td>
 		        	<td><%= Word.find_by(id:w.word2_id).content %></td>
-							<td><%= w.asked %></td>
-							<td><%= w.success %></td>
-							<td><%= w.success_ratio.to_i %></td>
-							
+							<td><%= w.success_ratio_qa.to_i %></td>
+							<td><%= w.success_ratio_aq.to_i %></td>
 	  		    </tr>	
+						<% @i = @i+1%>
 		      <% end %>
 		    </tbody>
 		  </table>
@@ -119,10 +119,49 @@
 	  
 	  
 	  <%= link_to "Edit list", edit_list_path(@list), class: "btn btn-default btn-lg btn-primary"  %>
-		
-		<%= link_to "Train", new_train_path(list_id:@list.id), class: "btn btn-default btn-lg btn-primary" %>
     <% end %>
   </div>
+	
+	
+	
+
+  <h2>Trains</h2>
+	
+	<section class="col-md-12 table-responsive">
+	  <table class="table table-bordered table-striped table-condensed">
+	    <thead>
+		  <tr>
+		    <th>Nb</th>
+				<th>Finalized date</th>
+				<th>Success ratio</th>
+				<th>Progress</th>
+				<th>Delete</th>
+		  </tr>
+		  </thead>
+	    <tbody>
+				<% @i = 1 %>
+	      <% @trains.each do |t| %>
+	         <tr>
+	        	<td><%= @i %></td>
+	        	<td><%= t.updated_at %></td>
+						<td><%= t.success_ratio %></td>
+						<td><% if t.finalized%> 
+									<%= link_to "summary", train_summary_path(t) %></td>
+							  <% else %>  
+								  <%= link_to "continue", train_path(t) %></td>
+								<% end %>
+						<td><%= link_to "delete", train_path(t, {list_id: @list.id}), 
+										controller: :trains, method: :delete %></td>
+  		    </tr>	
+					<% @i = @i +1 %>
+	      <% end %>
+	    </tbody>
+	  </table>
+    </section>
+	
+	<%= link_to "New train", new_train_path(list_id:@list.id), class: "btn btn-default btn-lg btn-primary" %>
+	
+	
 	
 	<% if false%>
   <% if not @list.nil? and @list.owner == current_user %>

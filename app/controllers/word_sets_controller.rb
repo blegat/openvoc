@@ -34,7 +34,9 @@ class WordSetsController < ApplicationController
         end
       end
       
-      newWordSet = WordSet.new(word1_id: word1.id, word2_id: word2.id, list_id:list.id, asked:0, success:0, success_ratio:0.0)
+      newWordSet = WordSet.new(word1_id: word1.id, word2_id: word2.id, list_id:list.id, 
+                            asked_qa:0, success_qa:0, success_ratio_qa:0.0, 
+                            asked_aq:0, success_aq:0, success_ratio_aq:0.0)
       newWordSet.user = current_user
       
       common_meanings = word1.common_meanings(word2)

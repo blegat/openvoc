@@ -29,13 +29,14 @@ V1
 V1.1
 ----
 * OK create TrainFragments
-*    re-write trains with fragments
+* OK re-write trains with fragments
 	-> mix words
 	-> save success ratio when finalising
+	-> difference if q->a or a->q
 * OK correct bugs when adding words
 	-> delete blank
 	-> multiple lines input
-*    show a full history of trains
+* OK show a full history of trains
 
 
 
@@ -46,6 +47,7 @@ v1.2
 	-> add words from a sub list
 	-> apply the "ask_policy"
 *    clean-up code of Trains and TrainFragments
+*    in list#show, show only the first elements of words and of trains
 
 
 

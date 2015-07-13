@@ -44,15 +44,15 @@ class ListsController < ApplicationController
     @words = get_words(@list)
     @wordsets = get_wordsets(@list)
     @language1_name = Language.find_by_id(@list.language1_id).name
-    @language2_name = Language.find_by_id(@list.language2_id).name  
-    #@train = Train.new  
+    @language2_name = Language.find_by_id(@list.language2_id).name
+    @trains = Train.where(list_id:@list.id)
+    @i = 1
   end
   def destroy
     List.find(params[:id]).destroy
     redirect_to lists_path, 
         flash: { success: "List deleted" } and return
   end
-  
   def edit
     @path = @list.path
     @wordsets = get_wordsets(@list)
@@ -60,7 +60,6 @@ class ListsController < ApplicationController
     @language2_name = Language.find_by(id:@list.language2_id).name
     @languages = Language.all    
   end
-  
   def moving
     @moving = true
     @path = @list.path
@@ -90,12 +89,10 @@ class ListsController < ApplicationController
     @words = get_words(@list)
     render :show
   end
-  
   def import
       post = DataFile.save(params[:upload])
       render :text => "File has been uploaded successfully"
   end
-  
   def export
     content = "" 
     @list.wordsets.each do |ws|
@@ -132,7 +129,7 @@ class ListsController < ApplicationController
       redirect_to list, flash: { danger: 'Maximum success rate should be between 0 and 100' } and return
     end
     redirect_to new_list_train_path(list, rec: rec, max: max)
-   end
+  end
   
   
   

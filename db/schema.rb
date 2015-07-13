@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150710220218) do
+ActiveRecord::Schema.define(version: 20150713130636) do
 
   create_table "authentications", force: true do |t|
     t.integer  "user_id"
@@ -99,16 +99,14 @@ ActiveRecord::Schema.define(version: 20150710220218) do
     t.integer  "list_id"
     t.boolean  "finished"
     t.float    "success_ratio"
-    t.text     "word_sets_ids"
-    t.integer  "actual_ws_id"
-    t.text     "word_sets_ids_failed"
-    t.text     "word_sets_ids_succeeded"
     t.integer  "max"
     t.integer  "type_of_train"
-    t.integer  "ask_policy"
+    t.integer  "error_policy"
     t.boolean  "include_sub_lists"
     t.text     "fragments_list"
     t.integer  "fragment_pos"
+    t.integer  "q_to_a"
+    t.boolean  "finalized"
   end
 
   add_index "trains", ["list_id"], name: "index_trains_on_list_id"
@@ -134,9 +132,12 @@ ActiveRecord::Schema.define(version: 20150710220218) do
     t.integer  "list_id"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "asked"
-    t.integer  "success"
-    t.float    "success_ratio"
+    t.integer  "asked_qa"
+    t.integer  "success_qa"
+    t.float    "success_ratio_qa"
+    t.float    "asked_aq"
+    t.float    "success_aq"
+    t.float    "success_ratio_aq"
   end
 
   add_index "word_sets", ["list_id"], name: "index_word_sets_on_list_id"

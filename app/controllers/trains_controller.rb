@@ -1,7 +1,7 @@
 class TrainsController < ApplicationController
   before_filter :signed_in_user
   before_filter :get_train,   only: [:show]
-  before_filter :get_train2,  only: [:summary]
+  before_filter :get_train2,  only: [:finalize, :summary]
   before_filter :list_exists, only: [:create]
   before_filter :get_list,    only: [:show, :summary]  
   before_filter :set_rec,     only: [:create] 
@@ -11,18 +11,19 @@ class TrainsController < ApplicationController
   def new
     @train = Train.new
     @list = List.find_by_id(params[:list_id])
+    @lang1 = Language.find(@list.language1_id).name
+    @lang2 = Language.find(@list.language2_id).name    
   end
   
   def create
     @new_train = current_user.trains.build(list_id: @list.id, finished: false, success_ratio: 0.0, 
-          max: @max, actual_ws_id: -1, word_sets_ids_succeeded: "", word_sets_ids_failed: "", 
-          type_of_train: params[:type_of_train].to_f, include_sub_lists: params[:sub_lists].to_i, 
-          ask_policy: params[:ask_policy].to_i, fragments_list: "", fragment_pos: 0)
-    
-    
-    # initialize_ws(@new_train, @list)
-    
-
+          max: @max, type_of_train: params[:type_of_train].to_f, 
+          include_sub_lists: params[:sub_lists].to_i, error_policy: params[:error_policy].to_i, 
+          fragments_list: "", fragment_pos: 0, q_to_a: params[:q_to_a].to_i, finalized: false)
+        
+    puts 'q_to_a TESSST'
+    puts @new_train.q_to_a.to_s
+          
     if @new_train.save
       initialize_fragments(@new_train, @list)
       
@@ -37,57 +38,6 @@ class TrainsController < ApplicationController
       redirect_to @list and return
     end
   end
-  
-  # def show
-  #   @guessTrue = false
-  #   @guessFalse = false
-  #
-  #   if params[:modif_guess]
-  #     @previous_ws = WordSet.find(params[:modif_guess][:ws_id])
-  #     @previous_ws_id = params[:modif_guess][:ws_id]
-  #     @previous_word1 = Word.find(@previous_ws.word1_id)
-  #     @previous_word2 = Word.find(@previous_ws.word2_id)
-  #     if params[:modif_guess][:to] == "true"
-  #       @guessTrue = true
-  #       @previous_ws.success += 1
-  #       last_id=pop_last_failed
-  #       add_id_to_succeeded(last_id)
-  #     else
-  #       @guessFalse = true
-  #       @previous_ws.success -= 1
-  #       last_id=pop_last_succeeded
-  #       add_id_to_failed(last_id)
-  #     end
-  #     @previous_ws.success_ratio = @previous_ws.success*100 / @previous_ws.asked
-  #     if not @previous_ws.save
-  #       redirect_to root_path and return
-  #     end
-  #
-  #   elsif (not @train.actual_ws_id == -1)
-  #     @previous_ws_id = @train.actual_ws_id
-  #     if not params[:translation].nil?
-  #       check_answer
-  #       pick_new_ws
-  #     end
-  #   else
-  #     pick_new_ws
-  #   end
-  #
-  #
-  #   if @train.actual_ws_id == -1
-  #     @train.finished = true
-  #     if not @train.save
-  #       redirect_to root_path and return
-  #     end
-  #
-  #   else
-  #     actual_ws = WordSet.find(@train.actual_ws_id)
-  #     @word1 = Word.find(actual_ws.word1_id)
-  #   end
-  #
-  # end
-  
-  
   
   def show
     pos = @train.fragment_pos
@@ -116,7 +66,7 @@ class TrainsController < ApplicationController
       
     elsif params[:translation]
       check_fragment
-      apply_ask_policy
+      apply_error_policy
       @train.fragment_pos += 1
       @train.save
       redirect_to @train
@@ -133,20 +83,55 @@ class TrainsController < ApplicationController
   end
   
   
-  # def summary
-  #   @list_id_succeeded = @train.word_sets_ids_succeeded.split(',')
-  #   @list_id_failed = @train.word_sets_ids_failed.split(',')
-  # end
+  def finalize
+    if @train.finalized == false
+      list_tf = TrainFragment.where(train_id: @train.id)
+      success = 0
+      asked = 0
+      list_tf.each do |tf|
+        ws = WordSet.find(tf.word_set_id)
+        asked += 1
+        if tf.q_to_a
+          ws.asked_qa += 1
+          if tf.is_correct
+            ws.success_qa += 1
+            success += 1
+          end
+        else
+          ws.asked_aq += 1
+          if tf.is_correct
+            ws.success_aq += 1
+            success+= 1
+          end
+        end
+        ws.compute_ratios
+        ws.save
+      end
+      if asked != 0
+        @train.success_ratio = (100 * success/asked) 
+      end        
+    end
+    
+    @train.finalized = true
+    @train.save
+    redirect_to train_summary_path(@train)
+  end
+
 
   def summary
     @list_frag_succeeded = TrainFragment.where(train_id: @train.id, is_correct: true)
     @list_frag_failed    = TrainFragment.where(train_id: @train.id, is_correct: false)
   end
   
+  def destroy
+    Train.find(params[:id]).destroy
+    redirect_to list_path(params[:list_id]), 
+        flash: { success: "List deleted" } and return
+  end
   
 
   private
-  
+    
   def load_prev_frag(frag)
     @prev_word1 = Word.find(frag.word1_id)
     @prev_word2 = Word.find(frag.word2_id)
@@ -156,8 +141,8 @@ class TrainsController < ApplicationController
     puts @prev_correct
   end
   
-  def apply_ask_policy
-    if @train.ask_policy == 1
+  def apply_error_policy
+    if @train.error_policy == 1
     end
   end
   
@@ -191,43 +176,37 @@ class TrainsController < ApplicationController
   end
   
   
-  # def initialize_ws(train, list)
-  #   wordsets = get_wordsets(list)
-  #   if wordsets.empty?
-  #     train.word_sets_ids = nil
-  #     return
-  #   end
-  #   ws_ids = []
-  #   wordsets.each do |ws|
-  #     if ws.success_ratio <= @max
-  #       ws_ids.push(ws.id)
-  #     end
-  #   end
-  #   if ws_ids.empty?
-  #     train.word_sets_ids = nil
-  #     return
-  #   end
-  #   train.word_sets_ids = ws_ids.join(',')
-  # end
-  
   
   
   def initialize_fragments(train, list) 
-    wordsets = get_wordsets(list)
+    wordsets = list.wordsets
     if wordsets.empty?
-      train.fragments_list = nil
+      train.fragments_list = ""
       return
     end
     
     wordsets.each do |ws|
-      if ws.success_ratio <= @max
-        new_fragment = train.fragments.build(word_set_id: ws.id, sort: 1, q_to_a: 1, word1_id: ws.word1_id, word2_id: ws.word2_id, answer: "")
-
-        if new_fragment.save
-          add_fragment_id(train,new_fragment.id)
+      if train.q_to_a == 1 or train.q_to_a == 3
+        if ws.success_ratio_qa <= @max
+          new_fragment = train.fragments.build(word_set_id: ws.id, sort: 1, q_to_a: 1, 
+                                               word1_id: ws.word1_id, word2_id: ws.word2_id, answer: "")
+          if new_fragment.save
+            add_fragment_id(train,new_fragment.id)
+          end
         end
       end
+      
+      if train.q_to_a == 2 or train.q_to_a == 3
+        if ws.success_ratio_aq <= @max
+          new_fragment = train.fragments.build(word_set_id: ws.id, sort: 1, q_to_a: 2, 
+                                               word1_id: ws.word2_id, word2_id: ws.word1_id, answer: "")
+          if new_fragment.save
+            add_fragment_id(train,new_fragment.id)
+          end
+        end  
+      end
     end
+    
     train.fragment_pos = 0
     train.save
   end
@@ -330,100 +309,8 @@ class TrainsController < ApplicationController
     end
   end
   
-  def get_wordsets(list)
-    if list.nil?
-      []
-    else
-      list.wordsets
-    end
-  end
-
-  # def add_id_to_succeeded(id)
-  #   ws_ids_succeeded = @train.word_sets_ids_succeeded
-  #   if ws_ids_succeeded.nil?
-  #     redirect_to root_path,
-  #         flash: { error: "An error occured" }  and return
-  #   else
-  #     ws_ids_array = ws_ids_succeeded.split(',')
-  #     if ws_ids_array.empty?
-  #       @train.word_sets_ids_succeeded = id.to_s
-  #     else
-  #       ws_ids_array.push(id.to_s)
-  #       @train.word_sets_ids_succeeded = ws_ids_array.join(',')
-  #     end
-  #   end
-  #   if not @train.save
-  #     flash_errors(@train)
-  #     redirect_to root_path and return
-  #   end
-  # end
-  
-  # def add_id_to_failed(id)
-  #   ws_ids_fail = @train.word_sets_ids_failed
-  #   if ws_ids_fail.nil?
-  #     redirect_to root_path,
-  #         flash: { error: "An error occured" }  and return
-  #   else
-  #     ws_ids_array = ws_ids_fail.split(',')
-  #     if ws_ids_array.empty?
-  #       @train.word_sets_ids_failed = id.to_s
-  #     else
-  #       ws_ids_array.push(id.to_s)
-  #       @train.word_sets_ids_failed = ws_ids_array.join(',')
-  #     end
-  #   end
-  #   if not @train.save
-  #     flash_errors(@train)
-  #     redirect_to root_path and return
-  #   end
-  # end
-  
-  # def pop_last_failed
-  #   ws_ids_fail = @train.word_sets_ids_failed
-  #   if ws_ids_fail.nil?
-  #     redirect_to root_path,
-  #         flash: { error: "An error occured" }  and return
-  #   else
-  #     ws_ids_array = ws_ids_fail.split(',')
-  #     if ws_ids_array.empty?
-  #       redirect_to root_path,
-  #           flash: { error: "An error occured: array is not empty" }  and return
-  #     else
-  #       last_id=ws_ids_array.pop
-  #       @train.word_sets_ids_failed = ws_ids_array.join(',')
-  #     end
-  #   end
-  #   if not @train.save
-  #     flash_errors(@train)
-  #     redirect_to root_path and return
-  #   end
-  #   last_id
-  # end
-  
-  # def pop_last_succeeded
-  #   ws_ids_succeeded = @train.word_sets_ids_succeeded
-  #   if ws_ids_succeeded.nil?
-  #     redirect_to root_path,
-  #         flash: { error: "An error occured" }  and return
-  #   else
-  #     ws_ids_array = ws_ids_succeeded.split(',')
-  #     if ws_ids_array.empty?
-  #       redirect_to root_path,
-  #           flash: { error: "An error occured" }  and return
-  #     else
-  #       last_id=ws_ids_array.pop
-  #       @train.word_sets_ids_succeeded = ws_ids_array.join(',')
-  #     end
-  #   end
-  #   if not @train.save
-  #     flash_errors(@train)
-  #     redirect_to root_path and return
-  #   end
-  #   last_id
-  # end
-  
   def init_create
-    if params[:type_of_train].nil? || params[:sub_lists].nil? || params[:ask_policy].nil?
+    if params[:type_of_train].nil? || params[:sub_lists].nil? || params[:error_policy].nil?
       redirect_to @list and return
     end
   end

@@ -43,8 +43,9 @@ Rails.application.routes.draw do
   get "/signout", to: "sessions#destroy", as: :signout
   resources :sessions, only: [:new, :create]
   resources :users, only: [:update, :edit, :new, :show, :create]
-  resources :trains, only: [:new, :create, :show] do
+  resources :trains, only: [:new, :create, :show, :destroy] do
     get "/summary", to: "trains#summary", as: :summary
+    get "/finalize", to: "trains#finalize", as: :finalize
   end
 
   resources :lists, only: [:new, :create, :index, :show, :edit, :destroy] do

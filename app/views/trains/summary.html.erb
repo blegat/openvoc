@@ -2,31 +2,6 @@
 <h1>Summary</h1>
 <p>Here is a summary of your training:</p>
 
-
-<% if false %>
-<p>Failed words:</p>
-<ul>
-  <% @list_id_failed.each do |id| %>
-    <li>
-       <%= Word.find(WordSet.find(id).word1_id).content %>
-    </li>
-  <% end %>
-</ul>
-
-<p>Succeeded words:</p>
-<ul>
-  <% @list_id_succeeded.each do |id| %>
-    <li>
-       <%= Word.find(WordSet.find(id).word1_id).content %>
-    </li>
-  <% end %>
-</ul>
-
-<% end %>
-
-
-<!-- Fragments -->
-
 <p>Failed words:</p>
 	<section class="col-md-12 table-responsive">
 	  <table class="table table-bordered table-striped table-condensed">
@@ -44,7 +19,11 @@
 	        			<td><%= Word.find(f.word1_id).content %></td>
 	        			<td><%= Word.find(f.word2_id).content %></td>
 								<td><%= f.answer %></td>
-								<td> 50 </td>
+								<% if f.q_to_a == true %>
+									<td><%= WordSet.find(f.word_set_id).success_ratio_qa %></td>
+							  <% else %>
+									<td><%= WordSet.find(f.word_set_id).success_ratio_aq %></td>
+								<% end %>
   		        </tr>	
 	          <% end %>
 	    </tbody>
@@ -68,7 +47,11 @@
 	        			<td><%= Word.find(f.word1_id).content %></td>
 	        			<td><%= Word.find(f.word2_id).content %></td>
 								<td><%= f.answer %></td>
-								<td> 50 </td>
+								<% if f.q_to_a == true %>
+									<td><%= WordSet.find(f.word_set_id).success_ratio_qa %></td>
+							  <% else %>
+									<td><%= WordSet.find(f.word_set_id).success_ratio_aq %></td>
+								<% end %>
   		        </tr>	
 	          <% end %>
 	    </tbody>
