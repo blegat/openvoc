@@ -124,9 +124,10 @@
 	
 	
 	
+	
+	<% if not (@trains.nil? or @trains.empty?) %>
 
   <h2>Trains</h2>
-	
 	<section class="col-md-12 table-responsive">
 	  <table class="table table-bordered table-striped table-condensed">
 	    <thead>
@@ -161,6 +162,7 @@
 	
 	<%= link_to "New train", new_train_path(list_id:@list.id), class: "btn btn-default btn-lg btn-primary" %>
 	
+	<% end %>
 	
 	
 	<% if false%>

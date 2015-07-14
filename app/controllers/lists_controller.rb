@@ -12,6 +12,7 @@ class ListsController < ApplicationController
     @new_list = current_user.lists.build
     #@train = Train.new
     #@new_list.parent = @list # yet useless
+    @i = 1
     render :show
   end
   def create

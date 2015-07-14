@@ -18,12 +18,9 @@ class TrainsController < ApplicationController
   def create
     @new_train = current_user.trains.build(list_id: @list.id, finished: false, success_ratio: 0.0, 
           max: @max, type_of_train: params[:type_of_train].to_f, 
-          include_sub_lists: params[:sub_lists].to_i, error_policy: params[:error_policy].to_i, 
+          include_sub_lists: params[:sub_lists].to_i == 1, error_policy: params[:error_policy].to_i, 
           fragments_list: "", fragment_pos: 0, q_to_a: params[:q_to_a].to_i, finalized: false)
-        
-    puts 'q_to_a TESSST'
-    puts @new_train.q_to_a.to_s
-          
+                  
     if @new_train.save
       initialize_fragments(@new_train, @list)
       
@@ -179,11 +176,14 @@ class TrainsController < ApplicationController
   
   
   def initialize_fragments(train, list) 
-    wordsets = list.wordsets
-    if wordsets.empty?
-      train.fragments_list = ""
-      return
+    wordsets = WordSet.where(list_id:list.id)
+    if train.include_sub_lists
+      sublists = List.where(parent_id:list.id)
+      sublists.each do |sl|
+        wordsets.push(*WordSet.where(list_id:sl.id))
+      end
     end
+
     
     wordsets.each do |ws|
       if train.q_to_a == 1 or train.q_to_a == 3
