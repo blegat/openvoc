@@ -115,6 +115,9 @@
 		    </tbody>
 		  </table>
 	    </section>
+			
+			<%= will_paginate @wordsets, param_name: :page_ws %>
+			
       <% end %>
 	  
 	  
@@ -128,6 +131,7 @@
 	
 	
 	<% if not (@trains.nil? or @trains.empty?) %>
+
 
   <h2>Trains</h2>
 	<section class="col-md-12 table-responsive">
@@ -161,6 +165,9 @@
 	    </tbody>
 	  </table>
     </section>
+		
+	<%= will_paginate @trains, param_name: :page_trains %>
+		
 	
 	<% end %>
 	

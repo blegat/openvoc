@@ -45,8 +45,8 @@ class ListsController < ApplicationController
     @words = get_words(@list)
     @wordsets = get_wordsets(@list)
     @language1_name = Language.find_by_id(@list.language1_id).name
-    @language2_name = Language.find_by_id(@list.language2_id).name
-    @trains = Train.where(list_id:@list.id)
+    @language2_name = Language.find_by_id(@list.language2_id).name    
+    @trains = Train.where(list_id:@list.id).paginate(page: params[:page_trains], per_page: 5)
     @i = 1
   end
   def destroy
@@ -172,7 +172,7 @@ class ListsController < ApplicationController
     if list.nil?
       []
     else
-      list.wordsets#.paginate(page: params[:page])
+      list.wordsets.paginate(page: params[:page_ws], per_page: 30)
     end
   end
 end

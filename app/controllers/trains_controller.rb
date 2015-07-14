@@ -62,8 +62,7 @@ class TrainsController < ApplicationController
       @previous_frag.save
       
     elsif params[:translation]
-      check_fragment
-      apply_error_policy
+      check_fragment_and_apply_error_policy
       @train.fragment_pos += 1
       @train.save
       redirect_to @train
@@ -156,16 +155,36 @@ class TrainsController < ApplicationController
   end
   
   def apply_error_policy
-    if @train.error_policy == 1
+    case @train.error_policy
+    when 1
+    when 2
+      new_fragment = @train.fragments.build(word_set_id: @actual_frag.word_set_id, sort: @actual_frag.sort, 
+                                           q_to_a: @actual_frag.q_to_a, word1_id: @actual_frag.word1_id, 
+                                           word2_id: @actual_frag.word2_id, answer: "")
+      new_fragment.save
+      old_list = @train.fragments_list
+      act_pos = @train.fragment_pos
+      if old_list.nil?
+        @train.fragments_list = newid.to_s
+      else
+        array = old_list.split(",")
+        if array.length == act_pos + 1 # if it is the last word, put new_fragment at the end (logical)
+          array.insert(array.length,new_fragment.id)
+        else # if not, don't put new_fragment just after the failed word
+          array.insert(act_pos + 2 + rand(array.length-act_pos-1),new_fragment.id)
+        end
+        @train.fragments_list = array.join(",")
+      end
     end
   end
   
-  def check_fragment
+  def check_fragment_and_apply_error_policy
     @actual_frag.answer = params[:translation]
     if @word2f.content == @actual_frag.answer
       @actual_frag.is_correct = true
     else
       @actual_frag.is_correct = false
+      apply_error_policy
     end
     @actual_frag.save
   end
@@ -205,7 +224,7 @@ class TrainsController < ApplicationController
           new_fragment = train.fragments.build(word_set_id: ws.id, sort: 1, q_to_a: 1, 
                                                word1_id: ws.word1_id, word2_id: ws.word2_id, answer: "")
           if new_fragment.save
-            add_fragment_id(train,new_fragment.id)
+            add_randomly_fragment_id(train,new_fragment.id)
           end
         end
       end
@@ -215,7 +234,7 @@ class TrainsController < ApplicationController
           new_fragment = train.fragments.build(word_set_id: ws.id, sort: 1, q_to_a: 2, 
                                                word1_id: ws.word2_id, word2_id: ws.word1_id, answer: "")
           if new_fragment.save
-            add_fragment_id(train,new_fragment.id)
+            add_randomly_fragment_id(train,new_fragment.id)
           end
         end  
       end
@@ -226,7 +245,7 @@ class TrainsController < ApplicationController
   end
   
   
-  def add_fragment_id(train,newid)
+  def add_randomly_fragment_id(train,newid)
     old_list = train.fragments_list
     if old_list.nil?
       train.fragments_list = newid.to_s
