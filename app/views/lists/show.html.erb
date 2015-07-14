@@ -119,6 +119,8 @@
 	  
 	  
 	  <%= link_to "Edit list", edit_list_path(@list), class: "btn btn-default btn-lg btn-primary"  %>
+		<%= link_to "New train", new_train_path(list_id:@list.id), class: "btn btn-default btn-lg btn-primary" %>
+		
     <% end %>
   </div>
 	
@@ -160,9 +162,9 @@
 	  </table>
     </section>
 	
-	<%= link_to "New train", new_train_path(list_id:@list.id), class: "btn btn-default btn-lg btn-primary" %>
-	
 	<% end %>
+	
+	
 	
 	
 	<% if false%>

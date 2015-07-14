@@ -121,13 +121,30 @@ class TrainsController < ApplicationController
   end
   
   def destroy
-    Train.find(params[:id]).destroy
+    train=Train.find(params[:id])
+    train.fragments.each do |t|
+      t.destroy
+    end
+    train.destroy
     redirect_to list_path(params[:list_id]), 
-        flash: { success: "List deleted" } and return
+        flash: { success: "Train deleted" } and return
   end
   
 
   private
+  
+  def get_sub_wordsets(list)
+    wordsets = WordSet.where(list_id:list.id)
+    sublists = List.where(parent_id:list.id)
+    if sublists.nil?
+      return []
+    else
+      sublists.each do |sl|
+        wordsets.concat(get_sub_wordsets(sl))
+      end
+    end
+    return wordsets
+  end
     
   def load_prev_frag(frag)
     @prev_word1 = Word.find(frag.word1_id)
@@ -174,14 +191,11 @@ class TrainsController < ApplicationController
   
   
   
-  
   def initialize_fragments(train, list) 
-    wordsets = WordSet.where(list_id:list.id)
     if train.include_sub_lists
-      sublists = List.where(parent_id:list.id)
-      sublists.each do |sl|
-        wordsets.push(*WordSet.where(list_id:sl.id))
-      end
+      wordsets = get_sub_wordsets(list)
+    else
+      wordsets = WordSet.where(list_id:list.id)
     end
 
     
