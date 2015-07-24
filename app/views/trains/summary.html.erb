@@ -20,9 +20,9 @@
 	        			<td><%= Word.find(f.word2_id).content %></td>
 								<td><%= f.answer %></td>
 								<% if f.q_to_a == true %>
-									<td><%= WordSet.find(f.word_set_id).success_ratio_qa %></td>
+									<td><%= WordSet.find(f.word_set_id).success_ratio_qa.to_i %></td>
 							  <% else %>
-									<td><%= WordSet.find(f.word_set_id).success_ratio_aq %></td>
+									<td><%= WordSet.find(f.word_set_id).success_ratio_aq.to_i %></td>
 								<% end %>
   		        </tr>	
 	          <% end %>
@@ -48,9 +48,9 @@
 	        			<td><%= Word.find(f.word2_id).content %></td>
 								<td><%= f.answer %></td>
 								<% if f.q_to_a == true %>
-									<td><%= WordSet.find(f.word_set_id).success_ratio_qa %></td>
+									<td><%= WordSet.find(f.word_set_id).success_ratio_qa.to_i %></td>
 							  <% else %>
-									<td><%= WordSet.find(f.word_set_id).success_ratio_aq %></td>
+									<td><%= WordSet.find(f.word_set_id).success_ratio_aq.to_i %></td>
 								<% end %>
   		        </tr>	
 	          <% end %>

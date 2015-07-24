@@ -51,7 +51,6 @@
         <%= f.submit "Move", class: "btn btn-default" %>
       <% end %>
     <% end %>
-		
     <% unless @new_list.nil? %>
       <%= form_for @new_list, url: path_to_create_list(@list) do |f| %>
         <%= f.label :name %>
@@ -59,35 +58,26 @@
 		<%= f.label :language_1 %>
 		<select name="language1_id" id="language1_id">
 			<% Language.all.each do |l|%>
-				<% if l == @lang1 %>
-	  			<option selected value=<%=l.id%>> <%= l.name %></option>
-				<% else %>
-  			  <option value=<%=l.id%>> <%= l.name %></option>
-				<% end %>
-	    <% end %>
+	  		 	<option value=<%=l.id%>> <%= l.name %></option>
+	    	<% end %>
 		</select>
 		<%= f.label :language_2 %>
 		<select name="language2_id" id="language2_id">
 			<% Language.all.each do |l|%>
-				<% if l == @lang2 %>
-	  			<option selected value=<%=l.id%>> <%= l.name %></option>
-				<% else %>
-  			  <option value=<%=l.id%>> <%= l.name %></option>
-				<% end %>
-	    <% end %>
+	  		 	<option value=<%=l.id%>> <%= l.name %></option>
+	    	<% end %>
 		</select>
         <br />
         <%= f.submit "Create list here", class: "btn btn-default" %>
       <% end %>
     <% end %>
 
-
     <h2>Sublists</h2>
-    <% if @childs.empty? %>
+    <% if @lists.empty? %>
       <p>No sublist.</p>
     <% else %>
       <ul>
-        <% @childs.each do |list| %>
+        <% @lists.each do |list| %>
           <li>
           <%= link_to list.name, list %>
           </li>

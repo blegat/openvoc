@@ -1,12 +1,13 @@
 class TrainsController < ApplicationController
   before_filter :signed_in_user
-  before_filter :get_train,   only: [:show]
-  before_filter :get_train2,  only: [:finalize, :summary]
-  before_filter :list_exists, only: [:create]
-  before_filter :get_list,    only: [:show, :summary]  
-  before_filter :set_rec,     only: [:create] 
-  before_filter :set_max,     only: [:create]
-  before_filter :init_create, only: [:create]
+  before_filter :expires_now    # problems could appear if page is not fully reloaded
+  before_filter :get_train,     only: [:show, :destroy]
+  before_filter :get_train2,    only: [:finalize, :summary]
+  before_filter :correct_user,  only: [:show, :finalize, :summary, :destroy]
+  before_filter :get_list,      only: [:create]
+  before_filter :get_list2,     only: [:show, :summary]
+  before_filter :get_params_create, only: [:create]
+  
    
   def new
     @train = Train.new
@@ -16,15 +17,23 @@ class TrainsController < ApplicationController
   end
   
   def create
-    @new_train = current_user.trains.build(list_id: @list.id, finished: false, success_ratio: 0.0, 
-          max: @max, type_of_train: params[:type_of_train].to_f, 
-          include_sub_lists: params[:sub_lists].to_i == 1, error_policy: params[:error_policy].to_i, 
-          fragments_list: "", fragment_pos: 0, q_to_a: params[:q_to_a].to_i, finalized: false)
+    @new_train = current_user.trains.build(list_id: @list.id, 
+                                          finished: false, 
+                                     success_ratio: 0.0, 
+                                               max: @max, 
+                                     type_of_train: @type_of_train, 
+                                 include_sub_lists: @include_sub_lists, 
+                                      error_policy: @error_policy, 
+                                    fragments_list: "",
+                                      fragment_pos: 0,
+                                            q_to_a: @q_to_a, 
+                                         finalized: false)
                   
     if @new_train.save
       initialize_fragments(@new_train, @list)
       
       if @new_train.fragments_list.empty?
+        @new_train.destroy
         redirect_to @list, flash: { info: "There is no word for training" } and return
       end
       
@@ -44,7 +53,9 @@ class TrainsController < ApplicationController
       load_fragment(@actual_frag)
     else
       @train.finished = true
-      @train.save
+      if not @train.save
+        redirect_to root_url, flash: { error: "Problem while saving the train" } and return
+      end
     end
     
     if pos >= 1
@@ -56,15 +67,24 @@ class TrainsController < ApplicationController
     if params[:modif_guess] && @previous_frag
       if params[:modif_guess][:to] == "true"
         @previous_frag.is_correct = true
+        unapply_error_policy(@previous_frag)
       else
         @previous_frag.is_correct = false
+        @train.finished = false
+        apply_error_policy(@previous_frag)
       end
-      @previous_frag.save
+      if not (@previous_frag.save && @train.save)
+        redirect_to root_url, flash: { error: "The modification could not be saved" } and return
+      end
+      puts 'redirect___'
+      redirect_to @train and return
       
     elsif params[:translation]
       check_fragment_and_apply_error_policy
       @train.fragment_pos += 1
-      @train.save
+      if not @train.save
+        redirect_to root_url, flash: { error: "The train could not be saved. Thepage cannot be loaded" } and return
+      end
       redirect_to @train
     else
       # nothing special to do
@@ -77,7 +97,6 @@ class TrainsController < ApplicationController
     end
     
   end
-  
   
   def finalize
     if @train.finalized == false
@@ -101,7 +120,9 @@ class TrainsController < ApplicationController
           end
         end
         ws.compute_ratios
-        ws.save
+        if not ws.save
+          redirect_to root_url, flash: { error: "An error occured while finalizing the train - 1" } and return
+        end
       end
       if asked != 0
         @train.success_ratio = (100 * success/asked) 
@@ -109,10 +130,11 @@ class TrainsController < ApplicationController
     end
     
     @train.finalized = true
-    @train.save
+    if not @train.save
+      redirect_to root_url, flash: { error: "An error occured while finalizing the train - 2" } and return
+    end
     redirect_to train_summary_path(@train)
   end
-
 
   def summary
     @list_frag_succeeded = TrainFragment.where(train_id: @train.id, is_correct: true)
@@ -120,11 +142,10 @@ class TrainsController < ApplicationController
   end
   
   def destroy
-    train=Train.find(params[:id])
-    train.fragments.each do |t|
+    @train.fragments.each do |t|
       t.destroy
     end
-    train.destroy
+    @train.destroy
     redirect_to list_path(params[:list_id]), 
         flash: { success: "Train deleted" } and return
   end
@@ -150,20 +171,45 @@ class TrainsController < ApplicationController
     @prev_word2 = Word.find(frag.word2_id)
     @prev_answer = frag.answer
     @prev_correct= frag.is_correct
-    puts 'HEREE'
-    puts @prev_correct
   end
   
-  def apply_error_policy
+  def unapply_error_policy(frag)
     case @train.error_policy
     when 1
     when 2
-      new_fragment = @train.fragments.build(word_set_id: @actual_frag.word_set_id, sort: @actual_frag.sort, 
-                                           q_to_a: @actual_frag.q_to_a, word1_id: @actual_frag.word1_id, 
-                                           word2_id: @actual_frag.word2_id, answer: "")
-      new_fragment.save
+      frag_to_remove = TrainFragment.where(train_id:@train.id, word_set_id:frag.word_set_id, q_to_a:frag.q_to_a).last
       old_list = @train.fragments_list
-      act_pos = @train.fragment_pos
+      if not (old_list.nil? or frag_to_remove.nil?)
+        array = old_list.split(",")
+        index = array.rindex(frag_to_remove.id.to_s) # get last index of an lement searched
+        array.delete_at(index)
+        @train.fragments_list = array.join(",")
+        if not (frag_to_remove.destroy && @train.save)
+          redirect_to root_url, flash: { error: "A problem occured while applying the unapply_error_policy" } and return
+        end
+      end
+    end
+  end
+  
+  def apply_error_policy(failed_frag)
+    case @train.error_policy
+    when 1
+    when 2
+      new_fragment = @train.fragments.build(word_set_id: failed_frag.word_set_id, 
+                                                   sort: failed_frag.sort, 
+                                                 q_to_a: failed_frag.q_to_a, 
+                                               word1_id: failed_frag.word1_id, 
+                                               word2_id: failed_frag.word2_id, 
+                                                 answer: "")
+      if not new_fragment.save
+        redirect_to root_url, flash: { error: "A problem occured while applying the error_policy" } and return
+      end
+      old_list = @train.fragments_list
+      if failed_frag == @actual_frag
+        act_pos = @train.fragment_pos
+      else
+        act_pos = @train.fragment_pos - 1
+      end
       if old_list.nil?
         @train.fragments_list = newid.to_s
       else
@@ -174,6 +220,9 @@ class TrainsController < ApplicationController
           array.insert(act_pos + 2 + rand(array.length-act_pos-1),new_fragment.id)
         end
         @train.fragments_list = array.join(",")
+        if not @train.save
+          redirect_to root_url, flash: { error: "A problem occured while applying the error_policy 2" } and return
+        end
       end
     end
   end
@@ -184,9 +233,11 @@ class TrainsController < ApplicationController
       @actual_frag.is_correct = true
     else
       @actual_frag.is_correct = false
-      apply_error_policy
+      apply_error_policy(@actual_frag)
     end
-    @actual_frag.save
+    if not @actual_frag.save
+      redirect_to root_url, flash: { error: "A problem occured while checking your answer" } and return
+    end
   end
   
   def load_fragment(frag)
@@ -197,8 +248,6 @@ class TrainsController < ApplicationController
     end
   end
   
-  
-  
   def get_nb_of_fragments
     @train.fragments_list.split(',').length
   end
@@ -207,8 +256,6 @@ class TrainsController < ApplicationController
     array = @train.fragments_list.split(',')
     array[n].to_i
   end
-  
-  
   
   def initialize_fragments(train, list) 
     if train.include_sub_lists
@@ -244,7 +291,6 @@ class TrainsController < ApplicationController
     train.save
   end
   
-  
   def add_randomly_fragment_id(train,newid)
     old_list = train.fragments_list
     if old_list.nil?
@@ -253,28 +299,6 @@ class TrainsController < ApplicationController
       array = old_list.split(",")
       array.insert(rand(array.length+1),newid)
       train.fragments_list = array.join(",")
-    end
-  end
-  
-  
-  
-  def pick_new_ws
-    ws_ids = @train.word_sets_ids
-    if ws_ids.nil?
-      @train.actual_ws_id = -1
-    else 
-      ws_ids_array = ws_ids.split(',')
-      if ws_ids_array.empty?
-        @train.actual_ws_id = -1
-      else
-        @train.actual_ws_id = ws_ids_array[rand(ws_ids_array.length)].to_i
-        ws_ids_array.delete(@train.actual_ws_id.to_s)
-        @train.word_sets_ids = ws_ids_array.join(',')        
-      end
-    end
-    if not @train.save
-      flash_errors(@train)
-      redirect_to root_path and return
     end
   end
   
@@ -298,7 +322,9 @@ class TrainsController < ApplicationController
     end
   end
 
-  def set_max
+  def get_params_create
+    @rec = (params[:train][:rec] == "1" ? 1 : 0)
+    
     if params[:train][:max].nil?
       raise params[:train][:max].to_s
       redirect_to root_path and return
@@ -308,20 +334,59 @@ class TrainsController < ApplicationController
       raise @max.to_s
       redirect_to root_path and return
     end
+    
+    if params[:train][:type_of_train].nil?
+      raise params[:train][:type_of_train].to_s
+      redirect_to root_path and return
+    end
+    @type_of_train = params[:train][:type_of_train].to_i
+    if not @type_of_train.in?([1, 2, 3])
+      raise @type_of_train.to_s
+      redirect_to root_path and return
+    end
+    
+    if params[:train][:type_of_train].nil?
+      raise params[:train][:type_fo_train].to_s
+      redirect_to root_path and return
+    end
+    @type_of_train = params[:train][:type_of_train].to_i
+    if not @type_of_train.in?([1, 2, 3])
+      raise @type_of_train.to_s
+      redirect_to root_path and return
+    end
+    
+    @include_sub_lists = (params[:train][:include_sub_lists] == "1" ? true : false)
+    
+    if params[:train][:error_policy].nil?
+      raise params[:train][:error_policy].to_s
+      redirect_to root_path and return
+    end
+    @error_policy = params[:train][:error_policy].to_i
+    if not @error_policy.in?([1, 2])
+      raise @error_policy.to_s
+      redirect_to root_path and return
+    end
+    
+    if params[:train][:q_to_a].nil?
+      raise params[:train][:q_to_a].to_s
+      redirect_to root_path and return
+    end
+    @q_to_a = params[:train][:q_to_a].to_i
+    if not @q_to_a.in?([1, 2, 3])
+      raise @q_to_a.to_s
+      redirect_to root_path and return
+    end
+    
   end
-  
-  def set_rec
-    @rec = (params[:train][:rec] == "1" ? 1 : 0)
-  end
-  
-  def list_exists
+
+  def get_list
     @list = List.find_by_id(params[:train][:list_id])
     if @list.nil?
       redirect_to root_path and return
     end
   end
 
-  def get_list
+  def get_list2
     @list = List.find_by_id(@train.list_id)
     if @list.nil?
       redirect_to root_path and return
@@ -342,10 +407,9 @@ class TrainsController < ApplicationController
     end
   end
   
-  def init_create
-    if params[:type_of_train].nil? || params[:sub_lists].nil? || params[:error_policy].nil?
-      redirect_to @list and return
-    end
+  def correct_user
+    user = User.find(@train.user_id)
+    redirect_to(root_url) unless user == current_user
   end
   
 end

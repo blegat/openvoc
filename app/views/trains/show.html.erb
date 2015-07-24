@@ -27,7 +27,7 @@
 <% else %>
 <%= form_for(:guess, url: train_path(@train), method: :get)  do %>
   <%= label_tag :translation, "What is the translation for \"#{@word1f.content}\"?" %>
-  <%= text_field_tag :translation, nil, options = {autofocus: :autofocus} %>
+  <%= text_field_tag :translation, nil, options = {autofocus: :autofocus, autocomplete: :off} %>
   <%= submit_tag "Submit", class: "btn btn-default" %>
 <% end %>
 
