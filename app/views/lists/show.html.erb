@@ -56,31 +56,46 @@
       <%= form_for @new_list, url: path_to_create_list(@list) do |f| %>
         <%= f.label :name %>
         <%= f.text_field :name %>
-		<%= f.label :language_1 %>
-		<select name="language1_id" id="language1_id">
-			<% Language.all.each do |l|%>
-				<% if l == @lang1 %>
-	  			<option selected value=<%=l.id%>> <%= l.name %></option>
-				<% else %>
-  			  <option value=<%=l.id%>> <%= l.name %></option>
-				<% end %>
-	    <% end %>
-		</select>
-		<%= f.label :language_2 %>
-		<select name="language2_id" id="language2_id">
-			<% Language.all.each do |l|%>
-				<% if l == @lang2 %>
-	  			<option selected value=<%=l.id%>> <%= l.name %></option>
-				<% else %>
-  			  <option value=<%=l.id%>> <%= l.name %></option>
-				<% end %>
-	    <% end %>
-		</select>
+		    <%= f.label :language_1 %>
+		    <select name="language1_id" id="language1_id">
+			    <% Language.all.each do |l|%>
+				    <% if l == @lang1 %>
+	  			    <option selected value=<%=l.id%>> <%= l.name %></option>
+				    <% else %>
+  			      <option value=<%=l.id%>> <%= l.name %></option>
+				    <% end %>
+	        <% end %>
+		    </select>
+		    <%= f.label :language_2 %>
+		    <select name="language2_id" id="language2_id">
+			    <% Language.all.each do |l|%>
+				    <% if l == @lang2 %>
+	  			    <option selected value=<%=l.id%>> <%= l.name %></option>
+				    <% else %>
+  			      <option value=<%=l.id%>> <%= l.name %></option>
+				    <% end %>
+	        <% end %>
+		    </select>
         <br />
         <%= f.submit "Create list here", class: "btn btn-default" %>
       <% end %>
     <% end %>
+		
+		
+		<% if @export %>
+		
+		<%= form_for :export, url: list_exporting_path(@list), method: :get do |f| %>
+		  <%= hidden_field_tag 'export[trains]', nil %>
+		  <%= hidden_field_tag 'export[results]', nil %>
+		  Save trains?    : <%= check_box_tag "export[trains]", "1", true %>
+		  Save your success results?    : <%= check_box_tag "export[results]", "1", true %>
+		  <%= f.submit %>
+		<% end %>
+		
 
+		<% end %>
+		
+<!-- url: list_exporting_path(@list) -->
 
     <h2>Sublists</h2>
     <% if @childs.empty? %>

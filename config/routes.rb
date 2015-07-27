@@ -49,6 +49,7 @@ Rails.application.routes.draw do
   end
 
   resources :lists, only: [:new, :create, :index, :show, :edit, :destroy] do
+    get "/exporting" => "lists#exporting", as: :exporting
     get "/export" => "lists#export", as: :export
     get "/moving" => "lists#moving", as: :moving
     get "/move" => "lists#move", as: :move

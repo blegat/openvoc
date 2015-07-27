@@ -36,6 +36,7 @@ class List < ActiveRecord::Base
   has_many :words, through: :inclusions
   has_many :inclusions, dependent: :destroy
   has_many :wordsets, foreign_key: :list_id, class_name: "WordSet"
+  has_many :trains, foreign_key: :list_id
   
   validate :language1_id, presence: true
   validate :language2_id, presence: true

@@ -1,8 +1,9 @@
 class ListsController < ApplicationController
   before_filter :signed_in_user
   before_filter :get_list, only: [:show, :edit, :destroy]
-  before_filter :get_list2, only: [:create, :new, :moving, :move, :export]
-  before_filter :get_data_show, only: [:new, :show, :move, :moving]
+  before_filter :get_list2, only: [:create, :new, :moving, :move, :export, :exporting]
+  before_filter :get_data_show, only: [:new, :show, :move, :moving, :export, :exporting]
+  before_filter :check_data_export, only: [:exporting]
   def new
     @new_list = current_user.lists.build
     if @list
@@ -89,24 +90,107 @@ class ListsController < ApplicationController
       render :text => "File has been uploaded successfully"
   end
   def export
-    content = "" 
-    @list.wordsets.each do |ws|
-      word1 = Word.find_by_id(ws.word1_id)
-      word2 = Word.find_by_id(ws.word2_id)
-      content = content + word1.content + ", "+ word2.content + "\n"
-    end    
-    if false
-      content = @list.words.inject("") do |sum, word|
-        "#{sum}#{word.content}|#{word.translations.inject("") do |s, w|
-          if s.blank?
-            "#{w.content}"
-          else
-            "#{s},#{w.content}"
+    @export = true
+    render :show
+  end
+  def exporting
+    # content = ""
+    # @list.wordsets.each do |ws|
+    #   word1 = Word.find_by_id(ws.word1_id)
+    #   word2 = Word.find_by_id(ws.word2_id)
+    #   content = content + word1.content + ", "+ word2.content + "\n"
+    # end
+    # if false
+    #   content = @list.words.inject("") do |sum, word|
+    #     "#{sum}#{word.content}|#{word.translations.inject("") do |s, w|
+    #       if s.blank?
+    #         "#{w.content}"
+    #       else
+    #         "#{s},#{w.content}"
+    #       end
+    #     end}\n"
+    #   end
+    # end
+    #send_data content, filename: @list.name + '.txt' # TODO no safe
+    
+    #send_data @list.to_xml, filename: "test"
+    
+    require 'nokogiri'
+    content = Nokogiri::XML::Builder.new do |xml|
+      xml.root {
+        xml.version 0.1
+        xml.list{
+          xml.name @list.name
+          xml.language1_id @list.language1_id
+          xml.language2_id @list.language2_id
+          
+          xml.wordsets {
+            @list.wordsets.each do |ws|
+              xml.wordset{
+                xml.word1{
+                  word1 = Word.find_by_id(ws.word1_id)
+                  xml.id          word1.id
+                  xml.content     word1.content
+                  xml.language_id word1.language_id
+                }
+                xml.word2{
+                  word2 = Word.find_by_id(ws.word2_id)
+                  xml.id          word2.id
+                  xml.content     word2.content
+                  xml.language_id word2.language_id
+                }
+                xml.meaning1_id      ws.meaning1_id
+                xml.meaning2_id      ws.meaning2_id
+                
+                if params[:export][:results].to_i == 1
+                  xml.asked_qa         ws.asked_qa
+                  xml.success_qa       ws.success_qa
+                  xml.success_ratio_qa ws.success_ratio_qa
+                  xml.asked_aq         ws.asked_aq
+                  xml.success_aq       ws.success_aq
+                  xml.success_ratio_aq ws.success_ratio_aq
+                end
+              }
+            end
+          }
+          
+          if params[:export][:trains].to_i == 1
+            xml.trains {
+              @list.trains.each do |t|
+                xml.train {
+                  xml.created_at          t.created_at
+                  xml.updated_at          t.updated_at
+                  xml.finished            t.finished
+                  xml.success_ratio       t.success_ratio
+                  xml.max                 t.max
+                  xml.type_of_train       t.type_of_train
+                  xml.error_policy        t.error_policy
+                  xml.include_sub_lists   t.include_sub_lists
+                  xml.fragments_list      t.fragments_list
+                  xml.q_to_a              t.q_to_a
+                  xml.finalized           t.finalized
+                
+                  xml.train_fragments {
+                    t.fragments.each do |tf|
+                      xml.train_fragment {
+                        xml.id          tf.id
+                        xml.sort        tf.sort
+                        xml.q_to_a      tf.q_to_a
+                        xml.word1_id    tf.word1_id
+                        xml.word2_id    tf.word2_id
+                        xml.answer      tf.answer
+                        xml.is_correct  tf.is_correct 
+                      }
+                    end
+                  }
+                }
+              end
+            }
           end
-        end}\n"
-      end
+        }
+      }
     end
-    send_data content, filename: @list.name + '.txt' # TODO no safe
+    send_data content.to_xml, filename: "test.xml" 
   end
   
   # def training
@@ -193,5 +277,10 @@ class ListsController < ApplicationController
     @words = get_words(@list)
     @wordsets = get_wordsets(@list)
     @i = 1
+  end
+  def check_data_export
+    if  params[:export].nil?
+      redirect_to @list
+    end
   end
 end

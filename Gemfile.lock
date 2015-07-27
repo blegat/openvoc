@@ -245,6 +245,7 @@ DEPENDENCIES
   faker (= 1.4.3)
   jquery-rails
   mysql2
+  nokogiri (= 1.6.6.2)
   omniauth-github
   omniauth-google-oauth2
   omniauth-identity

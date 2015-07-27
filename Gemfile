@@ -14,6 +14,7 @@ gem 'omniauth-github'
 gem 'omniauth-google-oauth2'
 gem 'omniauth-identity'
 gem 'algorithms'
+gem 'nokogiri', '1.6.6.2'
 
 
 group :development, :test do
