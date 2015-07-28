@@ -28,7 +28,7 @@
           <span class="input-group-addon">
             <%= f.radio_button :action, "donothing", checked: true %>
           </span>
-          <%= f.label :meaning, "This is exactly their common meaning I wanted. No meaning to add :)", value: "donothing", class: 'form-control'  %>
+          <%= f.label :action, "This is exactly their common meaning I wanted. No meaning to add :)", value: "donothing", class: 'form-control'  %>
         </div><!-- /input-group -->
       <% else %>
         <% @new_by_default = true %>
@@ -37,7 +37,7 @@
         <span class="input-group-addon">
           <%= f.radio_button :action, "new", checked: @new_by_default %>
         </span>
-        <%= f.label :meaning, "Create a new meaning and link both words to it", value: "new", class: 'form-control'  %>
+        <%= f.label :action, "Create a new meaning and link both words to it", value: "new", class: 'form-control'  %>
       </div><!-- /input-group -->
       <% [word1, word2].each do |word| %>
         <% first = true %>
@@ -61,7 +61,7 @@
 				else
 					lang = word1.language
 				end%>
-              <%= f.label :meaning, render("meanings/showshort", meaning:m, language:lang, withoutWord:word), value: m.id.to_s, class: 'form-control'  %>
+              <%= f.label :action, render("meanings/showshort", meaning:m, language:lang, withoutWord:word), value: m.id.to_s, class: 'form-control'  %>
             </div><!-- /input-group -->
           <% end %>
         <% end %>

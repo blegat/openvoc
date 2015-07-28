@@ -19,18 +19,18 @@
         <% end %>
         <div class="input-group">
           <span class="input-group-addon">
-            <%= f.radio_button :meaning, "donothing", checked: true %>
+            <%= f.radio_button :action, "donothing", checked: true %>
           </span>
-          <%= f.label :meaning, "This is exactly their common meaning I wanted. No meaning to add :)", value: "donothing", class: 'form-control'  %>
+          <%= f.label :action, "This is exactly their common meaning I wanted. No meaning to add :)", value: "donothing", class: 'form-control'  %>
         </div><!-- /input-group -->
       <% else %>
         <% @new_by_default = true %>
       <% end %>
       <div class="input-group">
         <span class="input-group-addon">
-          <%= f.radio_button :meaning, "new", checked: @new_by_default %>
+          <%= f.radio_button :action, "new", checked: @new_by_default %>
         </span>
-        <%= f.label :meaning, "Create a new meaning and links both words to it", value: "new", class: 'form-control'  %>
+        <%= f.label :action, "Create a new meaning and links both words to it", value: "new", class: 'form-control'  %>
       </div><!-- /input-group -->
       <% [@word1, @word2].each do |word| %>
         <% first = true %>
@@ -42,9 +42,9 @@
             <% end %>
             <div class="input-group">
               <span class="input-group-addon">
-                <%= f.radio_button :meaning, m.id %>
+                <%= f.radio_button :action, m.id %>
               </span>
-              <%= f.label :meaning, m.id.to_s, value:  m.id.to_s, class: 'form-control'  %>
+              <%= f.label :action, m.id.to_s, value:  m.id.to_s, class: 'form-control'  %>
             </div><!-- /input-group -->
           <% end %>
         <% end %>
