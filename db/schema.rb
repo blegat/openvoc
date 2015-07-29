@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150713130636) do
+ActiveRecord::Schema.define(version: 20150727103023) do
 
   create_table "authentications", force: true do |t|
     t.integer  "user_id"
@@ -58,10 +58,12 @@ ActiveRecord::Schema.define(version: 20150713130636) do
     t.datetime "updated_at"
     t.integer  "language1_id"
     t.integer  "language2_id"
+    t.integer  "public_level", default: 0
   end
 
   add_index "lists", ["owner_id"], name: "index_lists_on_owner_id"
   add_index "lists", ["parent_id"], name: "index_lists_on_parent_id"
+  add_index "lists", ["public_level"], name: "index_lists_on_public_level"
 
   create_table "meanings", force: true do |t|
     t.datetime "created_at"

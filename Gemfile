@@ -15,6 +15,8 @@ gem 'omniauth-google-oauth2'
 gem 'omniauth-identity'
 gem 'algorithms'
 gem 'nokogiri', '1.6.6.2'
+gem 'prawn',    '2.0.2'
+gem 'prawn-table', '0.2.2'
 
 
 group :development, :test do

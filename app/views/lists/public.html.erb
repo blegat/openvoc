@@ -1,0 +1,13 @@
+<% provide(:title, 'Public lists') %>
+<h1>Public lists</h1>
+
+
+<ul>
+  <% @publiclist.each do |l| %>
+    <li>
+      <%= link_to "#{l.owner.name}/#{l.name}", l %>
+    </li>
+  <% end %>
+</ul>
+
+<%= will_paginate @publiclist, param_name: :page %>

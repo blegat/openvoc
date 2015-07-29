@@ -1,4 +1,4 @@
-<% provide(:title, 'List') %>
+<% provide(:title, "Training") %>
 <h1><%= @path %></h1>
 
 
@@ -76,6 +76,13 @@
 				    <% end %>
 	        <% end %>
 		    </select>
+				
+				<%= f.label :public_level %>
+		    <select name="public_level" id="public_level">
+	  	    <option value=0>Private</option>
+	  	    <option value=10>Public</option>
+		    </select>
+				
         <br />
         <%= f.submit "Create list here", class: "btn btn-default" %>
       <% end %>
@@ -85,11 +92,25 @@
 		<% if @export %>
 		
 		<%= form_for :export, url: list_exporting_path(@list), method: :get do |f| %>
-		  <%= hidden_field_tag 'export[trains]', nil %>
-		  <%= hidden_field_tag 'export[results]', nil %>
+		  <%= hidden_field_tag 'export[trains]', 0 %>
+		  <%= hidden_field_tag 'export[results]', 0 %>
+		  <%= hidden_field_tag 'export[sub_lists]', 0 %>
+			Exportation format: 
+	    <select onchange="export_select_change()" id="export_select" name="export[format]">
+  	    <option value=0>.ovoc</option>
+  	    <option value=1>.ods</option>
+  	    <option value=2>.xlsx</option>
+  	    <option value=3>.pdf</option>
+  	    <option value=4>.txt</option>
+	    </select>
+			<br \>
 		  Save trains?    : <%= check_box_tag "export[trains]", "1", true %>
+			<br \>
 		  Save your success results?    : <%= check_box_tag "export[results]", "1", true %>
-		  <%= f.submit %>
+			<br \>
+		  Export sub lists?    : <%= check_box_tag "export[sub_lists]", "1", true %>
+			<br \>
+		  <%= f.submit "Export!"%>
 		<% end %>
 		
 
@@ -104,8 +125,9 @@
       <ul>
         <% @childs.each do |list| %>
           <li>
-          <%= link_to list.name, list %>
-          </li>
+          <%= link_to list.name, list %> <%= image_tag("public16.png", :alt => "rss feed") if list.public_level == 10%>
+					
+				</li>
         <% end %>
       </ul>
     <% end %>
@@ -212,4 +234,16 @@
     </div>
   <% end %>
 	<% end %>
+	
+	
+	
+	<script>
+	function export_select_change() {
+	    var x = document.getElementById("export_select").value;
+			if (x == ".odoc"){
+			} else{
+				
+			}
+	}
+	</script>
 </div>

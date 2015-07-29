@@ -48,6 +48,8 @@ Rails.application.routes.draw do
     get "/finalize", to: "trains#finalize", as: :finalize
   end
 
+  get "/publiclists" => "lists#public", as: :public
+
   resources :lists, only: [:new, :create, :index, :show, :edit, :destroy] do
     get "/exporting" => "lists#exporting", as: :exporting
     get "/export" => "lists#export", as: :export
