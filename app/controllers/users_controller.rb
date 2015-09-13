@@ -60,6 +60,7 @@ class UsersController < ApplicationController
     render :new
   end
   
+  
   def show
   end
   

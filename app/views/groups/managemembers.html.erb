@@ -1,0 +1,34 @@
+<div class="row">
+  <div class="col-md-10">
+		<p>Add someone to the group using this form. Search for his/her name or his/her email and then click on his/her name.</p>
+		<%= form_tag("members", method: "get") do %>
+		  <%= label_tag(:q, "Search for:") %>
+		  <%= text_field_tag(:q) %>
+		  <%= submit_tag("Search") %>
+		<% end %>
+		
+		
+		<% unless @users_search_list.nil? or @users_search_list.empty? %>
+		  <ul>
+			<% @users_search_list.each do |u| %>
+		    <li>
+		      <%= link_to "#{u.name}", controller: :groups, action: :managemembers, user_id:u.id %>
+		    </li>
+			<% end%>
+		  </ul>
+		<% else %>
+		  <p>No user matches your queries. Try again!</p>
+		<% end %>
+		
+	</br>
+	Below are the group members. Click on a name to remove it from the group.
+	<ul>
+	  <% @group.members.each do |u| %>
+	    <li>
+	      <%= link_to "#{u.name}", group_manage_members_remove_path(@group, user_id:u.id), method: :post, data: {confirm: "You sure?"} %>
+	    </li>
+    <% end%>
+	</ul>
+	</div>
+</div>
+

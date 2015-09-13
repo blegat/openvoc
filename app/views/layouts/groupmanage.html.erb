@@ -1,0 +1,22 @@
+<% provide(:title, "Group manage") %>
+<h1>Manage group "<%= @group.name%>"</h1>
+
+
+
+<div class="row">
+  <div class="col-md-2">
+    <ul class="nav nav-tabs nav-stacked">
+      <li <%= 'class="active"'.html_safe if @m_general %>>
+        <%= link_to "General", group_manage_general_path(@group) %>
+      </li>
+      <li <%= 'class="active"'.html_safe if @m_members %>>
+        <%= link_to "Members", group_manage_members_path(@group) %>
+      </li>
+    </ul>
+  </div>
+  <div class="col-md-10">
+    <%= yield %>
+  </div>
+</div>
+
+<%= parent_layout 'application' %>

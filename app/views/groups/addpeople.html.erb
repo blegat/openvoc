@@ -1,0 +1,38 @@
+<% provide(:title, "Groups") %>
+<h1>Groups</h1>
+
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="btn-group">
+      <a class="btn btn-default dropdown-toggle" data-toggle="dropdown" href="#">
+        Action <i class="glyphicon-cog"></i>
+        <span class="caret"></span>
+      </a>
+      <ul class="dropdown-menu">
+        <li>
+				  <%= link_to "Back to the group", group_lists_path(@group) %>
+			  </li>
+      </ul>
+    </div>
+		
+		<%= form_tag("addpeople", method: "get") do %>
+		  <%= label_tag(:q, "Search for:") %>
+		  <%= text_field_tag(:q) %>
+		  <%= submit_tag("Search") %>
+		<% end %>
+		
+		
+		<% unless @users_list.nil? or @users_list.empty? %>
+		  <ul>
+			<% @users_list.each do |u| %>
+		    <li>
+		      <%= link_to "#{u.name}", controller: :groups, action: :addpeople, user_id:u.id  %>
+		    </li>
+			<% end%>
+		  </ul>
+		<% else %>
+		  <p>No user matches your queries. Try again!</p>
+		<% end %>
+	</div>
+</div>

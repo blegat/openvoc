@@ -30,10 +30,18 @@ class User < ActiveRecord::Base
   has_many :words, foreign_key: :owner_id
   has_many :links, foreign_key: :owner_id
 
-  has_many :lists, foreign_key: :owner_id
-  has_many :inlusions, foreign_key: :author_id
+  has_many :lists, foreign_key: :owner_id, dependent: :destroy
+  has_many :inclusions, foreign_key: :author_id
 
   has_many :trains, dependent: :destroy
+  
+  has_many :link_votes, foreign_key: :user_id, class_name: "LinkVote"
+  
+  has_many :group_memberships, class_name:  "GroupMembership",
+                               foreign_key: :user_id,
+                               dependent:   :destroy  
+  has_many :groups, through: :group_memberships, source: :group
+  
 
   def root_lists
     self.lists.find_all_by_parent_id(nil)
@@ -56,6 +64,14 @@ class User < ActiveRecord::Base
     if self.root.nil?
       self.root = self.lists.create(name: '/')
       self.root
+    end
+  end
+  
+  def faker_of_group
+    if not self.faker?
+      return nil
+    else
+      return Group.find_by(faker_id:self.id)
     end
   end
 
@@ -101,6 +117,28 @@ class User < ActiveRecord::Base
 
   def password_required?
     (authentications.empty? || !password.blank?) && super
+  end
+  
+  def is_member?(group)
+    if group.nil?
+      return false
+    end
+    if GroupMembership.find_by(group_id:group.id, user_id:self.id)
+      return true
+    else
+      return false
+    end
+  end
+  
+  def is_admin?(group)
+    if group.nil?
+      return false
+    end
+    if GroupMembership.find_by(group_id:group.id, user_id:self.id, admin?:true)
+      return true
+    else
+      return false
+    end
   end
 
   private

@@ -1,12 +1,13 @@
 class ListsController < ApplicationController
   before_filter :signed_in_user
+  before_filter :create_group_and_user
   before_filter :get_list, only: [:show, :edit, :destroy]
   before_filter :get_list2, only: [:moving, :move, :export, :exporting]
-  before_filter :correct_user, only: [:show, :destroy, :deit, :moving, :move, :import, :export, :exporting]
-  before_filter :get_data_show, only: [:new, :show, :move, :moving, :export, :exporting]
+  before_filter :correct_user, only: [:index, :show, :destroy, :deit, :moving, :move, :import, :export, :exporting]
+  before_filter :get_data_show, only: [:new, :show, :moving, :export, :exporting]
   before_filter :check_data_export, only: [:exporting]
   def new
-    @new_list = current_user.lists.build
+    @new_list = @user.lists.build
     if params[:list_id] && @list = List.find(params[:list_id])
       correct_user
       @lang1 = Language.find(@list.language1_id)
@@ -15,7 +16,7 @@ class ListsController < ApplicationController
     render :show
   end
   def create
-    @new_list = current_user.lists.build(name: params[:list][:name])
+    @new_list = @user.lists.build(name: params[:list][:name])
     @new_list.language1_id = params["language1_id"].to_i
     @new_list.language2_id = params["language2_id"].to_i
     @new_list.public_level = params["public_level"].to_i
@@ -25,7 +26,7 @@ class ListsController < ApplicationController
     end
     if @new_list.save
       flash.now[:success] = "#{@new_list.name} successfully created"
-      redirect_to @new_list
+      redirect_to path_for_list(@new_list, @group)
     else
       flash_errors(@new_list)
       @path = get_path(@list)
@@ -36,13 +37,14 @@ class ListsController < ApplicationController
   end
   def index
     @path = '/'
-    @childs = current_user.root_lists
+    @childs = @user.root_lists
+    @groups_list = @current_user.groups
     render :show
   end
   def show
     @language1_name = Language.find_by_id(@list.language1_id).name
     @language2_name = Language.find_by_id(@list.language2_id).name    
-    @trains = Train.where(list_id:@list.id).paginate(page: params[:page_trains], per_page: 5)
+    @trains = Train.where(list_id:@list.id, user_id:current_user.id).paginate(page: params[:page_trains], per_page: 5)
   end
   def destroy
     get_all_childs(@list).each do |ch|
@@ -54,10 +56,10 @@ class ListsController < ApplicationController
     
     @list.wordsets.each do |ws|
       ws.destroy
-    end    
+    end  
     @list.destroy
     
-    redirect_to lists_path, 
+    redirect_to path_for_root_list(@group), 
         flash: { success: "List deleted" } and return
   end
   def edit
@@ -78,7 +80,7 @@ class ListsController < ApplicationController
       @list.save
     else
       @dest = List.find_by_id(params[:dest][:list_id])
-      if @dest.nil? or @dest.owner != current_user or
+      if @dest.nil? or @dest.owner != @user or
         @dest == @list or @dest.in?(@list.rec_parents)
         @moving = true
         flash.now[:danger] = "Invalid destination"
@@ -87,6 +89,7 @@ class ListsController < ApplicationController
         @list.save
       end
     end
+    get_data_show
     render :show
   end
   def import
@@ -139,6 +142,14 @@ class ListsController < ApplicationController
   
   
   private
+  def create_group_and_user
+    if params[:group_id]
+      @group = Group.find(params[:group_id])
+      @user = User.find(@group.faker_id)
+    else
+      @user = current_user
+    end
+  end
   def get_list
     @list = List.find_by_id(params[:id])
     if @list.nil?
@@ -160,7 +171,7 @@ class ListsController < ApplicationController
   end
   def get_childs(list)
     if list.nil?
-      current_user.root_lists
+      @user.root_lists
     else
       list.childs
     end
@@ -181,7 +192,7 @@ class ListsController < ApplicationController
   end
   def get_all_childs(list)
     if list.nil?
-      current_user.root_lists
+      @useruser.root_lists
     else
       childs = list.childs
       if childs.nil?
@@ -209,8 +220,32 @@ class ListsController < ApplicationController
     end
   end
   def correct_user
-    user = @list.owner
-    unless (user == current_user || @list.public_level == 10) 
+    if ((params[:action] == "index") && @group.nil?)
+      return
+    end
+        
+    if @list
+      test1 = (@list.owner == current_user)
+      test2 = (@list.public_level == 10)
+      if @group
+        test3 = @group.has_list?(@list) && current_user.is_member?(@group)
+        test4 = @group.public?
+      end
+    else
+      if @group
+        test5 = (current_user.is_member?(@group)) && (not @list)
+        test6 = @group.public?
+      end   
+    end
+
+    unless ( test1 || test2 || test3 || test4 || test5 || test6) 
+      if @list && (not @group) && @list.owner.faker?
+        supposed_group = @list.owner.faker_of_group
+        if current_user.is_member?(supposed_group)
+          redirect_to group_list_path(supposed_group, @list)
+          return
+        end
+      end
       flash[:danger] = "You may not access this page"
       redirect_to(root_url) 
     end
@@ -344,6 +379,22 @@ class ListsController < ApplicationController
       }
     end
     send_data content.to_xml, filename: "export.ovoc" 
+  end
+
+  def path_for_list(list,group)
+    if group.nil?
+      list_path(list)
+    else
+      group_list_path(group, list)
+    end
+  end
+  
+  def path_for_root_list(group)
+    if group.nil?
+      lists_path
+    else
+      group_lists_path(group)
+    end
   end
 
 end

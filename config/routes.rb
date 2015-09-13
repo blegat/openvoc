@@ -16,6 +16,8 @@
 ### END LICENSE
 
 Rails.application.routes.draw do
+  get 'link_vote/new'
+
   get 'train_fragment/new'
 
   resources :meanings
@@ -54,7 +56,7 @@ Rails.application.routes.draw do
     get "/exporting" => "lists#exporting", as: :exporting
     get "/export" => "lists#export", as: :export
     get "/moving" => "lists#moving", as: :moving
-    get "/move" => "lists#move", as: :move
+    post "/move" => "lists#move", as: :move
     get "/import" => "lists#import", as: :import
     get "/upload" => "upload#upload", as: :upload
     match "/save_upload" => "upload#save_upload", via: :post, as: :save_upload
@@ -64,5 +66,30 @@ Rails.application.routes.draw do
     end
     resources :lists, only: [:new, :create, :edit, :destroy]
     resources :words, only: [:destroy]
+  end
+  
+  get "/groups/search" => "groups#search", as: :groupsearch
+  
+  resources :groups, only: [:new, :create, :index, :show, :edit, :destroy] do
+    get "/leave" => "groups#leave"
+    get "/manage/general" => "groups#managegeneral"
+    patch "manage/general" => "groups#managegeneralpatch"
+    get "/manage/members" => "groups#managemembers"
+    post "/manage/members/remove" => "groups#managemembersremove"
+    get "/add" => "groups#add"
+    get "/addpeople" => "groups#addpeople"
+    
+    resources :lists, only: [:new, :create, :index, :show, :edit, :destroy] do
+      get "/exporting" => "lists#exporting", as: :exporting
+      get "/export" => "lists#export", as: :export
+      get "/moving" => "lists#moving", as: :moving
+      post "/move" => "lists#move", as: :move
+      get "/import" => "lists#import", as: :import
+      get "/upload" => "upload#upload", as: :upload
+      match "/save_upload" => "upload#save_upload", via: :post, as: :save_upload
+      resources :trains, only: [:new, :create]
+      resources :lists, only: [:new, :create, :edit, :destroy]
+      resources :words, only: [:destroy]
+    end
   end
 end

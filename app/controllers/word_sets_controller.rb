@@ -43,7 +43,7 @@ class WordSetsController < ApplicationController
       
       
       if common_meanings.length == 0 #!word1.has_meaning? && !word2.has_meaning?
-        newMeaning = Meaning.create(pro:1, contra:9, confidence:0.1)
+        newMeaning = Meaning.create()
         [word1, word2].each do |word|
           unless newMeaning.words.include?(word)
             link = newMeaning.links.create(word:word, owner: current_user)
@@ -57,15 +57,18 @@ class WordSetsController < ApplicationController
         newWordSet.meaning1_id = newMeaning.id
         newWordSet.meaning2_id = newMeaning.id
       
-      elsif  common_meanings.length == 1
-        common_meanings[0].pro = common_meanings[0].pro + 1
-        common_meanings[0].confidence = (common_meanings[0].pro.to_f) / (common_meanings[0].contra.to_f + common_meanings[0].pro.to_f)
-        
-        if !common_meanings[0].save 
-            flash_errors(common_meanings[0], false) 
-            redirect_to edit_list_url(list)
-            return
-        end                
+      elsif  common_meanings.length == 1 #TODO what to do?
+        common_meanings[0].links.each do |l|
+          if l.word.content == word1.content or l.word.content == word2.content
+            l.pro += 1
+            if !l.save 
+              flash_errors(l, false) 
+              redirect_to edit_list_url(list)
+              return
+            end 
+          end
+        end
+                         
         newWordSet.meaning1_id = common_meanings[0].id
         newWordSet.meaning2_id = common_meanings[0].id
       end

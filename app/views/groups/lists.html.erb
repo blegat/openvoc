@@ -1,0 +1,30 @@
+<% provide(:title, "Groups") %>
+<h1>Groups</h1>
+
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="btn-group">
+      <a class="btn btn-default dropdown-toggle" data-toggle="dropdown" href="#">
+        Action <i class="glyphicon-cog"></i>
+        <span class="caret"></span>
+      </a>
+      <ul class="dropdown-menu">
+        <li>
+				  <%= link_to "Create a new group", new_group_path %>
+			  </li>
+      </ul>
+    </div>
+		
+		
+		<% unless @groups_list.nil? %>
+			<% @groups_list.each do |f| %>
+		    <li>
+		      <%= link_to "#{f.name}", f %>
+		    </li>
+			<% end%>
+		<% else %>
+		  <p>You have no groups. Create one or wait for an invitation.</p>
+		<% end %>
+	</div>
+</div>

@@ -26,6 +26,17 @@ class Link < ActiveRecord::Base
 
   belongs_to :word, class_name: "Word"#, foreign_key: 'word1_id'
   belongs_to :meaning, class_name: "Meaning"#, foreign_key: 'word2_id'
+  
+  has_many :link_votes, foreign_key: :link_id, class_name: "LinkVote"
+  
+  before_save :default_values
+  
+  
+  def default_values
+    self.pro ||= 1
+    self.contra ||= 9
+  end
+  
 end
 # == Schema Information
 # Schema version: 20130822154326

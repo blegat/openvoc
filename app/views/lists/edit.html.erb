@@ -1,7 +1,11 @@
 <% provide(:title, 'List editing') %>
-<h1><%= @path %></h1>
+<% if @group.nil? %>
+	<h1><%= @path %></h1>
+<% else %>
+	<h1><%= "[#{@group.name}]#{@path}" %></h1>
+<% end %>
 
-<%= link_to "Back to list", list_path(@list), class: "btn btn-default btn-lg btn-primary"  %>
+<%= link_to "Back to list", path_for_list(@list,@group), class: "btn btn-default btn-lg btn-primary"  %>
 
 <div class="col-md-12">
     <% unless @list.nil? %>

@@ -1,5 +1,9 @@
 <% provide(:title, "Training") %>
-<h1><%= @path %></h1>
+<% if @group.nil? %>
+	<h1><%= @path %></h1>
+<% else %>
+	<h1><%= "[#{@group.name}]#{@path}" %></h1>
+<% end %>
 
 
 <div class="row">
@@ -10,29 +14,44 @@
         <span class="caret"></span>
       </a>
       <ul class="dropdown-menu">
+				<% if @group && (not current_user.is_member?(@group)) %>
+		      <li>
+					  <%= link_to "Add the group \"#{@group.name}\" to your groups", group_add_path %>
+				  </li>
+				<% elsif @group && current_user.is_member?(@group)%>
+	      <li>
+				  <%= link_to "Manage the group", group_manage_general_path %>
+			  </li>
+	      <li>
+				  <%= link_to "Add people to the group", group_addpeople_path %>
+				</li>
+	      <li>
+				  <%= link_to "Leave the group", group_leave_path, data: { confirm: "Do you really want to leave the group \"#{@group.name}\"?" } %>
+			  </li>
+				<% end %>
         <% unless @list.nil? %>
           <li>
           <% if @list.parent.nil? %>
-            <%= link_to "Go back to /", lists_path %>
+            <%= link_to "Go back to /", path_for_root_list(@group) %>
           <% else %>
-            <%= link_to "Go back to #{@list.parent.path}", @list.parent %>
+            <%= link_to "Go back to #{@list.parent.path}", path_for_list(@list.parent,@group) %>
           <% end %>
           </li>
           <% unless @moving %>
             <li>
-            <%= link_to "Move", list_moving_path(@list) %>
+            <%= link_to "Move", path_for_list_moving(@list,@group) %>
             </li>
           <% end %>
           <li>
-          <%= link_to "Export", list_export_path(@list) %>
+          <%= link_to "Export", path_for_list_export(@list,@group) %>
           </li>
 					<li> 
-					<%= link_to "Delete list", @list, method: :delete, data: {confirm: "You sure?"} %>
+					<%= link_to "Delete list", path_for_list(@list, @group), method: :delete, data: {confirm: "You sure?"} %>
 					</li>
         <% end %>
         <% if @new_list.nil? %>
           <li>
-          <%= link_to 'New list here', path_for_new_list(@list) %>
+          <%= link_to 'New list here', path_for_new_list(@list, @group) %>
           </li>
         <% end %>
 				
@@ -40,12 +59,12 @@
     </div>
 
     <% if @moving %>
-      <%= form_for :dest, url: list_move_path(@list) do |f| %>
+      <%= form_for :dest, url: path_for_list_move(@list,@group) do |f| %>
         <%= f.label :list_id, "Destination" %>
         <% if @list.parent.nil? %>
-          <%= f.collection_select("list_id", current_user.lists_outside(@list), :id, :path) %>
+          <%= f.collection_select("list_id", @user.lists_outside(@list), :id, :path) %>
         <% else %>
-          <%= f.collection_select("list_id", current_user.lists_outside(@list), :id, :path, prompt: "/") %>
+          <%= f.collection_select("list_id", @user.lists_outside(@list), :id, :path, prompt: "/") %>
         <% end %>
         <br />
         <%= f.submit "Move", class: "btn btn-default" %>
@@ -53,7 +72,7 @@
     <% end %>
 		
     <% unless @new_list.nil? %>
-      <%= form_for @new_list, url: path_to_create_list(@list) do |f| %>
+      <%= form_for @new_list, url: path_to_create_list(@list, @group) do |f| %>
         <%= f.label :name %>
         <%= f.text_field :name %>
 		    <%= f.label :language_1 %>
@@ -91,7 +110,7 @@
 		
 		<% if @export %>
 		
-		<%= form_for :export, url: list_exporting_path(@list), method: :get do |f| %>
+		<%= form_for :export, url: path_for_list_exporting(@list,@group), method: :get do |f| %>
 		  <%= hidden_field_tag 'export[trains]', 0 %>
 		  <%= hidden_field_tag 'export[results]', 0 %>
 		  <%= hidden_field_tag 'export[sub_lists]', 0 %>
@@ -103,13 +122,13 @@
   	    <option value=3>.pdf</option>
   	    <option value=4>.txt</option>
 	    </select>
-			<br \>
-		  Save trains?    : <%= check_box_tag "export[trains]", "1", true %>
-			<br \>
-		  Save your success results?    : <%= check_box_tag "export[results]", "1", true %>
-			<br \>
-		  Export sub lists?    : <%= check_box_tag "export[sub_lists]", "1", true %>
-			<br \>
+			<br />
+		  Save trains?    : <%= check_box_tag "export[trains]", "1", true, name: :export_options, disabled: true %>
+			<br />
+			Save your success results?    : <%= check_box_tag "export[results]", "1", true, name: :export_options, disabled: true %>
+			<br />
+		  Export sub lists?    : <%= check_box_tag "export[sub_lists]", "1", true, name: :export_options, disabled: true %>
+			<br />
 		  <%= f.submit "Export!"%>
 		<% end %>
 		
@@ -125,7 +144,7 @@
       <ul>
         <% @childs.each do |list| %>
           <li>
-          <%= link_to list.name, list %> <%= image_tag("public16.png", :alt => "rss feed") if list.public_level == 10%>
+          <%= link_to list.name, path_for_list(list,@group) %> <%= image_tag("public16.png", :alt => "rss feed") if list.public_level == 10%>
 					
 				</li>
         <% end %>
@@ -168,7 +187,7 @@
       <% end %>
 	  
 	  
-	  <%= link_to "Edit list", edit_list_path(@list), class: "btn btn-default btn-lg btn-primary"  %>
+	  <%= link_to "Edit list", path_for_edit_list(@list,@group), class: "btn btn-default btn-lg btn-primary"  %>
 		<%= link_to "New train", new_train_path(list_id:@list.id), class: "btn btn-default btn-lg btn-primary" %>
 		
     <% end %>
@@ -237,12 +256,58 @@
 	
 	
 	
+	
+	<% if @path == "/" && @group.nil? %>
+	<h2>Groups
+  <div class="btn-group">
+    <a class="btn btn-default dropdown-toggle" data-toggle="dropdown" href="#">
+      Action <i class="glyphicon-cog"></i>
+      <span class="caret"></span>
+    </a>
+    <ul class="dropdown-menu">
+      <li>
+			  <%= link_to "Create a new group", new_group_path %>
+		  </li>
+      <li>
+			  <%= link_to "Search for a public group", groupsearch_path %>
+		  </li>
+    </ul>
+  </div>
+	</h2>
+	
+	<section class="col-md-12 table-responsive">
+	  <table class="table table-bordered table-striped table-condensed">
+			<% unless @groups_list.nil? %>
+			  <ul>
+						<% @groups_list.each do |f| %>
+					    <li>
+					      <%= link_to "#{f.name}", group_lists_path(f) %>
+					    </li>
+						<% end%>
+				</ul>	
+			<% else %>
+				<p>You have no groups. Create one or wait for an invitation.</p>
+			<% end %>
+		</table>
+	</section>
+	<% end %>
+	
+	
+	
+	
 	<script>
 	function export_select_change() {
 	    var x = document.getElementById("export_select").value;
-			if (x == ".odoc"){
+			var TextElements = document.getElementsByName("export_options");
+			if (x == '0'){
+				for (var i = 0, max = TextElements.length; i < max; i++) {
+				    TextElements[i].disabled = true;
+						console.log('hey')
+				}
 			} else{
-				
+				for (var i = 0, max = TextElements.length; i < max; i++) {
+				    TextElements[i].disabled = false;
+				}
 			}
 	}
 	</script>

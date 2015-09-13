@@ -11,12 +11,32 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150727103023) do
+ActiveRecord::Schema.define(version: 20150803144440) do
 
   create_table "authentications", force: true do |t|
     t.integer  "user_id"
     t.string   "provider"
     t.string   "uid"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "group_memberships", force: true do |t|
+    t.integer  "group_id"
+    t.integer  "user_id"
+    t.boolean  "admin",      default: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "group_memberships", ["group_id", "user_id"], name: "index_group_memberships_on_group_id_and_user_id", unique: true
+  add_index "group_memberships", ["group_id"], name: "index_group_memberships_on_group_id"
+  add_index "group_memberships", ["user_id"], name: "index_group_memberships_on_user_id"
+
+  create_table "groups", force: true do |t|
+    t.string   "name"
+    t.integer  "faker_id"
+    t.boolean  "public"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -39,12 +59,25 @@ ActiveRecord::Schema.define(version: 20150727103023) do
 
   add_index "languages", ["name"], name: "index_languages_on_name", unique: true
 
+  create_table "link_votes", force: true do |t|
+    t.integer  "link_id"
+    t.integer  "user_id"
+    t.boolean  "pro"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "link_votes", ["link_id"], name: "index_link_votes_on_link_id"
+  add_index "link_votes", ["user_id"], name: "index_link_votes_on_user_id"
+
   create_table "links", force: true do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "owner_id"
     t.integer  "word_id"
     t.integer  "meaning_id"
+    t.integer  "pro",        default: 0
+    t.integer  "contra",     default: 0
   end
 
   add_index "links", ["meaning_id"], name: "index_links_on_meaning_id"
@@ -68,9 +101,6 @@ ActiveRecord::Schema.define(version: 20150727103023) do
   create_table "meanings", force: true do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "pro"
-    t.integer  "contra"
-    t.float    "confidence"
   end
 
   create_table "registrations", force: true do |t|
@@ -120,6 +150,8 @@ ActiveRecord::Schema.define(version: 20150727103023) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "remember_token"
+    t.boolean  "faker"
+    t.integer  "faker_for_group"
   end
 
   add_index "users", ["email"], name: "index_users_on_email", unique: true
