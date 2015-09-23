@@ -27,8 +27,8 @@ class Word < ActiveRecord::Base
   #TODO rename it author
   has_many :trains, dependent: :destroy
 
-  has_many :inclusions
-  has_many :lists, dependent: :destroy, through: :inclusions
+  has_many :wordsets, class_name: "WordSet"
+  has_many :lists, dependent: :destroy, through: :wordsets
 
   belongs_to :language
   has_many :links, class_name: "Link", dependent: :destroy, foreign_key: "word_id"
@@ -38,7 +38,7 @@ class Word < ActiveRecord::Base
   def has_meaning?
     return self.meanings.any?
   end
-  
+
   def common_meanings(other_word)
     # TODO use INTERSECT with to_sql
     # Meaning.find_by_sql(word.meanings.to_sql + " INTERSECT " other_word.meanings.to_sql)
@@ -75,7 +75,7 @@ class Word < ActiveRecord::Base
       trains.where(user_id: user.id).count
     end
   end
-  
+
   def has_common_meaning(other_meanings = nil)
     @common_meanings = []
 

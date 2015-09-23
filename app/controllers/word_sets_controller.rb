@@ -6,9 +6,10 @@ class WordSetsController < ApplicationController
   def create
     dataToAdd = params[:wordset][:data_to_add]
     from_edit_list_url = false
+    hash = Hash.new
     if dataToAdd
       from_edit_list_url = true
-      dataToAdd.split("\r\n") # FIXME if error maybe here...
+      dataToAdd = dataToAdd.split("\r\n") # FIXME if error maybe here...
       # Added from the list
       list = List.find_by(id:params[:wordset][:list_id])
 
@@ -60,7 +61,7 @@ class WordSetsController < ApplicationController
               l.pro += 1
               if !l.save
                 flash_errors(l, false)
-                redirect_to edit_list_url(list)
+                redirect_to edit_list_url(list) and return
                 return
               end
             end
@@ -68,14 +69,20 @@ class WordSetsController < ApplicationController
           meaning = common_meanings[0]
         end
 
-        if !newWordSet.save
-          flash_errors(newWordSet, false)
-          redirect_to edit_list_url(list)
-          return
+        if list.wordsets.where(word_id: word1.id).any?
+          # we cannot have twice the same word, even with different meaning
+          hash[:warning] = "#{word1.content} is already in #{list.path}"
+          redirect_to edit_list_url(list), flash: hash and return # FIXME Stops here and do not look at other words, problem ?
+        else
+          h = list.add_word word1, meaning, current_user
+          unless h.nil?
+            hash[:danger] = h
+            redirect_to edit_list_url(list), flash: hash and return # FIXME Stops here and do not look at other words, problem ?
+          end
         end
-
       end
-      word = word1
+      hash[:success] = "Successfully added"
+      redirect_to edit_list_url(list), flash: hash
     else
       word = Word.find_by_id(params[:word_id])
       meaning = Meaning.find_by_id(params[:meaning_id])
@@ -85,38 +92,33 @@ class WordSetsController < ApplicationController
       else
         redirect_to root_path
       end
-    end
 
-    if list and list.owner == current_user
-      hash = Hash.new
-      if list.words.find_by_id(word)
-        # we cannot have twice the same word, even with different meaning
-        hash[:warning] = "#{word.content} is already in #{@list.path}"
-      else
-        h = list.add_word word, meaning, current_user
-        if h.nil?
-          hash[:success] = "Successfully added"
+      if list and list.owner == current_user
+        if list.wordsets.where(word_id: word.id).any?
+          # we cannot have twice the same word, even with different meaning
+          hash[:warning] = "#{word.content} is already in #{list.path}"
         else
-          hash[:danger] = h
+          h = list.add_word word, meaning, current_user
+          if h.nil?
+            hash[:success] = "Successfully added"
+          else
+            hash[:danger] = h
+          end
         end
-      end
-      if from_edit_list_url
-        redirect_to edit_list_url(list), flash: hash
-      else
         redirect_to list, flash: hash
+      else
+        redirect_to root_path
       end
-    else
-      redirect_to root_path
     end
 
 
 
-      #word2 = Word.new(content:newWords[1], language_id:list.language2_id, owner_id:current_user)
-      #if word1.save
-        #redirect_to root_url
-        #else
-        #flash_errors(word1, false)
-        #end
+    #word2 = Word.new(content:newWords[1], language_id:list.language2_id, owner_id:current_user)
+    #if word1.save
+    #redirect_to root_url
+    #else
+    #flash_errors(word1, false)
+    #end
   end
 
   def destroy

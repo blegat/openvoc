@@ -7,6 +7,8 @@ class WordSet < ActiveRecord::Base
   validates :user_id, presence: true
   #validates :list_id, presence: true
   validates :word_id, presence: true
+  validates :word_id, presence: true,
+    uniqueness: { scope: :list_id }
   validates :meaning_id, presence: true
   #validates :meaning1_id, presence: true
   #validates :meaning2_id, presence: true

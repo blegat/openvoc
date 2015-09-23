@@ -33,9 +33,8 @@ class List < ActiveRecord::Base
   #has_many :inclusions
   #FIXME which one is better ? why is the first one working ?
   #(i.e. passing the tests)
-  has_many :words, through: :inclusions
-  has_many :inclusions, dependent: :destroy
-  has_many :wordsets, foreign_key: :list_id, class_name: "WordSet"
+  has_many :words, through: :wordsets
+  has_many :wordsets, dependent: :destroy, foreign_key: :list_id, class_name: "WordSet"
   has_many :trains, foreign_key: :list_id
 
   belongs_to :language1, class_name: "Language"
