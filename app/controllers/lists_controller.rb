@@ -53,13 +53,13 @@ class ListsController < ApplicationController
       end
       ch.destroy
     end
-    
+
     @list.wordsets.each do |ws|
       ws.destroy
-    end  
+    end
     @list.destroy
-    
-    redirect_to path_for_root_list(@group), 
+
+    redirect_to path_for_root_list(@group),
         flash: { success: "List deleted" } and return
   end
   def edit
@@ -67,8 +67,8 @@ class ListsController < ApplicationController
     @wordsets = get_wordsets(@list)
     @language1_name = Language.find_by(id:@list.language1_id).name
     @language2_name = Language.find_by(id:@list.language2_id).name
-    @languages = Language.all    
-  end 
+    @languages = Language.all
+  end
   def moving
     @moving = true
     render :show
@@ -100,7 +100,7 @@ class ListsController < ApplicationController
     @export = true
     render :show
   end
-  def exporting 
+  def exporting
     case params[:export][:format].to_i
     when 0 # .ovoc
       exporting_ovoc
@@ -116,11 +116,11 @@ class ListsController < ApplicationController
       redirect_to @list
     end
   end
-  
+
   def public
     @publiclist = List.where(public_level: 10).paginate(page: params[:page], per_page: 30)
   end
-  
+
   # def training
   #   list = List.find_by_id(params[:list_id])
   #   max = params[:train][:max]
@@ -138,9 +138,9 @@ class ListsController < ApplicationController
   #   end
   #   redirect_to new_list_train_path(list, rec: rec, max: max)
   # end
-  
-  
-  
+
+
+
   private
   def create_group_and_user
     if params[:group_id]
@@ -204,9 +204,9 @@ class ListsController < ApplicationController
         end
         tot
       end
-    end 
+    end
   end
-  
+
   def get_data_show
     @path = get_path(@list)
     @childs = get_childs(@list)
@@ -223,7 +223,7 @@ class ListsController < ApplicationController
     if ((params[:action] == "index") && @group.nil?)
       return
     end
-        
+
     if @list
       test1 = (@list.owner == current_user)
       test2 = (@list.public_level == 10)
@@ -235,10 +235,10 @@ class ListsController < ApplicationController
       if @group
         test5 = (current_user.is_member?(@group)) && (not @list)
         test6 = @group.public?
-      end   
+      end
     end
 
-    unless ( test1 || test2 || test3 || test4 || test5 || test6) 
+    unless ( test1 || test2 || test3 || test4 || test5 || test6)
       if @list && (not @group) && @list.owner.faker?
         supposed_group = @list.owner.faker_of_group
         if current_user.is_member?(supposed_group)
@@ -247,11 +247,11 @@ class ListsController < ApplicationController
         end
       end
       flash[:danger] = "You may not access this page"
-      redirect_to(root_url) 
+      redirect_to(root_url)
     end
   end
-  
-  
+
+
   def exporting_pdf(list)
     #
     # require "prawn"
@@ -264,7 +264,7 @@ class ListsController < ApplicationController
     #           ["short", "loooooooooooooooooooong", "short"],
     #           ["loooooooooooooooooooong", "short", "short"] ])
     # end
-    
+
     Prawn::Document.generate("export.pdf") do
       text list.name, align: :center
       array = []
@@ -278,7 +278,7 @@ class ListsController < ApplicationController
 
       table(array, position: :center, column_widths: [250,250])
     end
-    
+
     send_file("export.pdf")
   end
   def exporting_txt
@@ -301,7 +301,7 @@ class ListsController < ApplicationController
     end
     send_data content, filename: @list.name + '.txt' # TODO no safe
   end
-  
+
   def exporting_ovoc
     require 'nokogiri'
     content = Nokogiri::XML::Builder.new do |xml|
@@ -311,7 +311,7 @@ class ListsController < ApplicationController
           xml.name @list.name
           xml.language1_id @list.language1_id
           xml.language2_id @list.language2_id
-          
+
           xml.wordsets {
             @list.wordsets.each do |ws|
               xml.wordset{
@@ -329,7 +329,7 @@ class ListsController < ApplicationController
                 }
                 xml.meaning1_id      ws.meaning1_id
                 xml.meaning2_id      ws.meaning2_id
-                
+
                 if params[:export][:results].to_i == 1
                   xml.asked_qa         ws.asked_qa
                   xml.success_qa       ws.success_qa
@@ -341,7 +341,7 @@ class ListsController < ApplicationController
               }
             end
           }
-          
+
           if params[:export][:trains].to_i == 1
             xml.trains {
               @list.trains.each do |t|
@@ -357,7 +357,7 @@ class ListsController < ApplicationController
                   xml.fragments_list      t.fragments_list
                   xml.q_to_a              t.q_to_a
                   xml.finalized           t.finalized
-                
+
                   xml.train_fragments {
                     t.fragments.each do |tf|
                       xml.train_fragment {
@@ -367,7 +367,7 @@ class ListsController < ApplicationController
                         xml.word1_id    tf.word1_id
                         xml.word2_id    tf.word2_id
                         xml.answer      tf.answer
-                        xml.is_correct  tf.is_correct 
+                        xml.is_correct  tf.is_correct
                       }
                     end
                   }
@@ -378,7 +378,7 @@ class ListsController < ApplicationController
         }
       }
     end
-    send_data content.to_xml, filename: "export.ovoc" 
+    send_data content.to_xml, filename: "export.ovoc"
   end
 
   def path_for_list(list,group)
@@ -388,7 +388,7 @@ class ListsController < ApplicationController
       group_list_path(group, list)
     end
   end
-  
+
   def path_for_root_list(group)
     if group.nil?
       lists_path

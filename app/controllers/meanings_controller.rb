@@ -35,14 +35,14 @@ class MeaningsController < ApplicationController
       unless newmeaning.words.include?(word)
         link = newmeaning.links.create(word:word, owner: current_user)
         if link.save
-          flash[:success] = "Meaning updated : TODO" 
+          flash[:success] = "Meaning updated : TODO"
         else
           flash_errors(link, false)
           break
         end
       end
     end
-    
+
     theWS = WordSet.find_by(id:params[:meaning][:wordset_id])
     if theWS
       theWS.meaning1_id = newmeaning.id
@@ -52,7 +52,7 @@ class MeaningsController < ApplicationController
       end
     else
     end
-    
+
     redirect_appropriately and return
   end
 
