@@ -42,8 +42,8 @@ class ListsController < ApplicationController
     render :show
   end
   def show
-    @language1_name = Language.find_by_id(@list.language1_id).name
-    @language2_name = Language.find_by_id(@list.language2_id).name    
+    @language1 = Language.find_by_id(@list.language1_id)
+    @language2 = Language.find_by_id(@list.language2_id)
     @trains = Train.where(list_id:@list.id, user_id:current_user.id).paginate(page: params[:page_trains], per_page: 5)
   end
   def destroy

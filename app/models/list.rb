@@ -37,7 +37,10 @@ class List < ActiveRecord::Base
   has_many :inclusions, dependent: :destroy
   has_many :wordsets, foreign_key: :list_id, class_name: "WordSet"
   has_many :trains, foreign_key: :list_id
-  
+
+  belongs_to :language1, class_name: "Language"
+  belongs_to :language2, class_name: "Language"
+
   validate :language1_id, presence: true
   validate :language2_id, presence: true
 
@@ -79,13 +82,22 @@ class List < ActiveRecord::Base
     words.include?(word)
   end
 
-  def add_word(word, user)
-    inclusion = Inclusion.new
-    inclusion.list = self
-    inclusion.author = user
-    inclusion.word = word
-    unless inclusion.save
-      raise inclusion.errors.full_messages.to_sentence
+  def add_word(word, meaning, user)
+    wordset = WordSet.new
+    wordset.list = self
+    wordset.user = user
+    wordset.word = word
+    wordset.meaning = meaning
+    wordset.asked_qa = 0
+    wordset.success_qa = 0
+    wordset.success_ratio_qa = 0.0
+    wordset.asked_aq = 0
+    wordset.success_aq = 0
+    wordset.success_ratio_aq = 0.0
+    if wordset.save
+      nil
+    else
+      wordset.errors.full_messages.to_sentence
     end
   end
 
@@ -131,4 +143,3 @@ end
 #  index_lists_on_parent_id  (parent_id)
 #  index_lists_on_owner_id   (owner_id)
 #
-

@@ -45,7 +45,7 @@
           <li>
           <%= link_to "Export", path_for_list_export(@list,@group) %>
           </li>
-					<li> 
+					<li>
 					<%= link_to "Delete list", path_for_list(@list, @group), method: :delete, data: {confirm: "You sure?"} %>
 					</li>
         <% end %>
@@ -54,7 +54,7 @@
           <%= link_to 'New list here', path_for_new_list(@list, @group) %>
           </li>
         <% end %>
-				
+
       </ul>
     </div>
 
@@ -70,7 +70,7 @@
         <%= f.submit "Move", class: "btn btn-default" %>
       <% end %>
     <% end %>
-		
+
     <% unless @new_list.nil? %>
       <%= form_for @new_list, url: path_to_create_list(@list, @group) do |f| %>
         <%= f.label :name %>
@@ -95,26 +95,26 @@
 				    <% end %>
 	        <% end %>
 		    </select>
-				
+
 				<%= f.label :public_level %>
 		    <select name="public_level" id="public_level">
 	  	    <option value=0>Private</option>
 	  	    <option value=10>Public</option>
 		    </select>
-				
+
         <br />
         <%= f.submit "Create list here", class: "btn btn-default" %>
       <% end %>
     <% end %>
-		
-		
+
+
 		<% if @export %>
-		
+
 		<%= form_for :export, url: path_for_list_exporting(@list,@group), method: :get do |f| %>
 		  <%= hidden_field_tag 'export[trains]', 0 %>
 		  <%= hidden_field_tag 'export[results]', 0 %>
 		  <%= hidden_field_tag 'export[sub_lists]', 0 %>
-			Exportation format: 
+			Exportation format:
 	    <select onchange="export_select_change()" id="export_select" name="export[format]">
   	    <option value=0>.ovoc</option>
   	    <option value=1>.ods</option>
@@ -131,10 +131,10 @@
 			<br />
 		  <%= f.submit "Export!"%>
 		<% end %>
-		
+
 
 		<% end %>
-		
+
 <!-- url: list_exporting_path(@list) -->
 
     <h2>Sublists</h2>
@@ -145,24 +145,24 @@
         <% @childs.each do |list| %>
           <li>
           <%= link_to list.name, path_for_list(list,@group) %> <%= image_tag("public16.png", :alt => "rss feed") if list.public_level == 10%>
-					
+
 				</li>
         <% end %>
       </ul>
     <% end %>
-	
+
     <% unless @list.nil? %>
       <h2>Words</h2>
       <% if @wordsets.empty? %>
         <p>No word.</p>
-      <% else %> 
+      <% else %>
 		<section class="col-md-12 table-responsive">
 		  <table class="table table-bordered table-striped table-condensed">
 		    <thead>
 			  <tr>
 			    <th>Nb</th>
-			    <th><%= @language1_name %></th>
-			    <th><%= @language2_name %></th>
+			    <th><%= @language1.name %></th>
+			    <th><%= @language2.name %></th>
 					<th>Success ratio q->a (%)</th>
 					<th>Success ratio q<-a (%)</th>
 			  </tr>
@@ -171,31 +171,31 @@
 		      <% @wordsets.each do |w| %>
   	        <tr>
 							<td><%= @i %></td>
-		        	<td><%= Word.find_by(id:w.word1_id).content %></td>
-		        	<td><%= Word.find_by(id:w.word2_id).content %></td>
+		        	<td><%= w.word.content %></td>
+		        	<td><%= w.translations(@language2) %></td>
 							<td><%= w.success_ratio_qa.to_i %></td>
 							<td><%= w.success_ratio_aq.to_i %></td>
-	  		    </tr>	
+	  		    </tr>
 						<% @i = @i+1%>
 		      <% end %>
 		    </tbody>
 		  </table>
 	    </section>
-			
+
 			<%= will_paginate @wordsets, param_name: :page_ws %>
-			
+
       <% end %>
-	  
-	  
+
+
 	  <%= link_to "Edit list", path_for_edit_list(@list,@group), class: "btn btn-default btn-lg btn-primary"  %>
 		<%= link_to "New train", new_train_path(list_id:@list.id), class: "btn btn-default btn-lg btn-primary" %>
-		
+
     <% end %>
   </div>
-	
-	
-	
-	
+
+
+
+
 	<% if not (@trains.nil? or @trains.empty?) %>
 
 
@@ -218,28 +218,28 @@
 	        	<td><%= @i %></td>
 	        	<td><%= t.updated_at %></td>
 						<td><%= t.success_ratio %></td>
-						<td><% if t.finalized%> 
+						<td><% if t.finalized%>
 									<%= link_to "summary", train_summary_path(t) %></td>
-							  <% else %>  
+							  <% else %>
 								  <%= link_to "continue", train_path(t) %></td>
 								<% end %>
-						<td><%= link_to "delete", train_path(t, {list_id: @list.id}), 
+						<td><%= link_to "delete", train_path(t, {list_id: @list.id}),
 										controller: :trains, method: :delete %></td>
-  		    </tr>	
+  		    </tr>
 					<% @i = @i +1 %>
 	      <% end %>
 	    </tbody>
 	  </table>
     </section>
-		
+
 	<%= will_paginate @trains, param_name: :page_trains %>
-		
-	
+
+
 	<% end %>
-	
-	
-	
-	
+
+
+
+
 	<% if false%>
   <% if not @list.nil? and @list.owner == current_user %>
     <div class="col-md-6">
@@ -253,10 +253,10 @@
     </div>
   <% end %>
 	<% end %>
-	
-	
-	
-	
+
+
+
+
 	<% if @path == "/" && @group.nil? %>
 	<h2>Groups
   <div class="btn-group">
@@ -274,7 +274,7 @@
     </ul>
   </div>
 	</h2>
-	
+
 	<section class="col-md-12 table-responsive">
 	  <table class="table table-bordered table-striped table-condensed">
 			<% unless @groups_list.nil? %>
@@ -284,17 +284,17 @@
 					      <%= link_to "#{f.name}", group_lists_path(f) %>
 					    </li>
 						<% end%>
-				</ul>	
+				</ul>
 			<% else %>
 				<p>You have no groups. Create one or wait for an invitation.</p>
 			<% end %>
 		</table>
 	</section>
 	<% end %>
-	
-	
-	
-	
+
+
+
+
 	<script>
 	function export_select_change() {
 	    var x = document.getElementById("export_select").value;

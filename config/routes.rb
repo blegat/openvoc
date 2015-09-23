@@ -21,9 +21,9 @@ Rails.application.routes.draw do
   get 'train_fragment/new'
 
   resources :meanings
-  
+
   resources :wordsets, controller: :word_sets
-  
+
   resources :authentications, only: [:index, :create, :destroy]
   resources :registrations, only: [:new, :create, :edit, :update, :destroy]
 
@@ -33,7 +33,9 @@ Rails.application.routes.draw do
   end
   resources :words, only: [:show, :destroy] do
     resources :links, only: [:create, :new]
-    resources :inclusions, only: [:create]
+    resources :meaning do
+      resources :wordsets, only: [:create], controller: :word_sets
+    end
   end
   resources :links, only: [:create, :new, :show, :destroy]
 
@@ -67,9 +69,9 @@ Rails.application.routes.draw do
     resources :lists, only: [:new, :create, :edit, :destroy]
     resources :words, only: [:destroy]
   end
-  
+
   get "/groups/search" => "groups#search", as: :groupsearch
-  
+
   resources :groups, only: [:new, :create, :index, :show, :edit, :destroy] do
     get "/leave" => "groups#leave"
     get "/manage/general" => "groups#managegeneral"
@@ -78,7 +80,7 @@ Rails.application.routes.draw do
     post "/manage/members/remove" => "groups#managemembersremove"
     get "/add" => "groups#add"
     get "/addpeople" => "groups#addpeople"
-    
+
     resources :lists, only: [:new, :create, :index, :show, :edit, :destroy] do
       get "/exporting" => "lists#exporting", as: :exporting
       get "/export" => "lists#export", as: :export

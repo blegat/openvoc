@@ -103,6 +103,8 @@ end
 
 def make_lists
   empty = true
+  latin = Language.find_by_name("Latin")
+  random = Language.find_by_name("Random")
   99.times do |n|
     list = List.new
     list.name = Faker::Lorem.words(1).to_s
@@ -110,6 +112,8 @@ def make_lists
     if Random.rand(2) == 0 and not empty
       list.parent = list.owner.lists.random
     end
+    list.language1 = latin
+    list.language2 = random
     list.save!
     empty = false
   end

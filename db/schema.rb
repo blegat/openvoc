@@ -158,10 +158,8 @@ ActiveRecord::Schema.define(version: 20150803144440) do
   add_index "users", ["remember_token"], name: "index_users_on_remember_token"
 
   create_table "word_sets", force: true do |t|
-    t.integer  "word1_id"
-    t.integer  "word2_id"
-    t.integer  "meaning1_id"
-    t.integer  "meaning2_id"
+    t.integer  "word_id"
+    t.integer  "meaning_id"
     t.integer  "user_id"
     t.integer  "list_id"
     t.datetime "created_at"

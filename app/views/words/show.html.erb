@@ -11,7 +11,7 @@
   <div class="col-md-3">
     <h3>Meanings</h3>
     <div class="well">
-      <ul class="navbar nav-list">
+      <ul class="nav nav-pills nav-stacked">
         <li <%= 'class="active"'.html_safe unless @link %>><%= link_to new_word_link_path(@word) do %>
           <i class="glyphicon-magnet <%= "glyphicon_white" unless @link %>"></i>
           New link
@@ -30,12 +30,12 @@
       </ul>
     </div>
   </div>
-  <% if signed_in? %>
+  <% if signed_in? and @link %>
     <div class="col-md-3">
       <h3>Lists</h3>
       <div class="well">
         <p>Add to</p>
-        <%= form_for :inclusion, url: word_inclusions_path(@word) do |f| %>
+        <%= form_for :wordset, url: word_meaning_wordsets_path(@word, @link.meaning) do |f| %>
           <%= f.collection_select("list_id", current_user.lists_without(@word), :id, :path, prompt: true) %>
           <%= f.submit "Add", class: "btn btn-default btn-primary" %>
         <% end %>

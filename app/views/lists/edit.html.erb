@@ -11,7 +11,7 @@
     <% unless @list.nil? %>
       <% if @wordsets.empty? %>
         <p>No word.</p>
-      <% else %> 
+      <% else %>
 		<section class="col-md-12 table-responsive">
 		  <table class="table table-bordered table-striped table-condensed">
 		    <thead>
@@ -42,21 +42,21 @@
 			</thead>
 		    <tbody>
 			  <% @wordsets.each do |w| %>
-			  	<% if w.meaning1_id && w.meaning2_id %>
+			  	<% # if w.meaning1_id && w.meaning2_id # ???? FIXME %>
 	          <tr>
-		          <td><%= Word.find_by(id:w.word1_id).content %></td>
-		        	<td><%= Word.find_by(id:w.word2_id).content %></td>
-						  <td><%= link_to "delete", wordset_path(w, {list_id: @list.id}), 
+		          <td><%= w.word.content %></td>
+		        	<td><%= w.translations(@list.language2) %></td>
+						  <td><%= link_to "delete", wordset_path(w, {list_id: @list.id}),
 										controller: :word_sets, method: :delete %></td>
 		        </tr>
-			    <% else @wordsWithoutMeaning = true end%>
+			    <% # else @wordsWithoutMeaning = true end%>
 			  <% end %>
 		    </tbody>
 		  </table>
 	    </section>
       <% end %>
-	  
-	  
+
+
 	  <% if @wordsWithoutMeaning %>
 	  	Please associate a meaning to the following words:
 	  	<% @wordsets.each do |w| %>
@@ -65,12 +65,12 @@
 			    </br>
           	<% end %>
 	  	<% end %>
-		
+
 	  <% end%>
-	  
-	  
+
+
 	  <%= render 'word_sets/new' %>
-	  
+
 	<% end %>
 </div>
 </br>
