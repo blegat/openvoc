@@ -67,9 +67,81 @@
 	  	<% end %>
 
 	  <% end%>
+		
+		
+		<% if @dataPrepared %>
+			<p>Please check the following data before adding it to the database:</p>
+			<%= form_for(:wordset, url: path_for_list_prepare_data_to_add(@list,@group), method: :post) do |f| %>
+		  <%= f.hidden_field :checked, value: true %>
+			
+			
+			<section class="col-md-12 table-responsive">
+			  <table class="table table-bordered table-striped table-condensed">
+			    <thead>
+				  <tr>
+						<th>Index</th>
+				    <th><%= @language1_name %></th>		
+				    <th><%= @language2_name %></th>
+						<th>Please choose</th>
+				  </tr>
+				</thead>
+			  <tbody>
+				  <% @dataPrepared.each do |index,v| %>
+		          <tr>
+								<td><%= index %></td>
+			          <td><font color ="<%= v[:word0][:should_be_created]? 'orange' : 'green' %>"> <%= v[:word0][:value] %></font></td>
+			          <td><font color ="<%= v[:word1][:should_be_created]? 'orange' : 'green' %>"> <%= v[:word1][:value] %></font></td>
+								<td> 
+								<% if v[:link][:should_be_created]%>
+								  Create both words in the database and create a common meaning
+									
+								<% elsif v[:link][:already_exists]%>
+									Both words already exists and are already linked. Just add it to your list :)
+									
+								<% elsif v[:link][:should_be_selected]%>
+								  <% @word1 = Word.find(v[:word0][:id]) %>
+								  <% @word2 = Word.find(v[:word1][:id]) %>
+									
+						      <% @common_m = @word1.common_meanings(@word2) %>
+							    <% [@word1, @word2].each do |word| %>
+										<% if (word == @word1) %>
+											<% opposite_word = @word2 %>
+										<% else %>
+											<% opposite_word = @word1 %>
+										<% end %>
+							      <% word.meanings.each do |m| %>
+							        <% if not @common_m.include?(m) %>
+							          <%= f.radio_button "i#{index.to_s}[link]", m.id %>
+							          <%= f.label :action, "Link <i>#{opposite_word.content}</i> to the meaning (n°#{m.id}) containing: </br>#{m.words_in_two_lang(@language1,@language2)}.".html_safe%>
+											</br>
+											<% end %>
+							      <% end %>
+							    <% end %>								
+								<% end %>
+								
+								</td>
+			        </tr>
+				  <% end %>
+			    </tbody>
+			  </table>
+		    </section>
+		<% end %>
+		<% end%>
+		
+		
+		<%= form_for(:wordset, url: path_for_list_prepare_data_to_add(@list,@group), method: :post) do |f| %>
 
+		  <%= f.hidden_field :list_id, value: @list.id %>
 
-	  <%= render 'word_sets/new' %>
+		  <%= f.label "Add new words" %>
+	
+		  <%= f.text_area :data_to_add, placeholder: "word1=word2", class: 'form-control' %>
+
+		  <br/>
+		  <%= f.submit "Add the words", class: "btn btn-default btn-lg btn-primary" %>
+		<% end %>
+
+	  <!-- <%= render 'word_sets/new' %> -->
 
 	<% end %>
 </div>
@@ -82,3 +154,8 @@
 </br>
 </br>
 </br>
+</br>
+</br>
+</br>
+</br>
+

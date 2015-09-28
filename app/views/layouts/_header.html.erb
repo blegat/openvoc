@@ -24,10 +24,10 @@
         <%= link_to "Languages", languages_path %></li>
         <li <%= "class=active" if yield(:title) == "New link" %>>
         <%= link_to "New link", new_link_path %></li>
-        <li <%= "class=active" if yield(:title) == "Public lists" %>>
-        <%= link_to "Public lists", public_path %></li>
+        <li <%= "class=active" if yield(:title) == 'My lists' %>>
+        <%= link_to "My lists", lists_path %></li>
         <li <%= "class=active" if yield(:title) == "Groups" %>>
-        <%= link_to "Groups", groups_path %></li>
+        <%= link_to "Groups", groupsearch_path %></li>
       </ul>
 
       <ul class="nav navbar-nav navbar-right">

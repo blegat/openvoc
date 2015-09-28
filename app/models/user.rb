@@ -134,7 +134,7 @@ class User < ActiveRecord::Base
     if group.nil?
       return false
     end
-    if GroupMembership.find_by(group_id:group.id, user_id:self.id, admin?:true)
+    if GroupMembership.find_by(group_id:group.id, user_id:self.id, admin:true)
       return true
     else
       return false

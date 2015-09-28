@@ -1,7 +1,12 @@
-<% provide(:title, "Training") %>
 <% if @group.nil? %>
+	<% if @path == '/' %>
+		<% provide(:title, "My lists") %>
+	<% else %>
+		<% provide(:title, "List") %>
+	<% end %>
 	<h1><%= @path %></h1>
 <% else %>
+	<% provide(:title, "List") %>
 	<h1><%= "[#{@group.name}]#{@path}" %></h1>
 <% end %>
 

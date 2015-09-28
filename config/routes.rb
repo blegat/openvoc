@@ -54,7 +54,8 @@ Rails.application.routes.draw do
 
   get "/publiclists" => "lists#public", as: :public
 
-  resources :lists, only: [:new, :create, :index, :show, :edit, :destroy] do
+  resources :lists, only: [:new, :create, :index, :show, :edit, :destroy, :update] do
+    post "/add_data" => "lists#prepare_data_to_add", as: :prepare_data_to_add
     get "/exporting" => "lists#exporting", as: :exporting
     get "/export" => "lists#export", as: :export
     get "/moving" => "lists#moving", as: :moving
@@ -82,6 +83,7 @@ Rails.application.routes.draw do
     get "/addpeople" => "groups#addpeople"
 
     resources :lists, only: [:new, :create, :index, :show, :edit, :destroy] do
+      post "/add_data" => "lists#prepare_data_to_add", as: :prepare_data_to_add
       get "/exporting" => "lists#exporting", as: :exporting
       get "/export" => "lists#export", as: :export
       get "/moving" => "lists#moving", as: :moving

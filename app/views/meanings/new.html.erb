@@ -8,55 +8,48 @@
         <%= f.hidden_field :list_id, value: @list.id %>
       <% end %>
       <% @common_m = @word1.common_meanings(@word2) %>
-      <%= f.label :meaning %><br />
-      <% if @common_m.count > 0 %>
-        <% @new_by_default = false %>
-        <p>The words are already linked by the meanings:</p>
-        <% @common_m.each do |m| %>
-        <ul>
-          <li><%= link_to m.id, meaning_path(m.id) %></li>
-        </ul>
-        <% end %>
-        <div class="input-group">
-          <span class="input-group-addon">
-            <%= f.radio_button :action, "donothing", checked: true %>
-          </span>
-          <%= f.label :action, "This is exactly their common meaning I wanted. No meaning to add :)", value: "donothing", class: 'form-control'  %>
-        </div><!-- /input-group -->
-      <% else %>
-        <% @new_by_default = true %>
-      <% end %>
-      <div class="input-group">
+			<% @checked = true %>
+			
+      <%= f.label "#{@word1.content} - #{@word2.content}" %><br />
+		  <% if @common_m.count > 0 %>
+				<% @common_m.each do |m| %>
+		      <div class="input-group">
+		        <span class="input-group-addon">
+		          <%= f.radio_button :action, "donothing", checked: @checked %>
+							<% @checked = false %>
+		        </span>
+				  <%= f.text_area :action, "#{@word1.content} and #{@word2.content} do already have a common meaning (n°#{m.id}): #{m.words_in_two_lang(@language1,@laguage2)}. No meaning to add :)", value: "donothing", class: 'form-control', rows: 3  %>
+			  </div>
+						
+			  <% end %>
+			<% end %>
+				
+	    <% [@word1, @word2].each do |word| %>
+				<% if (word == @word1) %>
+					<% opposite_word = @word2 %>
+				<% else %>
+					<% opposite_word = @word1 %>
+				<% end %>
+	      <% word.meanings.each do |m| %>
+	        <% if not @common_m.include?(m) %>
+			      <div class="input-group" rows="3" >
+	            <span class="input-group-addon">
+	              <%= f.radio_button :action, m.id, checked: @checked %>
+								<% @checked = false %>
+	            </span>
+	              <%= f.label :action, "Link <i>#{opposite_word.content}</i> to the meaning (n°#{m.id}) containing: </br>#{m.words_in_two_lang(@language1,@language2)}.".html_safe%>
+				    </div>
+					<% end %>
+	      <% end %>
+	    <% end %>
+			
+	    <div class="input-group">
         <span class="input-group-addon">
-          <%= f.radio_button :action, "new", checked: @new_by_default %>
+          <%= f.radio_button :action, "new", checked: @checked %>
         </span>
-        <%= f.label :action, "Create a new meaning and links both words to it", value: "new", class: 'form-control'  %>
-      </div><!-- /input-group -->
-      <% [@word1, @word2].each do |word| %>
-        <% first = true %>
-        <% word.meanings.each do |m| %>
-          <% if not @common_m.include?(m) %>
-            <% if first %>
-              <% first = false %>
-              <p>Or use one of the meaning of <%= link_to word.content, word_path(word) %> and only link the other word to it:</p>
-            <% end %>
-            <div class="input-group">
-              <span class="input-group-addon">
-                <%= f.radio_button :action, m.id %>
-              </span>
-              <%= f.label :action, m.id.to_s, value:  m.id.to_s, class: 'form-control'  %>
-            </div><!-- /input-group -->
-          <% end %>
-        <% end %>
-        <% if first %><!-- No meaning -->
-          <% if word.meanings.empty? %>
-            <p><%= link_to word.content, word_path(word) %> has currently no meaning.</p>
-          <% else %>
-            <p>All the meanings of <%= link_to word.content, word_path(word) %> are also linked with the other word.</p>
-          <% end %>
-        <% end %>
-      <% end %>
-    <br/>
+        <%= f.label :action, "Create a new meaning and link both words to it", value: "new", class: 'form-control'  %>
+			</div>
+			
     <%= f.submit "Choose option", class: "btn btn-default btn-lg btn-primary" %>
     <% end %>
   </div>

@@ -2,8 +2,8 @@ class ListsController < ApplicationController
   before_filter :signed_in_user
   before_filter :create_group_and_user
   before_filter :get_list, only: [:show, :edit, :destroy]
-  before_filter :get_list2, only: [:moving, :move, :export, :exporting]
-  before_filter :correct_user, only: [:index, :show, :destroy, :deit, :moving, :move, :import, :export, :exporting]
+  before_filter :get_list2, only: [:moving, :move, :export, :exporting, :prepare_data_to_add]
+  before_filter :correct_user, only: [:index, :show, :destroy, :edit, :moving, :move, :import, :export, :exporting]
   before_filter :get_data_show, only: [:new, :show, :moving, :export, :exporting]
   before_filter :check_data_export, only: [:exporting]
   def new
@@ -63,11 +63,7 @@ class ListsController < ApplicationController
         flash: { success: "List deleted" } and return
   end
   def edit
-    @path = @list.path
-    @wordsets = get_wordsets(@list)
-    @language1_name = Language.find_by(id:@list.language1_id).name
-    @language2_name = Language.find_by(id:@list.language2_id).name
-    @languages = Language.all
+    prepare_for_edit
   end
   def moving
     @moving = true
@@ -139,6 +135,68 @@ class ListsController < ApplicationController
   #   redirect_to new_list_train_path(list, rec: rec, max: max)
   # end
 
+  def prepare_data_to_add
+    dataToAdd = params[:wordset][:data_to_add]
+    @dataPrepared={}
+    hash = Hash.new
+    if dataToAdd
+      dataToAdd = dataToAdd.split("\r\n") # FIXME if error maybe here...
+      # Added from the list
+      list = List.find_by(id:params[:wordset][:list_id])
+
+      dataToAdd.each_with_index do |dta, index|
+        newWords = dta.split('=')
+        newWords[0] = delete_blanks(newWords[0])
+        newWords[1] = delete_blanks(newWords[1])
+        @dataPrepared[index.to_s] = {}
+        @dataPrepared[index.to_s][:word0]={}
+        @dataPrepared[index.to_s][:word1]={}
+        @dataPrepared[index.to_s][:link]={}
+        
+        @dataPrepared[index.to_s][:word0][:value]=newWords[0]
+        @dataPrepared[index.to_s][:word1][:value]=newWords[1]
+        
+        
+        @dataPrepared[index.to_s][:word0][:should_be_created]=true
+        @dataPrepared[index.to_s][:word1][:should_be_created]=true
+
+        word1 = Word.find_by(content:newWords[0], language_id:list.language1_id)
+        word2 = Word.find_by(content:newWords[1], language_id:list.language2_id)
+        if word1
+          @dataPrepared[index.to_s][:word0][:should_be_created]=false
+          @dataPrepared[index.to_s][:word0][:id]=word1.id
+        end
+        if word2
+          @dataPrepared[index.to_s][:word1][:should_be_created]=false
+          @dataPrepared[index.to_s][:word1][:id]=word2.id
+        end
+
+        common_meanings = []
+        if word1 && word2
+          common_meanings = word1.common_meanings(word2)
+          puts 'word1_id'
+          puts word1.id
+          puts 'word2_id'
+          puts word2.id
+          puts 'HEREE'
+          puts common_meanings.length
+        end
+        
+
+        if common_meanings.length == 0 && !word1 && !word2
+          @dataPrepared[index.to_s][:link][:should_be_created]=true
+          
+        elsif common_meanings.length == 0
+          @dataPrepared[index.to_s][:link][:should_be_selected]=true
+        
+        elsif  common_meanings.length >= 1 #TODO what to do?
+          @dataPrepared[index.to_s][:link][:already_exists]=true
+        end
+      end
+    end  
+    prepare_for_edit
+    render :edit
+  end
 
 
   private
@@ -395,6 +453,41 @@ class ListsController < ApplicationController
     else
       group_lists_path(group)
     end
+  end
+  
+  def delete_blanks(input)
+    max_length = input.length
+    i=0
+    j=input.length - 1
+    k=0
+    output=""
+
+    while (i < max_length && input[i].blank?) do
+      i=i+1
+    end
+
+    while (j >= 0 && input[j].blank?) do
+      j=j-1
+    end
+
+    while k < max_length do
+      if k >= i && k <= j
+        output = "#{output}#{input[k]}"
+      end
+      k = k +1
+    end
+
+    return output
+  end
+  
+  def prepare_for_edit
+    @path = @list.path
+    @wordsets = get_wordsets(@list)
+    @language1_name = Language.find_by(id:@list.language1_id).name
+    @language2_name = Language.find_by(id:@list.language2_id).name
+    @language1 = Language.find_by(id:@list.language1_id)
+    @language2 = Language.find_by(id:@list.language2_id)
+    @languages = Language.all
   end
 
 end

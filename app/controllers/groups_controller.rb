@@ -241,7 +241,7 @@ class GroupsController < ApplicationController
   end
   
   def admin_user
-    unless (current_user.is_admin(@group)) 
+    unless (current_user.is_admin?(@group)) 
       flash[:danger] = "You may not access this page2"
       redirect_to(root_url) 
     end

@@ -78,4 +78,18 @@ module ListsHelper
       edit_group_list_path(group,list)
     end
   end
+  def path_for_edit_list(list,group)
+    if group.nil?
+      edit_list_path(list)
+    else
+      edit_group_list_path(group,list)
+    end
+  end
+  def path_for_list_prepare_data_to_add(list,group)
+    if group.nil?
+      list_prepare_data_to_add_path(list)
+    else
+      group_list_prepare_data_to_add_path(group,list)
+    end
+  end
 end

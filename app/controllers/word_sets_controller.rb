@@ -83,6 +83,8 @@ class WordSetsController < ApplicationController
       end
       hash[:success] = "Successfully added"
       redirect_to edit_list_url(list), flash: hash
+      
+      
     else
       word = Word.find_by_id(params[:word_id])
       meaning = Meaning.find_by_id(params[:meaning_id])
@@ -140,12 +142,10 @@ class WordSetsController < ApplicationController
 
     while (i < max_length && input[i].blank?) do
       i=i+1
-      puts 'he'
     end
 
     while (j >= 0 && input[j].blank?) do
       j=j-1
-      puts 'hi'
     end
 
     while k < max_length do
@@ -153,7 +153,6 @@ class WordSetsController < ApplicationController
         output = "#{output}#{input[k]}"
       end
       k = k +1
-      puts '3'
     end
 
     return output

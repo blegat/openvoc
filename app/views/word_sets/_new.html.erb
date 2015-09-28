@@ -3,7 +3,8 @@
   <%= f.hidden_field :list_id, value: @list.id %>
 
   <%= f.label "Add new words" %>
-  <%= f.text_area :data_to_add, placeholder: "word1=word2" %>
+	
+  <%= f.text_area :data_to_add, placeholder: "word1=word2", class: 'form-control' %>
 
   <br/>
   <%= f.submit "Add the words", class: "btn btn-default btn-lg btn-primary" %>
