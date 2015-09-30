@@ -76,7 +76,6 @@ class TrainsController < ApplicationController
       if not (@previous_frag.save && @train.save)
         redirect_to root_url, flash: { error: "The modification could not be saved" } and return
       end
-      puts 'redirect___'
       redirect_to @train and return
       
     elsif params[:translation]
@@ -167,8 +166,22 @@ class TrainsController < ApplicationController
   end
     
   def load_prev_frag(frag)
-    @prev_word1 = Word.find(frag.word1_id)
-    @prev_word2 = Word.find(frag.word2_id)
+    if frag.item1_is_word
+      @prev_item1 = Word.find(frag.item1_id)
+      @prev_content1 = @prev_item1.content
+    else
+      @prev_item1 = Meaning.find(frag.item1_id)
+      @prev_content1 = @prev_item1.words_in_one_lang(Language.find(frag.language1_id))
+    end
+    
+    if frag.item2_is_word
+      @prev_item2 = Word.find(frag.item2_id)
+      @prev_content2 = @prev_item2.content
+    else
+      @prev_item2 = Meaning.find(frag.item2_id)
+      @prev_content2 = @prev_item2.words_in_one_lang(Language.find(frag.language2_id)) 
+      
+    end
     @prev_answer = frag.answer
     @prev_correct= frag.is_correct
   end
@@ -198,8 +211,12 @@ class TrainsController < ApplicationController
       new_fragment = @train.fragments.build(word_set_id: failed_frag.word_set_id, 
                                                    sort: failed_frag.sort, 
                                                  q_to_a: failed_frag.q_to_a, 
-                                               word1_id: failed_frag.word1_id, 
-                                               word2_id: failed_frag.word2_id, 
+                                               item1_id: failed_frag.item1_id, 
+                                               item2_id: failed_frag.item2_id, 
+                                          item1_is_word: failed_frag.item1_is_word,
+                                          item2_is_word: failed_frag.item2_is_word,
+                                           language1_id: failed_frag.language1_id,
+                                           language2_id: failed_frag.language2_id,
                                                  answer: "")
       if not new_fragment.save
         redirect_to root_url, flash: { error: "A problem occured while applying the error_policy" } and return
@@ -229,7 +246,8 @@ class TrainsController < ApplicationController
   
   def check_fragment_and_apply_error_policy
     @actual_frag.answer = params[:translation]
-    if @word2f.content == @actual_frag.answer
+    
+    if check_answer_only(@item2, @item2_is_word, @actual_frag.language2_id, @actual_frag.answer)
       @actual_frag.is_correct = true
     else
       @actual_frag.is_correct = false
@@ -243,8 +261,23 @@ class TrainsController < ApplicationController
   def load_fragment(frag)
     @sort = frag.sort
     if @sort == 1
-      @word1f = Word.find(frag.word1_id)
-      @word2f = Word.find(frag.word2_id)
+      @item1_is_word = frag.item1_is_word
+      @item2_is_word = frag.item2_is_word
+      if @item1_is_word
+        @item1 = Word.find(frag.item1_id)
+        @content1 = @item1.content
+      else
+        @item1 = Meaning.find(frag.item1_id)
+        @content1 = @item1.words_in_one_lang(Language.find(frag.language1_id))
+      end
+      
+      if @item2_is_word
+        @item2 = Word.find(frag.item2_id)
+        @content2 = @item2.content
+      else
+        @item2 = Meaning.find(frag.item2_id)
+        @content2 = @item2.words_in_one_lang(Language.find(frag.language2_id)) 
+      end
     end
   end
   
@@ -269,7 +302,10 @@ class TrainsController < ApplicationController
       if train.q_to_a == 1 or train.q_to_a == 3
         if ws.success_ratio_qa <= @max
           new_fragment = train.fragments.build(word_set_id: ws.id, sort: 1, q_to_a: 1, 
-                                               word1_id: ws.word1_id, word2_id: ws.word2_id, answer: "")
+                                               item1_id: ws.word_id, item2_id: ws.meaning_id,
+                                               item1_is_word: true, item2_is_word: false,
+                                               language1_id: ws.list.language1_id, language2_id: ws.list.language2_id,
+                                               answer: "")
           if new_fragment.save
             add_randomly_fragment_id(train,new_fragment.id)
           end
@@ -279,7 +315,10 @@ class TrainsController < ApplicationController
       if train.q_to_a == 2 or train.q_to_a == 3
         if ws.success_ratio_aq <= @max
           new_fragment = train.fragments.build(word_set_id: ws.id, sort: 1, q_to_a: 2, 
-                                               word1_id: ws.word2_id, word2_id: ws.word1_id, answer: "")
+                                               item1_id: ws.meaning_id, item2_id: ws.word_id, 
+                                               item1_is_word: false, item2_is_word: true,
+                                               language1_id: ws.list.language2_id, language2_id: ws.list.language1_id,
+                                               answer: "")
           if new_fragment.save
             add_randomly_fragment_id(train,new_fragment.id)
           end
@@ -302,11 +341,24 @@ class TrainsController < ApplicationController
     end
   end
   
+  def check_answer_only(item, is_word, lang_id, answer)
+    if is_word
+      return item.content == answer
+    else
+      item.words.where(language_id:lang_id).each do |w|
+        if w.content == answer
+          return true
+        end
+      end
+    end
+    return false
+  end
+  
   def check_answer
     @previous_ws = WordSet.find(@train.actual_ws_id)
-    @previous_word1 = Word.find(@previous_ws.word1_id) 
-    @previous_word2 = Word.find(@previous_ws.word2_id)
-    if @previous_word2.content == params[:translation]
+
+    if check_answer_only(@previous_ws.item2, @previous_ws.item2_is_word, 
+                         @previous_ws.language2_id, params[:translation])
       @guessTrue = true
       @previous_ws.success += 1
       add_id_to_succeeded(@previous_ws.id)

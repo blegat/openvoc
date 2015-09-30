@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150803144440) do
+ActiveRecord::Schema.define(version: 20150930194824) do
 
   create_table "authentications", force: true do |t|
     t.integer  "user_id"
@@ -116,12 +116,16 @@ ActiveRecord::Schema.define(version: 20150803144440) do
     t.integer  "word_set_id"
     t.integer  "sort"
     t.boolean  "q_to_a"
-    t.integer  "word1_id"
-    t.integer  "word2_id"
+    t.integer  "item1_id"
+    t.integer  "item2_id"
     t.string   "answer"
     t.boolean  "is_correct"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.boolean  "item1_is_word"
+    t.boolean  "item2_is_word"
+    t.integer  "language1_id"
+    t.integer  "language2_id"
   end
 
   create_table "trains", force: true do |t|

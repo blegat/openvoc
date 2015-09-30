@@ -5,9 +5,9 @@
 	<h1><%= "[#{@group.name}]#{@path}" %></h1>
 <% end %>
 
-<%= link_to "Back to list", path_for_list(@list,@group), class: "btn btn-default btn-lg btn-primary"  %>
 
-<div class="col-md-12">
+<div class="row ol-md-12">
+	<%= link_to "Back to list", path_for_list(@list,@group), class: "btn btn-default btn-lg btn-primary"  %>
     <% unless @list.nil? %>
       <% if @wordsets.empty? %>
         <p>No word.</p>
@@ -71,10 +71,8 @@
 		
 		<% if @dataPrepared %>
 			<p>Please check the following data before adding it to the database:</p>
-			<%= form_for(:wordset, url: path_for_list_prepare_data_to_add(@list,@group), method: :post) do |f| %>
-		  <%= f.hidden_field :checked, value: true %>
-			
-			
+			<%= form_for(:confirm, url: path_for_list_add_data(@list,@group), method: :post) do |f| %>
+			<%= hash_to_hidden_fields(prepared_data:@dataPrepared) %>
 			<section class="col-md-12 table-responsive">
 			  <table class="table table-bordered table-striped table-condensed">
 			    <thead>
@@ -83,24 +81,33 @@
 				    <th><%= @language1_name %></th>		
 				    <th><%= @language2_name %></th>
 						<th>Please choose</th>
+						<th>Don't add</th>
 				  </tr>
 				</thead>
 			  <tbody>
 				  <% @dataPrepared.each do |index,v| %>
+					    <% @first = true %>
 		          <tr>
 								<td><%= index %></td>
-			          <td><font color ="<%= v[:word0][:should_be_created]? 'orange' : 'green' %>"> <%= v[:word0][:value] %></font></td>
-			          <td><font color ="<%= v[:word1][:should_be_created]? 'orange' : 'green' %>"> <%= v[:word1][:value] %></font></td>
+			          <td><font color ="<%= v[:word0][:should_be_created] == "t" ? 'orange' : 'green' %>"> <%= v[:word0][:value] %></font></td>
+			          <td><font color ="<%= v[:word1][:should_be_created] == "t" ? 'orange' : 'green' %>"> <%= v[:word1][:value] %></font></td>
 								<td> 
-								<% if v[:link][:should_be_created]%>
-								  Create both words in the database and create a common meaning
+								<% if v[:link][:should_be_created] == "t" %>
+				          <%= f.radio_button "#{index.to_s}[link]", "newmeaning", checked: true %>
+									<% @first = false %>
+				          <%= f.label "#{index.to_s}[link]", "Create both words in the database and create a common meaning".html_safe, value: :newmeaning %>
 									
-								<% elsif v[:link][:already_exists]%>
-									Both words already exists and are already linked. Just add it to your list :)
+								<% elsif v[:link][:already_exists] == "t" %>
+				          <%= f.radio_button "#{index.to_s}[link]", "justadd", checked: true %>
+									<% @first = false %>
+				          <%= f.label "#{index.to_s}[link]", "Both words belongs already to the same meaning. Just add it to your list :)".html_safe, value: :justadd %>
+								</br>
+				          <%= f.radio_button "#{index.to_s}[link]", "newmeaning" %>
+				          <%= f.label "#{index.to_s}[link]", "Create a new meaning and link both words".html_safe, value: :newmeaning%>
 									
-								<% elsif v[:link][:should_be_selected]%>
-								  <% @word1 = Word.find(v[:word0][:id]) %>
-								  <% @word2 = Word.find(v[:word1][:id]) %>
+								<% elsif v[:link][:should_be_selected] == "t" %>
+								  <% v[:word0][:should_be_created] == "t" ? @word1 = Word.new(content: v[:word0][:value]) : @word1 = Word.find(v[:word0][:id]) %>
+									<% v[:word1][:should_be_created] == "t" ? @word2 = Word.new(content: v[:word1][:value]) : @word2 = Word.find(v[:word1][:id]) %>
 									
 						      <% @common_m = @word1.common_meanings(@word2) %>
 							    <% [@word1, @word2].each do |word| %>
@@ -111,20 +118,28 @@
 										<% end %>
 							      <% word.meanings.each do |m| %>
 							        <% if not @common_m.include?(m) %>
-							          <%= f.radio_button "i#{index.to_s}[link]", m.id %>
-							          <%= f.label :action, "Link <i>#{opposite_word.content}</i> to the meaning (n°#{m.id}) containing: </br>#{m.words_in_two_lang(@language1,@language2)}.".html_safe%>
+							          <%= f.radio_button "#{index.to_s}[link]", [word.id,  m.id], checked:@first %>
+												<% @first = false %>
+							          <%= f.label "#{index.to_s}[link]", "Link <i>#{opposite_word.content}</i> to the meaning (n°#{m.id}) containing: </br>#{m.words_in_two_lang(@language1,@language2)}.".html_safe, value: [word.id,  m.id] %>
 											</br>
 											<% end %>
 							      <% end %>
-							    <% end %>								
+							    <% end %>	
+				          <%= f.radio_button "#{index.to_s}[link]", "newmeaning", checked: @first %>
+				          <%= f.label "#{index.to_s}[link]", "Create a new meaning for both words.".html_safe, value: :newmeaning %>					
 								<% end %>
 								
+								</td>
+								<td>
+				          <%= f.radio_button "#{index.to_s}[link]", "delete" %>
+				          <%= f.label "#{index.to_s}[link]", "Delete".html_safe, value: :delete %>
 								</td>
 			        </tr>
 				  <% end %>
 			    </tbody>
 			  </table>
-		    </section>
+		  </section>
+			<%= f.submit "Confirm", class: "col-md-1 col-md-offset-11 btn btn-default btn-lg btn-primary" %>
 		<% end %>
 		<% end%>
 		
@@ -145,17 +160,5 @@
 
 	<% end %>
 </div>
-</br>
-</br>
-</br>
-</br>
-</br>
-</br>
-</br>
-</br>
-</br>
-</br>
-</br>
-</br>
-</br>
+
 

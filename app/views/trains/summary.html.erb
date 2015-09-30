@@ -15,9 +15,19 @@
 		  </thead>
 	    <tbody>
   					<% @list_frag_failed.each do |f| %>
+						<% if f.item1_is_word %>
+						  <% content1 = Word.find(f.item1_id).content %>
+						<% else %>
+						  <% content1 = Meaning.find(f.item1_id).words_in_one_lang(Language.find(f.language1_id)) %>
+						<% end %>
+						<% if f.item2_is_word %>
+						  <% content2 = Word.find(f.item2_id).content %>
+						<% else %>
+						  <% content2 = Meaning.find(f.item2_id).words_in_one_lang(Language.find(f.language2_id)) %>
+						<% end %>
 	            <tr>
-	        			<td><%= Word.find(f.word1_id).content %></td>
-	        			<td><%= Word.find(f.word2_id).content %></td>
+	        			<td><%= content1 %></td>
+	        			<td><%= content2 %></td>
 								<td><%= f.answer %></td>
 								<% if f.q_to_a == true %>
 									<td><%= WordSet.find(f.word_set_id).success_ratio_qa.to_i %></td>
@@ -43,9 +53,19 @@
 		  </thead>
 	    <tbody>
   					<% @list_frag_succeeded.each do |f| %>
+						<% if f.item1_is_word %>
+						  <% content1 = Word.find(f.item1_id).content %>
+						<% else %>
+						  <% content1 = Meaning.find(f.item1_id).words_in_one_lang(Language.find(f.language1_id)) %>
+						<% end %>
+						<% if f.item2_is_word %>
+						  <% content2 = Word.find(f.item2_id).content %>
+						<% else %>
+						  <% content2 = Meaning.find(f.item2_id).words_in_one_lang(Language.find(f.language2_id)) %>
+						<% end %>
 	            <tr>
-	        			<td><%= Word.find(f.word1_id).content %></td>
-	        			<td><%= Word.find(f.word2_id).content %></td>
+	        			<td><%= content1 %></td>
+	        			<td><%= content2 %></td>
 								<td><%= f.answer %></td>
 								<% if f.q_to_a == true %>
 									<td><%= WordSet.find(f.word_set_id).success_ratio_qa.to_i %></td>

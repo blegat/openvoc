@@ -10,11 +10,11 @@
 
 <% if @previous_frag %>
 <% if @prev_correct == true %>
-	<p>Yes! The translation of "<%= @prev_word1.content %>" is indeed "<%= @prev_answer %>" (Expected: "<%= @prev_word2.content %>")!</p>
+	<p>Yes! The translation of "<%= @prev_content1 %>" is indeed "<%= @prev_answer %>" (Expected: "<%= @prev_content2 %>")!</p>
 	<p>Think you were wrong? Click <%= link_to("here", train_path(@train, modif_guess: {to: false}))%>.</p>
 	
 <% else %>
-		<p>No! The translation of "<%= @prev_word1.content %>" was "<%= @prev_word2.content %>", not "<%= @prev_answer %>"! </p>
+		<p>No! The translation of "<%= @prev_content1 %>" was "<%= @prev_content2 %>", not "<%= @prev_answer %>"! </p>
 		<p>Think you were right? Click <%= link_to("here", train_path(@train, modif_guess: {to: true}))%>.</p>
 <% end %>
 <% end %>
@@ -26,7 +26,7 @@
 
 <% else %>
 <%= form_for(:guess, url: train_path(@train), method: :get)  do %>
-  <%= label_tag :translation, "What is the translation for \"#{@word1f.content}\"?" %>
+  <%= label_tag :translation, "What is the translation for \"#{@content1}\"?" %>
   <%= text_field_tag :translation, nil, options = {autofocus: :autofocus, autocomplete: :off} %>
   <%= submit_tag "Submit", class: "btn btn-default" %>
 <% end %>

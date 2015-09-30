@@ -17,7 +17,9 @@
 	<br>
 	
 	<%= f.label(:type_of_train, "Kind of test") %>
-	<%= f.select(:type_of_train, options_for_select([['Fill-in', 1], ['Multiple choice', 2]], 1)) %>
+	<%= f.select(:type_of_train, options_for_select([['Fill-in', 1],
+	#	 																							 ['Multiple choice', 2]
+																									 ], 1)) %>
 	<br>
 	
 	<%= f.label(:q_to_a, "What to ask") %>

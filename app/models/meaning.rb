@@ -27,4 +27,17 @@ class Meaning < ActiveRecord::Base
     output
   end
   
+  def words_in_one_lang(lang)
+    words_lang = self.words.where(language_id: lang.id)
+    output = ""
+    if not words_lang.empty?
+      words_lang.each do |w|
+        output << w.content << ", "
+      end
+      output = output[0...-2]
+    end
+    output
+  end
+  
+  
 end

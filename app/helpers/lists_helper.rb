@@ -92,4 +92,11 @@ module ListsHelper
       group_list_prepare_data_to_add_path(group,list)
     end
   end
+  def path_for_list_add_data(list,group)
+    if group.nil?
+      list_add_data_path(list)
+    else
+      group_list_add_data_path(group,list)
+    end
+  end
 end

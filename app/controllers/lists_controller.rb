@@ -2,8 +2,8 @@ class ListsController < ApplicationController
   before_filter :signed_in_user
   before_filter :create_group_and_user
   before_filter :get_list, only: [:show, :edit, :destroy]
-  before_filter :get_list2, only: [:moving, :move, :export, :exporting, :prepare_data_to_add]
-  before_filter :correct_user, only: [:index, :show, :destroy, :edit, :moving, :move, :import, :export, :exporting]
+  before_filter :get_list2, only: [:moving, :move, :export, :exporting, :prepare_data_to_add, :add_data]
+  before_filter :correct_user, only: [:index, :show, :destroy, :edit, :moving, :move, :import, :export, :exporting, :prepare_data_to_add, :add_data]
   before_filter :get_data_show, only: [:new, :show, :moving, :export, :exporting]
   before_filter :check_data_export, only: [:exporting]
   def new
@@ -134,6 +134,105 @@ class ListsController < ApplicationController
   #   end
   #   redirect_to new_list_train_path(list, rec: rec, max: max)
   # end
+  
+  def add_data
+    @dataPrepared = params[:prepared_data]
+    @dataConfirm = params[:confirm]
+    hash = Hash.new
+    
+    
+    @dataPrepared.each do |k,v|
+      if @dataConfirm[k] && @dataConfirm[k][:link] != :delete
+        
+        word1 = nil
+        word2 = nil
+        meaning = nil
+        
+        if v[:word0] && v[:word0][:should_be_created] == "t"
+          word1 = Word.new(content:v[:word0][:value], language_id:@list.language1_id)
+          word1.owner = current_user
+          if !word1.save
+            flash_errors(word1, false)
+            redirect_to edit_list_url(@list)
+            return
+          end
+        else
+          word1 = Word.find(v[:word0][:id])
+        end
+        
+        if v[:word1] && v[:word1][:should_be_created] == "t"
+          word2 = Word.new(content:v[:word1][:value], language_id:@list.language2_id)
+          word2.owner = current_user
+          if !word2.save
+            flash_errors(word2, false)
+            redirect_to edit_list_url(@list)
+            return
+          end
+        else
+          word2 = Word.find(v[:word1][:id])
+        end
+        
+        if @dataConfirm[k][:link] == "newmeaning"
+          newMeaning = Meaning.create()
+          [word1, word2].each do |word|
+            link = newMeaning.links.create(word:word, owner: current_user)
+            if !link.save
+              flash_errors(link, false)
+              redirect_to edit_list_url(@list)
+              return
+            end
+          end
+          meaning = newMeaning
+          
+          
+        elsif @dataConfirm[k][:link] == "justadd"
+          common_meanings = word1.common_meanings(word2)
+          if common_meanings.length >= 1
+            meaning = common_meanings[0]
+          else
+            flash[:danger] = "An error occured - 100"
+          end
+          
+        else
+          tab = []
+          tab = @dataConfirm[k][:link].split(" ")
+          if tab.length != 2            
+            flash[:danger] = "An error occured - 101"
+          else            
+            meaning = Meaning.find(tab[1])
+            [word1, word2].each do |word|
+              unless meaning.words.include?(word)
+                link = meaning.links.create(word:word, owner:current_user)
+                if !link.save
+                  flash_errors(link, false)
+                  redirect_to edit_list_url(@list)
+                  return
+                end
+              end
+            end
+          end
+        end
+        
+        
+        
+        if @list.wordsets.where(word_id: word1.id, meaning_id:meaning.id).any?
+          # we may have twice the same word, but with different meaning
+          hash[:warning] = "#{word1.content} is already in #{@list.path} with the same meaning"
+          # do nothing
+        elsif meaning
+          h = @list.add_word word1, meaning, current_user
+          unless h.nil?
+            
+            hash[:danger] = h
+            redirect_to edit_list_url(@list), flash: hash and return # FIXME Stops here and do not look at other words, problem ?
+          end
+        end
+
+      end
+    end
+    
+    redirect_to edit_list_path(@list)
+  end
 
   def prepare_data_to_add
     dataToAdd = params[:wordset][:data_to_add]
@@ -157,40 +256,34 @@ class ListsController < ApplicationController
         @dataPrepared[index.to_s][:word1][:value]=newWords[1]
         
         
-        @dataPrepared[index.to_s][:word0][:should_be_created]=true
-        @dataPrepared[index.to_s][:word1][:should_be_created]=true
+        @dataPrepared[index.to_s][:word0][:should_be_created]="t"
+        @dataPrepared[index.to_s][:word1][:should_be_created]="t"
 
         word1 = Word.find_by(content:newWords[0], language_id:list.language1_id)
         word2 = Word.find_by(content:newWords[1], language_id:list.language2_id)
         if word1
-          @dataPrepared[index.to_s][:word0][:should_be_created]=false
-          @dataPrepared[index.to_s][:word0][:id]=word1.id
+          @dataPrepared[index.to_s][:word0][:should_be_created]="f"
+          @dataPrepared[index.to_s][:word0][:id]= word1.id.to_s
         end
         if word2
-          @dataPrepared[index.to_s][:word1][:should_be_created]=false
-          @dataPrepared[index.to_s][:word1][:id]=word2.id
+          @dataPrepared[index.to_s][:word1][:should_be_created]="f"
+          @dataPrepared[index.to_s][:word1][:id]= word2.id.to_s
         end
 
         common_meanings = []
         if word1 && word2
           common_meanings = word1.common_meanings(word2)
-          puts 'word1_id'
-          puts word1.id
-          puts 'word2_id'
-          puts word2.id
-          puts 'HEREE'
-          puts common_meanings.length
         end
         
 
         if common_meanings.length == 0 && !word1 && !word2
-          @dataPrepared[index.to_s][:link][:should_be_created]=true
+          @dataPrepared[index.to_s][:link][:should_be_created]="t"
           
         elsif common_meanings.length == 0
-          @dataPrepared[index.to_s][:link][:should_be_selected]=true
+          @dataPrepared[index.to_s][:link][:should_be_selected]="t"
         
         elsif  common_meanings.length >= 1 #TODO what to do?
-          @dataPrepared[index.to_s][:link][:already_exists]=true
+          @dataPrepared[index.to_s][:link][:already_exists]="t"
         end
       end
     end  
@@ -489,5 +582,7 @@ class ListsController < ApplicationController
     @language2 = Language.find_by(id:@list.language2_id)
     @languages = Language.all
   end
+  
+  
 
 end
