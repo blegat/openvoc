@@ -1,0 +1,49 @@
+<% provide(:title, 'How to add a word in a list') %>
+<h1>How to add a word in a list?</h1>
+
+<div class="row">
+	<div class="col-md-12">
+		<p>
+			Pour ajouter un mot dans la liste, vous devez utiliser l'outil mis à votre disposition.
+		  Insérez une paire mot-traduction par ligne, en les séparant par un signe égal "=".
+		</p>
+		<p>
+			Le premier mot doit OBLIGATOIREMENT être le mot que vous souhaitez étudier dans la langue étrangère. Le second mot est la traduction du mot (en français, donc).
+		</p>
+		<p>
+			Gardez à l'esprit que les liens que vous enregistrez entre les mots (par exemple, le fait de lier "cat" à chat") seront enregistrés dans la base de donnée et partagés entre tous les utilisateurs. Soyez donc certain de ce que vous faites lorsque vous ajoutez un mot et sa traduction!
+		</p>
+		<p>
+		  Voici un exemple de code qui sera bien interprété:
+	  </p>
+    <pre>
+cat=chat
+dog=chien
+house=maison
+	  </pre>
+		Si vous souhaitez ajouter une seconde traduction pour un mot, il faut le faire de manière séparée (il s'agit d'un bug à rectifier). Après avoir validé le code précédant, vous pouvez donc encore insérer, par exemple:
+		<pre>
+house=habitat
+mouse=souris
+		</pre>
+		<p>
+			Voici quelques exemples à ne PAS suivre:
+		</p>
+		<pre>
+wine=vin    bread=pain
+		</pre>
+		<p>
+			(Car les mots sont insérés sur la même ligne)
+		</p>
+		<pre>
+house=maison,habitat
+		</pre>
+		<p>
+			(Car les virgules ne sont pas reconnues)
+		</p>
+		
+
+		
+		
+  </div>
+</div>

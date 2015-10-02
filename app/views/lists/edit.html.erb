@@ -1,164 +1,178 @@
 <% provide(:title, 'List editing') %>
 <% if @group.nil? %>
-	<h1><%= @path %></h1>
+<h1><%= @path %></h1>
 <% else %>
-	<h1><%= "[#{@group.name}]#{@path}" %></h1>
+<h1><%= "[#{@group.name}]#{@path}" %></h1>
 <% end %>
 
-
-<div class="row ol-md-12">
-	<%= link_to "Back to list", path_for_list(@list,@group), class: "btn btn-default btn-lg btn-primary"  %>
-    <% unless @list.nil? %>
-      <% if @wordsets.empty? %>
-        <p>No word.</p>
-      <% else %>
+<div class="row">
+	<div class="col-md-12">
+		<div class="btn-group">
+			<a class="btn btn-default dropdown-toggle" data-toggle="dropdown" href="#">
+				Action <i class="glyphicon-cog"></i>
+				<span class="caret"></span>
+			</a>
+			<ul class="dropdown-menu">
+				<li>
+					<%= link_to "Back to list", path_for_list(@list,@group) %>
+				</li>
+			</ul>
+		</div>
+		
+		<% unless @list.nil? %>
+		<% if @wordsets.empty? %>
+		<p>No word yet in the list.</p>
+		<% else %>
 		<section class="col-md-12 table-responsive">
-		  <table class="table table-bordered table-striped table-condensed">
-		    <thead>
-			  <tr>
-			    <th>
-						<select id="select" class="form-control">
-							<% @languages.each do |l|%>         <!--  #TODO gérer le changement de langue -->
+			<table class="table table-bordered table-striped table-condensed">
+				<thead>
+					<tr>
+						<th>
+							<select id="select" class="form-control">
+								<% @languages.each do |l|%>         <!--  #TODO gérer le changement de langue -->
 								<% if @list.language1_id == l.id %>
-		      			  <option selected> <%= l.name %></option>
+								<option selected> <%= l.name %></option>
 								<% else%>
-		     			    <option> <%= l.name %></option>
+								<option> <%= l.name %></option>
 								<% end %>
-		      		<% end %>
-            </select>
-				  </th>
-			    <th>
-						<select id="select" class="form-control">
-							<% @languages.each do |l|%>
+								<% end %>
+							</select>
+						</th>
+						<th>
+							<select id="select" class="form-control">
+								<% @languages.each do |l|%>
 								<% if @list.language2_id == l.id %>
-		      			  <option selected> <%= l.name %></option>
+								<option selected> <%= l.name %></option>
 								<% else%>
-		     			    <option> <%= l.name %></option>
+								<option> <%= l.name %></option>
 								<% end %>
-		      		<% end %>
-            </select>
-				  </th>
-			  </tr>
-			</thead>
-		    <tbody>
-			  <% @wordsets.each do |w| %>
-			  	<% # if w.meaning1_id && w.meaning2_id # ???? FIXME %>
-	          <tr>
-		          <td><%= w.word.content %></td>
-		        	<td><%= w.translations(@list.language2) %></td>
-						  <td><%= link_to "delete", wordset_path(w, {list_id: @list.id}),
-										controller: :word_sets, method: :delete %></td>
-		        </tr>
-			    <% # else @wordsWithoutMeaning = true end%>
-			  <% end %>
-		    </tbody>
-		  </table>
-	    </section>
-      <% end %>
+								<% end %>
+							</select>
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					<% @wordsets.each do |w| %>
+					<% # if w.meaning1_id && w.meaning2_id # ???? FIXME %>
+					<tr>
+						<td><%= w.word.content %></td>
+						<td><%= w.translations(@list.language2) %></td>
+						<td><%= link_to "delete", wordset_path(w, {list_id: @list.id}),
+							controller: :word_sets, method: :delete %>
+						</td>
+					</tr>
+					<% # else @wordsWithoutMeaning = true end%>
+					<% end %>
+				</tbody>
+			</table>
+		</section>
+		<% end %>
 
 
-	  <% if @wordsWithoutMeaning %>
-	  	Please associate a meaning to the following words:
-	  	<% @wordsets.each do |w| %>
-	  		<% if !w.meaning1_id && !w.meaning2_id %>
-			 	<%= render 'meanings/new', word1:Word.find_by(id:w.word1_id), 					word2:Word.find_by(id:w.word2_id), act_list:@list, ws:w %>
-			    </br>
-          	<% end %>
-	  	<% end %>
+		<% if @wordsWithoutMeaning %>
+		Please associate a meaning to the following words:
+		<% @wordsets.each do |w| %>
+		<% if !w.meaning1_id && !w.meaning2_id %>
+		<%= render 'meanings/new', word1:Word.find_by(id:w.word1_id), 					word2:Word.find_by(id:w.word2_id), act_list:@list, ws:w %>
+		<br>
+		<% end %>
+		<% end %>
 
-	  <% end%>
+		<% end%>
 		
 		
 		<% if @dataPrepared %>
-			<p>Please check the following data before adding it to the database:</p>
-			<%= form_for(:confirm, url: path_for_list_add_data(@list,@group), method: :post) do |f| %>
-			<%= hash_to_hidden_fields(prepared_data:@dataPrepared) %>
-			<section class="col-md-12 table-responsive">
-			  <table class="table table-bordered table-striped table-condensed">
-			    <thead>
-				  <tr>
+		<p>Please check the following data before adding it to the database:</p>
+		<%= form_for(:confirm, url: path_for_list_add_data(@list,@group), method: :post) do |f| %>
+		<%= hash_to_hidden_fields(prepared_data:@dataPrepared) %>
+		<section class="col-md-12 table-responsive">
+			<table class="table table-bordered table-striped table-condensed">
+				<thead>
+					<tr>
 						<th>Index</th>
-				    <th><%= @language1_name %></th>		
-				    <th><%= @language2_name %></th>
+						<th><%= @language1_name %></th>		
+						<th><%= @language2_name %></th>
 						<th>Please choose</th>
 						<th>Don't add</th>
-				  </tr>
+					</tr>
 				</thead>
-			  <tbody>
-				  <% @dataPrepared.each do |index,v| %>
-					    <% @first = true %>
-		          <tr>
-								<td><%= index %></td>
-			          <td><font color ="<%= v[:word0][:should_be_created] == "t" ? 'orange' : 'green' %>"> <%= v[:word0][:value] %></font></td>
-			          <td><font color ="<%= v[:word1][:should_be_created] == "t" ? 'orange' : 'green' %>"> <%= v[:word1][:value] %></font></td>
-								<td> 
-								<% if v[:link][:should_be_created] == "t" %>
-				          <%= f.radio_button "#{index.to_s}[link]", "newmeaning", checked: true %>
-									<% @first = false %>
-				          <%= f.label "#{index.to_s}[link]", "Create both words in the database and create a common meaning".html_safe, value: :newmeaning %>
+				<tbody>
+					<% @dataPrepared.each do |index,v| %>
+					<% @first = true %>
+					<tr>
+						<td><%= index %></td>
+						<td><font color ="<%= v[:word0][:should_be_created] == "t" ? 'orange' : 'green' %>"> <%= v[:word0][:value] %></font></td>
+						<td><font color ="<%= v[:word1][:should_be_created] == "t" ? 'orange' : 'green' %>"> <%= v[:word1][:value] %></font></td>
+						<td> 
+							<% if v[:link][:should_be_created] == "t" %>
+							<%= f.radio_button "#{index.to_s}[link]", "newmeaning", checked: true %>
+							<% @first = false %>
+							<%= f.label "#{index.to_s}[link]", "Create both words in the database and create a common meaning".html_safe, value: :newmeaning %>
 									
-								<% elsif v[:link][:already_exists] == "t" %>
-				          <%= f.radio_button "#{index.to_s}[link]", "justadd", checked: true %>
-									<% @first = false %>
-				          <%= f.label "#{index.to_s}[link]", "Both words belongs already to the same meaning. Just add it to your list :)".html_safe, value: :justadd %>
-								</br>
-				          <%= f.radio_button "#{index.to_s}[link]", "newmeaning" %>
-				          <%= f.label "#{index.to_s}[link]", "Create a new meaning and link both words".html_safe, value: :newmeaning%>
+							<% elsif v[:link][:already_exists] == "t" %>
+							<%= f.radio_button "#{index.to_s}[link]", "justadd", checked: true %>
+							<% @first = false %>
+							<%= f.label "#{index.to_s}[link]", "Both words belongs already to the same meaning. Just add it to your list :)".html_safe, value: :justadd %>
+							<br>
+							<%= f.radio_button "#{index.to_s}[link]", "newmeaning" %>
+							<%= f.label "#{index.to_s}[link]", "Create a new meaning and link both words".html_safe, value: :newmeaning%>
 									
-								<% elsif v[:link][:should_be_selected] == "t" %>
-								  <% v[:word0][:should_be_created] == "t" ? @word1 = Word.new(content: v[:word0][:value]) : @word1 = Word.find(v[:word0][:id]) %>
-									<% v[:word1][:should_be_created] == "t" ? @word2 = Word.new(content: v[:word1][:value]) : @word2 = Word.find(v[:word1][:id]) %>
+							<% elsif v[:link][:should_be_selected] == "t" %>
+							<% v[:word0][:should_be_created] == "t" ? @word1 = Word.new(content: v[:word0][:value]) : @word1 = Word.find(v[:word0][:id]) %>
+							<% v[:word1][:should_be_created] == "t" ? @word2 = Word.new(content: v[:word1][:value]) : @word2 = Word.find(v[:word1][:id]) %>
 									
-						      <% @common_m = @word1.common_meanings(@word2) %>
-							    <% [@word1, @word2].each do |word| %>
-										<% if (word == @word1) %>
-											<% opposite_word = @word2 %>
-										<% else %>
-											<% opposite_word = @word1 %>
-										<% end %>
-							      <% word.meanings.each do |m| %>
-							        <% if not @common_m.include?(m) %>
-							          <%= f.radio_button "#{index.to_s}[link]", [word.id,  m.id], checked:@first %>
-												<% @first = false %>
-							          <%= f.label "#{index.to_s}[link]", "Link <i>#{opposite_word.content}</i> to the meaning (n°#{m.id}) containing: </br>#{m.words_in_two_lang(@language1,@language2)}.".html_safe, value: [word.id,  m.id] %>
-											</br>
-											<% end %>
-							      <% end %>
-							    <% end %>	
-				          <%= f.radio_button "#{index.to_s}[link]", "newmeaning", checked: @first %>
-				          <%= f.label "#{index.to_s}[link]", "Create a new meaning for both words.".html_safe, value: :newmeaning %>					
-								<% end %>
+							<% @common_m = @word1.common_meanings(@word2) %>
+							<% [@word1, @word2].each do |word| %>
+							<% if (word == @word1) %>
+							<% opposite_word = @word2 %>
+							<% else %>
+							<% opposite_word = @word1 %>
+							<% end %>
+							<% word.meanings.each do |m| %>
+							<% if not @common_m.include?(m) %>
+							<%= f.radio_button "#{index.to_s}[link]", [word.id,  m.id], checked:@first %>
+							<% @first = false %>
+							<%= f.label "#{index.to_s}[link]", "Link <i>#{opposite_word.content}</i> to the meaning (n°#{m.id}) containing: </br>#{m.words_in_two_lang(@language1,@language2)}.".html_safe, value: [word.id,  m.id] %>
+							<br>
+							<% end %>
+							<% end %>
+							<% end %>	
+							<%= f.radio_button "#{index.to_s}[link]", "newmeaning", checked: @first %>
+							<%= f.label "#{index.to_s}[link]", "Create a new meaning for both words.".html_safe, value: :newmeaning %>					
+							<% end %>
 								
-								</td>
-								<td>
-				          <%= f.radio_button "#{index.to_s}[link]", "delete" %>
-				          <%= f.label "#{index.to_s}[link]", "Delete".html_safe, value: :delete %>
-								</td>
-			        </tr>
-				  <% end %>
-			    </tbody>
-			  </table>
-		  </section>
-			<%= f.submit "Confirm", class: "col-md-1 col-md-offset-11 btn btn-default btn-lg btn-primary" %>
+						</td>
+						<td>
+							<%= f.radio_button "#{index.to_s}[link]", "delete" %>
+							<%= f.label "#{index.to_s}[link]", "Delete".html_safe, value: :delete %>
+						</td>
+					</tr>
+					<% end %>
+				</tbody>
+			</table>
+		</section>
+		<%= f.submit "Confirm", class: "col-md-1 col-md-offset-11 btn btn-default btn-lg btn-primary" %>
 		<% end %>
 		<% end%>
 		
 		
 		<%= form_for(:wordset, url: path_for_list_prepare_data_to_add(@list,@group), method: :post) do |f| %>
 
-		  <%= f.hidden_field :list_id, value: @list.id %>
+		<%= f.hidden_field :list_id, value: @list.id %>
 
-		  <%= f.label "Add new words" %>
+		<%= f.label "Add new words" %> <%= link_to image_tag("help.png", :alt => "Help"), info_addwords_path, :target => "_blank" %>
+
 	
-		  <%= f.text_area :data_to_add, placeholder: "word1=word2", class: 'form-control' %>
+		<%= f.text_area :data_to_add, placeholder: "word1=word2", class: 'form-control' %>
 
-		  <br/>
-		  <%= f.submit "Add the words", class: "btn btn-default btn-lg btn-primary" %>
+		<br/>
+		<%= f.submit "Add the words", class: "btn btn-default btn-lg btn-primary" %>
 		<% end %>
 
-	  <!-- <%= render 'word_sets/new' %> -->
+		<!-- <%= render 'word_sets/new' %> -->
 
-	<% end %>
+		<% end %>
+	</div>
 </div>
 
 

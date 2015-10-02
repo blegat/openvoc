@@ -41,6 +41,8 @@ Rails.application.routes.draw do
 
   root to: 'static_pages#home'
   get '/contact', to: 'static_pages#contact'
+  get '/info/addwords', to: 'static_pages#addwords'
+  
 
   get "/auth/:provider/callback", to: "authentications#create"
   get "/signin", to: "authentications#index", as: :signin

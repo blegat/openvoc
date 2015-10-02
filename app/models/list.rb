@@ -15,7 +15,17 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ### END LICENSE
 
+class MyValidator < ActiveModel::Validator
+  def validate(record)
+    if record.language1_id == record.language2_id
+      record.errors[:languages] << 'The languages must be different!'
+    end
+  end
+end
+
 class List < ActiveRecord::Base
+  include ActiveModel::Validations
+  
   #attr_accessible :name
   validates :name, presence: true
     # uniqueness: { scope: :parent } FIXME deal with root with owner
@@ -42,6 +52,7 @@ class List < ActiveRecord::Base
 
   validate :language1_id, presence: true
   validate :language2_id, presence: true
+  validates_with MyValidator
 
   validate :parent_of_same_owner
 
