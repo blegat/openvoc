@@ -17,7 +17,7 @@ gem 'algorithms'
 gem 'nokogiri', '1.6.6.2'
 gem 'prawn',    '2.0.2'
 gem 'prawn-table', '0.2.2'
-
+gem 'tzinfo-data'
 
 group :development, :test do
   gem 'byebug'
