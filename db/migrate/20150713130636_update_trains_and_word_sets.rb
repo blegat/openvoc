@@ -1,7 +1,6 @@
 class UpdateTrainsAndWordSets < ActiveRecord::Migration
   def up
       remove_column :trains, :word_sets_ids
-      remove_column :trains, :actual_ws_id
       remove_column :trains, :word_sets_ids_failed
       remove_column :trains, :word_sets_ids_succeeded
       add_column    :trains, :q_to_a, :integer
@@ -20,7 +19,6 @@ class UpdateTrainsAndWordSets < ActiveRecord::Migration
   
   def down
     add_column :trains, :word_sets_ids, :text
-    add_column :trains, :actual_ws_id, :text
     add_column :trains, :word_sets_ids_failed, :text
     add_column :trains, :word_sets_ids_succeeded, :text
     remove_column :trains, :q_to_a
