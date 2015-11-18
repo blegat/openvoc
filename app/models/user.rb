@@ -42,15 +42,22 @@ class User < ActiveRecord::Base
                                dependent:   :destroy  
   has_many :groups, through: :group_memberships, source: :group
   
+  has_one :faked_group, class_name: "Group", foreign_key: :faker_id
 
   def root_lists
     self.lists.find_all_by_parent_id(nil)
   end
 
   def lists_without(word)
-    lists.select do |list|
+    my_lists = lists.select do |list|
       not list.contain_word(word)
     end
+    mygroups_lists = groups.map do |g|
+      g.faker.lists.select do |list|
+        not list.contain_word(word)
+      end
+    end
+    my_lists + mygroups_lists.flatten(1)
   end
   def lists_outside(list)
     lists = []

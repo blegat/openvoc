@@ -4,7 +4,7 @@ class Group < ActiveRecord::Base
                                dependent:   :destroy  
   has_many :members, through: :group_memberships, source: :user
   
-  has_one :faker, class_name: :User
+  belongs_to :faker, class_name: :User, foreign_key: :faker_id
   
   validates :name, presence: true
   
