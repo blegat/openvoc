@@ -56,6 +56,22 @@ class List < ActiveRecord::Base
 
   validate :parent_of_same_owner
 
+  def path_with_group
+    if self.owner.faker?
+      "[#{self.owner.faked_group.name}]#{path}"
+    else
+      path
+    end
+  end
+
+  def can_edit(user)
+    if owner.faker?
+      owner.faked_group.members.include?(user)
+    else
+      owner == user
+    end
+  end
+
   def parent_of_same_owner
     if not parent.nil? and owner != parent.owner
       errors.add(:list, "owner must be the same as parent's owner")

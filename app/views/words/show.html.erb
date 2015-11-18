@@ -36,7 +36,7 @@
       <div class="well">
         <p>Add to</p>
         <%= form_for :wordset, url: word_meaning_wordsets_path(@word, @link.meaning) do |f| %>
-          <%= f.collection_select("list_id", current_user.lists_without(@word), :id, :path, prompt: true) %>
+          <%= f.collection_select("list_id", current_user.lists_without(@word), :id, :path_with_group, prompt: true) %>
           <%= f.submit "Add", class: "btn btn-default btn-primary" %>
         <% end %>
       </div>

@@ -95,7 +95,7 @@ class WordSetsController < ApplicationController
         redirect_to root_path
       end
 
-      if list and list.owner == current_user
+      if list and list.can_edit(current_user)
         if list.wordsets.where(word_id: word.id).any?
           # we cannot have twice the same word, even with different meaning
           hash[:warning] = "#{word.content} is already in #{list.path}"
