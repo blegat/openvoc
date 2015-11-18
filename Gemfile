@@ -43,7 +43,7 @@ group :test do
 end
 
 group :production do
-  gem 'mysql2'
+  gem 'pg'
 end
 
 # To ease Transition Rails 3 -> Rails 4
